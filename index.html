@@ -24,7 +24,7 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
 nav{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border);margin-bottom:20px}
 .logo{display:flex;align-items:center;gap:12px}
 .logo-ico{display:flex;align-items:center;justify-content:center}
-.logo-ico img{height:36px;width:auto;display:block}
+.logo-ico img{height:48px;width:auto;display:block}
 .logo h1{font-size:18px;font-weight:700;color:var(--accent2)}
 .logo small{font-size:11px;color:var(--text3)}
 .live{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3)}
@@ -371,17 +371,21 @@ function renderKPI(){
 }
 
 // CHARTS
-document.getElementById('charts').innerHTML='<div class="row2"><div class="card"><div class="card-b">'+
+var chart1=null,chart2=null;
+function renderCharts(){
+  document.getElementById('charts').innerHTML='<div class="row2"><div class="card"><div class="card-b">'+
   '<div class="sec-h"><div class="bar"></div>المتاجر حسب المدينة</div><canvas id="c1"></canvas></div></div>'+
   '<div class="card"><div class="card-b"><div class="sec-h"><div class="bar"></div>أنواع المتاجر</div><canvas id="c2"></canvas></div></div></div>';
-
-var cities=Object.keys(byCity);
-var cityCounts=cities.map(function(c){return byCity[c].reduce(function(s,x){return s+x.count},0)});
-var cityColors=['#8377b7','#43a047','#a99bd4','#5c6bc0','#fb8c00','#00897b','#7e57c2','#ef6c00'];
-new Chart(document.getElementById('c1'),{type:'bar',data:{labels:cities,datasets:[{data:cityCounts,backgroundColor:cityColors.slice(0,cities.length),borderRadius:8,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#5a5777',font:{family:'IBM Plex Sans Arabic'}},grid:{color:'rgba(221,216,235,.4)'}},y:{ticks:{color:'#5a5777'},grid:{color:'rgba(221,216,235,.3)'}}}}});
-var tLabels=Object.keys(T);var tCounts=Object.values(T);
-var tColors=['#8377b7','#fb8c00','#43a047','#a99bd4','#5c6bc0','#00897b','#e53935','#7e57c2','#8e8ba5','#6b5e9e','#5a5777'];
-new Chart(document.getElementById('c2'),{type:'doughnut',data:{labels:tLabels,datasets:[{data:tCounts,backgroundColor:tColors.slice(0,tLabels.length),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'bottom',labels:{color:'#5a5777',font:{family:'IBM Plex Sans Arabic',size:11},padding:12}}}}});
+  var cities=Object.keys(byCity);
+  var cityCounts=cities.map(function(c){return byCity[c].reduce(function(s,x){return s+x.count},0)});
+  var cityColors=['#8377b7','#43a047','#a99bd4','#5c6bc0','#fb8c00','#00897b','#7e57c2','#ef6c00'];
+  if(chart1)chart1.destroy();
+  chart1=new Chart(document.getElementById('c1'),{type:'bar',data:{labels:cities,datasets:[{data:cityCounts,backgroundColor:cityColors.slice(0,cities.length),borderRadius:8,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#5a5777',font:{family:'IBM Plex Sans Arabic'}},grid:{color:'rgba(221,216,235,.4)'}},y:{ticks:{color:'#5a5777'},grid:{color:'rgba(221,216,235,.3)'}}}}});
+  var tLabels=Object.keys(T);var tCounts=Object.values(T);
+  var tColors=['#8377b7','#fb8c00','#43a047','#a99bd4','#5c6bc0','#00897b','#e53935','#7e57c2','#8e8ba5','#6b5e9e','#5a5777'];
+  if(chart2)chart2.destroy();
+  chart2=new Chart(document.getElementById('c2'),{type:'doughnut',data:{labels:tLabels,datasets:[{data:tCounts,backgroundColor:tColors.slice(0,tLabels.length),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'bottom',labels:{color:'#5a5777',font:{family:'IBM Plex Sans Arabic',size:11},padding:12}}}}});
+}
 
 var curFilter='all',curSearch='',curType='all',curDebit='all',curSort='count';
 
