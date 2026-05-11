@@ -59,13 +59,28 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:14px 0
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
 canvas{max-height:320px!important}
 
-.ctrls{display:flex;gap:10px;padding:16px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center}
-.srch{flex:1;min-width:200px;position:relative}
-.srch input{width:100%;padding:10px 40px 10px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:14px;outline:none}
-.srch input:focus{border-color:var(--accent)}
-.srch::after{content:'🔍';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px}
-.btn{padding:9px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text2);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:.2s;white-space:nowrap}
-.btn:hover,.btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.fcard{margin-bottom:16px}
+.fsearch{padding:14px 18px;border-bottom:1px solid var(--border)}
+.fsearch input{width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:14px;outline:none}
+.fsearch input:focus{border-color:var(--accent)}
+.fcity-row{display:flex;gap:6px;padding:12px 18px;overflow-x:auto;-webkit-overflow-scrolling:touch;border-bottom:1px solid var(--border)}
+.fcity-row::-webkit-scrollbar{height:0}
+.fchip{padding:7px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;color:var(--text2);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:.2s;white-space:nowrap}
+.fchip:hover{border-color:var(--accent)}
+.fchip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.fchip span{opacity:.6;font-weight:400;font-size:11px}
+.fdrops{display:flex;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.fdrop{flex:1;min-width:120px}
+.fdrop label{display:block;font-size:10px;font-weight:600;color:var(--text3);margin-bottom:4px}
+.fdrop select{width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'IBM Plex Sans Arabic',sans-serif;font-size:13px;outline:none;cursor:pointer;appearance:auto}
+.fdrop select:focus{border-color:var(--accent)}
+.ftags{display:flex;align-items:center;gap:8px;padding:10px 18px;flex-wrap:wrap;background:rgba(131,119,183,.04)}
+.ftags-label{font-size:11px;color:var(--text3);font-weight:600}
+.atag{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;background:var(--accent);color:#fff;border-radius:16px;font-size:11px;font-weight:500;cursor:pointer;transition:.2s}
+.atag:hover{opacity:.8}
+.atag b{font-size:13px;margin-right:2px}
+.ftags-clear{padding:5px 12px;background:none;border:1px solid var(--red);border-radius:16px;color:var(--red);font-size:11px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif}
+.rcount{font-size:13px;color:var(--text3);font-weight:400}
 .btn-exp{padding:9px 16px;background:var(--accent);border:none;border-radius:6px;color:#fff;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;font-weight:600;cursor:pointer}
 .btn-add{padding:9px 16px;background:var(--green);border:none;border-radius:6px;color:#fff;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:12px;font-weight:600;cursor:pointer}
 
@@ -149,9 +164,9 @@ footer{text-align:center;padding:24px 0;color:var(--text3);font-size:12px;border
   .kpi .l{font-size:11px}
   .row2{grid-template-columns:1fr}
   .dg{grid-template-columns:1fr}
-  .ctrls{padding:10px 12px;gap:6px}
-  .srch{min-width:100%;flex-basis:100%}
-  .btn{padding:7px 10px;font-size:11px}
+  .fdrops{flex-direction:column;gap:8px}
+  .fdrop{min-width:100%}
+  .fcity-row{padding:10px 12px}
   .sec-h{font-size:16px}
   .dn{font-size:14px}
   nav{flex-wrap:wrap;gap:8px}
@@ -252,6 +267,12 @@ var T = DATA.types;
 var TYPE_MAP = {
   'تموينات':0,'مخبز':1,'بقالة':2,'أسواق':3,'سوبرماركت':4,'متجر':5,
   'بلاستيك ومنظفات':6,'شركة / مؤسسة':7,'أخرى':8,'سوبرماركت مركزي':4,'خدمات أخرى':8
+};
+var TYPE_LABELS = {
+  'تموينات':'🛒 تموينات','مخبز':'🍞 مخبز','بقالة':'🏪 بقالة','أسواق':'🏬 أسواق',
+  'سوبرماركت':'🏷️ سوبرماركت','سوبرماركت مركزي':'🏬 سوبرماركت مركزي','متجر':'🏪 متجر',
+  'بلاستيك ومنظفات':'🧴 بلاستيك ومنظفات','شركة / مؤسسة':'🏢 شركة / مؤسسة',
+  'خدمات أخرى':'🔧 خدمات أخرى','أخرى':'📌 أخرى'
 };
 function tc(t){return 't'+(TYPE_MAP[t]||8)}
 function fmt(n){return Number(n).toLocaleString('en-US',{maximumFractionDigits:0})}
@@ -396,23 +417,31 @@ function getFiltered(){
 
 function render(){
   var filtered=getFiltered();
-  var fbtns='<div style="margin-bottom:8px;font-size:11px;color:var(--text3);font-weight:600">🏙 المدينة</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"><button class="btn '+(curFilter==='all'?'on':'')+'" onclick="window._F(\'all\')">الكل ('+fmt(totalStores)+')</button>';
   var cts=Object.keys(byCity);
-  for(var ci=0;ci<cts.length;ci++){var cc=cts[ci];var cnt=byCity[cc].reduce(function(s,x){return s+x.count},0);fbtns+='<button class="btn '+(curFilter===cc?'on':'')+'" onclick="window._F(\''+cc.replace(/'/g,"\\'")+'\')">'+cc+' ('+cnt+')</button>';}
-  fbtns+='</div>';
-  fbtns+='<div style="margin-bottom:8px;font-size:11px;color:var(--text3);font-weight:600">🏪 نوع المتجر</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">';
   var allTypes=Object.keys(T);
-  fbtns+='<button class="btn '+(curType==='all'?'on':'')+'" onclick="window._FT(\'all\')">الكل</button>';
-  for(var ti=0;ti<allTypes.length;ti++){fbtns+='<button class="btn '+(curType===allTypes[ti]?'on':'')+'" onclick="window._FT(\''+allTypes[ti].replace(/'/g,"\\'")+'\')">'+allTypes[ti]+'</button>';}
-  fbtns+='</div>';
-  fbtns+='<div style="margin-bottom:8px;font-size:11px;color:var(--text3);font-weight:600">💰 المبلغ المتبقي</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">';
-  var debitOpts=[['all','الكل'],['0','بدون مديونية'],['1-500','1 - 500'],['500-2000','500 - 2,000'],['2000+','أكثر من 2,000']];
-  for(var di=0;di<debitOpts.length;di++){fbtns+='<button class="btn '+(curDebit===debitOpts[di][0]?'on':'')+'" onclick="window._FD(\''+debitOpts[di][0]+'\')">'+debitOpts[di][1]+'</button>';}
-  fbtns+='</div>';
-  fbtns+='<div style="margin-bottom:8px;font-size:11px;color:var(--text3);font-weight:600">📊 ترتيب حسب</div><div style="display:flex;flex-wrap:wrap;gap:6px">';
-  var sortOpts=[['count','عدد المتاجر'],['debit','المتبقي ⬇'],['paid','المدفوع ⬇'],['name','الحي أ-ي']];
-  for(var si=0;si<sortOpts.length;si++){fbtns+='<button class="btn '+(curSort===sortOpts[si][0]?'on':'')+'" onclick="window._FS(\''+sortOpts[si][0]+'\')">'+sortOpts[si][1]+'</button>';}
-  fbtns+='</div>';
+  var hasFilters=curFilter!=='all'||curType!=='all'||curDebit!=='all'||curSort!=='count';
+
+  var cityChips='<div class="fcity-row"><button class="fchip '+(curFilter==='all'?'active':'')+'" onclick="window._F(\'all\')">الكل <span>'+fmt(totalStores)+'</span></button>';
+  for(var ci=0;ci<cts.length;ci++){var cc=cts[ci];var cnt=byCity[cc].reduce(function(s,x){return s+x.count},0);cityChips+='<button class="fchip '+(curFilter===cc?'active':'')+'" onclick="window._F(\''+cc.replace(/'/g,"\\'")+'\')">'+cc+' <span>'+cnt+'</span></button>';}
+  cityChips+='</div>';
+
+  var sortedTypes=allTypes.slice().sort(function(a,b){return T[b]-T[a]});var typeOpts='<option value="all" '+(curType==='all'?'selected':'')+'>🏪 كل الأنواع</option>';
+  for(var ti=0;ti<sortedTypes.length;ti++){var tl=TYPE_LABELS[sortedTypes[ti]]||sortedTypes[ti];typeOpts+='<option value="'+sortedTypes[ti]+'" '+(curType===sortedTypes[ti]?'selected':'')+'>'+tl+' ('+T[sortedTypes[ti]]+')</option>';}
+
+  var debitOpts=[['all','كل المبالغ'],['0','بدون مديونية'],['1-500','1 - 500 ر.س'],['500-2000','500 - 2,000 ر.س'],['2000+','أكثر من 2,000 ر.س']];
+  var debitSel='';
+  for(var di=0;di<debitOpts.length;di++){debitSel+='<option value="'+debitOpts[di][0]+'" '+(curDebit===debitOpts[di][0]?'selected':'')+'>'+debitOpts[di][1]+'</option>';}
+
+  var sortOpts=[['count','عدد المتاجر'],['debit','الأعلى مديونية'],['paid','الأعلى مدفوع'],['name','الحي (أ-ي)']];
+  var sortSel='';
+  for(var si=0;si<sortOpts.length;si++){sortSel+='<option value="'+sortOpts[si][0]+'" '+(curSort===sortOpts[si][0]?'selected':'')+'>'+sortOpts[si][1]+'</option>';}
+
+  var activeTags='';
+  if(curFilter!=='all')activeTags+='<span class="atag" onclick="window._F(\'all\')">'+curFilter+' <b>✕</b></span>';
+  if(curType!=='all')activeTags+='<span class="atag" onclick="window._FT(\'all\')">'+(TYPE_LABELS[curType]||curType)+' <b>✕</b></span>';
+  if(curDebit!=='all'){var dl={'0':'بدون مديونية','1-500':'1-500','500-2000':'500-2000','2000+':'2000+'};activeTags+='<span class="atag" onclick="window._FD(\'all\')">متبقي: '+dl[curDebit]+' <b>✕</b></span>';}
+  if(curSort!=='count')activeTags+='<span class="atag" onclick="window._FS(\'count\')">ترتيب مختلف <b>✕</b></span>';
+
   var cards='';
   for(var i=0;i<filtered.length;i++){
     var d=filtered[i];var pct=(d.count/maxCnt*100).toFixed(0);var col=barColor(d.count);
@@ -426,8 +455,10 @@ function render(){
     }
     cards+='<div class="dc" id="dc'+i+'" onclick="window._T('+i+')"><div class="dh"><div><div class="dn">'+cln(d.district)+'</div><div class="dc-city">'+cln(d.city)+'</div></div><div class="dbadge" style="background:'+col+'">'+d.count+'</div></div><div class="dbar"><div class="dbar-f" style="width:'+pct+'%;background:'+col+'"></div></div><div class="dfoot"><span>📊 '+d.stores.length+' متجر</span><span class="m p">💰 '+fmtM(d.paid)+'</span><span class="m d">⬆ '+fmtM(d.debit)+'</span></div><div class="dbody" onclick="event.stopPropagation()">'+storesHtml+'</div></div>';
   }
-  var hasFilters=curFilter!=='all'||curType!=='all'||curDebit!=='all'||curSort!=='count';
-  document.getElementById('main').innerHTML='<div class="sec"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px"><div class="sec-h" style="margin:0"><div class="bar"></div>تفاصيل الأحياء ('+filtered.length+' حي)</div><div style="display:flex;gap:8px"><button class="btn-add" onclick="window._M(true)">➕ إضافة متجر</button><button class="btn-exp" onclick="window._A()">📋 عرض الكل</button></div></div><div class="card" style="margin-bottom:16px"><div class="ctrls"><div class="srch"><input type="text" placeholder="بحث بالحي أو المدينة أو اسم المتجر..." value="'+curSearch+'" oninput="window._S(this.value)"></div><button class="btn '+(hasFilters?'on':'')+'" onclick="window._TF()" style="min-width:fit-content">🔍 فلاتر'+(hasFilters?' (نشط)':'')+'</button></div></div><div class="filter-panel '+(window._filterOpen?'show':'')+'">'+fbtns+(hasFilters?'<button class="filter-clear" onclick="window._FC()">✕ إعادة ضبط الفلاتر</button>':'')+'</div><div class="dg">'+cards+'</div></div>';
+
+  var resultCount='<span class="rcount">'+filtered.length+' حي'+(hasFilters?' من '+Object.keys(D).length:'')+'</span>';
+
+  document.getElementById('main').innerHTML='<div class="sec"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px"><div class="sec-h" style="margin:0"><div class="bar"></div>تفاصيل الأحياء '+resultCount+'</div><div style="display:flex;gap:8px"><button class="btn-add" onclick="window._M(true)">➕ إضافة متجر</button><button class="btn-exp" onclick="window._A()">📋 عرض الكل</button></div></div><div class="card fcard"><div class="fsearch"><input type="text" placeholder="بحث بالحي أو المدينة أو اسم المتجر..." value="'+curSearch+'" oninput="window._S(this.value)"></div>'+cityChips+'<div class="fdrops"><div class="fdrop"><label>🏪 النوع</label><select onchange="window._FT(this.value)">'+typeOpts+'</select></div><div class="fdrop"><label>💰 المتبقي</label><select onchange="window._FD(this.value)">'+debitSel+'</select></div><div class="fdrop"><label>📊 ترتيب</label><select onchange="window._FS(this.value)">'+sortSel+'</select></div></div>'+(hasFilters?'<div class="ftags"><span class="ftags-label">الفلاتر النشطة:</span>'+activeTags+'<button class="ftags-clear" onclick="window._FC()">مسح الكل</button></div>':'')+'</div><div class="dg">'+cards+'</div></div>';
 }
 
 window._F=function(c){curFilter=c;render()};
