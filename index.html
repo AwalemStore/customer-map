@@ -425,9 +425,18 @@ function render(){
   for(var ci=0;ci<cts.length;ci++){var cc=cts[ci];var cnt=byCity[cc].reduce(function(s,x){return s+x.count},0);cityChips+='<button class="fchip '+(curFilter===cc?'active':'')+'" onclick="window._F(\''+cc.replace(/'/g,"\\'")+'\')">'+cc+' <span>'+cnt+'</span></button>';}
   cityChips+='</div>';
 
-  var sortedTypes=allTypes.slice().sort(function(a,b){return T[b]-T[a]});var typeOpts='<option value="all" '+(curType==='all'?'selected':'')+'>🏪 كل الأنواع</option>';
-  for(var ti=0;ti<sortedTypes.length;ti++){var tl=TYPE_LABELS[sortedTypes[ti]]||sortedTypes[ti];typeOpts+='<option value="'+sortedTypes[ti]+'" '+(curType===sortedTypes[ti]?'selected':'')+'>'+tl+' ('+T[sortedTypes[ti]]+')</option>';}
-
+  var sortedTypes=allTypes.slice().sort(function(a,b){return T[b]-T[a]});
+  var typeOpts='<option value="all" '+(curType==='all'?'selected':'')+'>🏪 كل الأنواع</option>';
+  var foodT=['تموينات','مخبز','بقالة','أسواق','متجر','سوبرماركت','سوبرماركت مركزي'];
+  var bizT=['شركة / مؤسسة','بلاستيك ومنظفات'];
+  var othT=['خدمات أخرى','أخرى'];
+  typeOpts+='<optgroup label="🍞 غذائية">';
+  for(var ti=0;ti<sortedTypes.length;ti++){var t=sortedTypes[ti];if(foodT.indexOf(t)<0)continue;typeOpts+='<option value="'+t+'" '+(curType===t?'selected':'')+'>'+(TYPE_LABELS[t]||t)+' ('+T[t]+')</option>';}
+  typeOpts+='</optgroup><optgroup label="🏢 تجارية">';
+  for(var ti=0;ti<sortedTypes.length;ti++){var t=sortedTypes[ti];if(bizT.indexOf(t)<0)continue;typeOpts+='<option value="'+t+'" '+(curType===t?'selected':'')+'>'+(TYPE_LABELS[t]||t)+' ('+T[t]+')</option>';}
+  typeOpts+='</optgroup><optgroup label="📌 أخرى">';
+  for(var ti=0;ti<sortedTypes.length;ti++){var t=sortedTypes[ti];if(othT.indexOf(t)<0)continue;typeOpts+='<option value="'+t+'" '+(curType===t?'selected':'')+'>'+(TYPE_LABELS[t]||t)+' ('+T[t]+')</option>';}
+  typeOpts+='</optgroup>';
   var debitOpts=[['all','كل المبالغ'],['0','بدون مديونية'],['1-500','1 - 500 ر.س'],['500-2000','500 - 2,000 ر.س'],['2000+','أكثر من 2,000 ر.س']];
   var debitSel='';
   for(var di=0;di<debitOpts.length;di++){debitSel+='<option value="'+debitOpts[di][0]+'" '+(curDebit===debitOpts[di][0]?'selected':'')+'>'+debitOpts[di][1]+'</option>';}
