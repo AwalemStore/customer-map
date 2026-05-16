@@ -925,8 +925,8 @@ body {
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" data-ico="bar"></span> مقارنة شهرية</div>
-    <div class="chart-container"><canvas id="monthlyCompareChart"></canvas></div>
+    <div class="card-title"><span class="icon" data-ico="bar"></span> مقارنة الأداء الشهري</div>
+    <div id="monthlyComparisonCards"></div>
   </div>
 
 </div>
@@ -1978,22 +1978,37 @@ function initCharts() {
     netData.push(daily[key].net);
   }
 
-  // Monthly Comparison
-  new Chart(document.getElementById('monthlyCompareChart'), {
-    type: 'bar',
-    data: {
-      labels: ['المبيعات', 'عمليات البيع', 'إجمالي الربح', 'صافي الدخل'],
-      datasets: [
-        { label: '2026 (يناير - مايو)', data: [184233.37, 731, 38580.03, -17770.77], backgroundColor: 'rgba(51,48,136,0.85)', borderColor: '#333088', borderWidth: 2 }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', rtl: true }, tooltip: { rtl: true, callbacks: { label: (c) => c.dataset.label + ': ' + fmt(c.raw) } } },
-      scales: { y: { beginAtZero: true, grid: { color: '#F3F0F8' } }, x: { grid: { display: false } } }
-    }
-  });
+  // Monthly Comparison Cards
+  (function() {
+    var md = PAFTAH_DATA.monthly.filter(function(m) { return !m.isTotal; });
+    var container = document.getElementById('monthlyComparisonCards');
+    if (!container) return;
+    var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:8px">';
+    var prevSales = 0;
+    md.forEach(function(m) {
+      var trend = prevSales > 0 ? ((m.sales - prevSales) / prevSales * 100).toFixed(0) : null;
+      var trendColor = trend > 0 ? 'var(--success)' : (trend < 0 ? 'var(--danger)' : '#6B7280');
+      var trendIcon = trend > 0 ? '&#9650;' : (trend < 0 ? '&#9660;' : '');
+      var netColor = m.netIncome >= 0 ? 'var(--success)' : 'var(--danger)';
+      var barW = Math.max(5, (m.sales / 74853.75 * 100)).toFixed(0);
+      html += '<div style="background:#FAFAFE;border:1px solid #EDEAF5;border-radius:12px;padding:14px 16px;position:relative;overflow:hidden">';
+      html += '<div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:10px">' + m.month + '</div>';
+      html += '<div style="font-size:20px;font-weight:800;color:#1F2937;line-height:1.2">' + fmt(m.sales) + '</div>';
+      html += '<div style="font-size:10px;color:#9CA3AF;margin-bottom:8px">ر.س مبيعات</div>';
+      html += '<div style="height:4px;background:#EDEAF5;border-radius:4px;margin-bottom:10px"><div style="height:100%;width:' + barW + '%;background:var(--primary);border-radius:4px"></div></div>';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;font-size:11px">';
+      html += '<div style="color:#6B7280">ربح <strong style="color:var(--success)">' + fmt(m.profit) + '</strong></div>';
+      html += '<div style="color:' + netColor + ';font-weight:600">صافي ' + (m.netIncome >= 0 ? '+' : '') + fmt(m.netIncome) + '</div>';
+      html += '</div>';
+      if (trend !== null) {
+        html += '<div style="position:absolute;top:10px;left:10px;font-size:10px;font-weight:600;color:' + trendColor + ';background:' + (trend > 0 ? '#D1FAE5' : (trend < 0 ? '#FEE2E2' : '#F3F4F6')) + ';padding:2px 8px;border-radius:20px">' + trendIcon + ' ' + (trend > 0 ? '+' : '') + trend + '%</div>';
+      }
+      html += '</div>';
+      prevSales = m.sales;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  })();
 
   // Sales Daily Detail Chart
   new Chart(document.getElementById('salesDailyDetailChart'), {
