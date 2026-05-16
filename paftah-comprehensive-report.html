@@ -166,13 +166,12 @@ body {
   letter-spacing: -0.01em;
 }
 .card-title .icon {
-  width: 40px; height: 40px;
-  background: linear-gradient(135deg, var(--accent-light), var(--accent));
-  border-radius: var(--radius-xs);
+  width: 36px; height: 36px;
+  background: transparent;
+  border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 8px rgba(51,48,136,0.1);
 }
-.card-title .icon svg { width: 20px; height: 20px; }
+.card-title .icon svg { width: 22px; height: 22px; color: var(--primary); }
 .collapsible-header .ch-icon svg { width: 18px; height: 18px; vertical-align: middle; }
 .export-btn svg { width: 16px; height: 16px; }
 .alert-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0; margin-top: 3px; }
@@ -361,39 +360,29 @@ body {
 .tag-yellow { background: #FEF3C7; color: #92400E; }
 
 /* ===== ACTIVITY TIMELINE ===== */
-.timeline { position: relative; padding-right: 40px; }
-.timeline::before {
-  content: ''; position: absolute; right: 15px; top: 12px; bottom: 12px;
-  width: 2px; background: linear-gradient(to bottom, transparent, var(--primary) 10%, var(--primary) 90%, transparent);
-  border-radius: 2px;
-}
+.timeline { display: flex; flex-direction: column; gap: 12px; }
 .timeline-item {
-  position: relative; padding: 16px 20px 16px 0; margin-bottom: 12px;
-  background: #FAFAFE; border-radius: var(--radius-sm);
-  border: 1px solid var(--border); border-right: 3px solid var(--primary);
-  transition: all 0.3s ease;
+  padding: 18px 20px;
+  background: var(--card); border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  border-right: 4px solid var(--primary);
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
 }
-.timeline-item:hover { background: var(--primary-light); transform: translateX(-4px); box-shadow: var(--shadow); }
-.timeline-item::before {
-  content: ''; position: absolute; right: -28px; top: 50%; transform: translateY(-50%);
-  width: 10px; height: 10px; background: var(--primary);
-  border-radius: 50%; border: 2px solid var(--card);
-  box-shadow: 0 0 0 3px var(--primary-light), 0 2px 8px rgba(51,48,136,0.15);
-}
+.timeline-item:hover { background: var(--primary-light); box-shadow: var(--shadow); }
 .timeline-item .tl-user {
   display: inline-flex; align-items: center; gap: 6px;
-  background: var(--accent-light); color: var(--accent);
-  padding: 2px 10px; border-radius: 100px;
-  font-size: 0.68rem; font-weight: 700; margin-bottom: 6px;
+  background: var(--primary-light); color: var(--primary);
+  padding: 3px 12px; border-radius: 100px;
+  font-size: 0.7rem; font-weight: 700; margin-bottom: 8px;
 }
 .timeline-item .tl-user svg { width: 12px; height: 12px; }
-.timeline-item .action { font-size: 0.88rem; font-weight: 500; line-height: 1.7; }
-.timeline-item .time { font-size: 0.72rem; color: var(--text-secondary); font-weight: 500; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
-.timeline-item .time svg { width: 12px; height: 12px; opacity: 0.5; }
+.timeline-item .action { font-size: 0.88rem; font-weight: 500; line-height: 1.8; color: var(--text); }
+.timeline-item .time { font-size: 0.72rem; color: var(--text-secondary); font-weight: 500; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+.timeline-item .time svg { width: 12px; height: 12px; opacity: 0.4; }
 .timeline-item.tl-price { border-right-color: var(--warning); }
-.timeline-item.tl-price::before { background: var(--warning); box-shadow: 0 0 0 3px #FEF3C7, 0 2px 8px rgba(245,158,11,0.15); }
+.timeline-item.tl-price .tl-user { background: #FEF3C7; color: #92400E; }
 .timeline-item.tl-customer { border-right-color: var(--success); }
-.timeline-item.tl-customer::before { background: var(--success); box-shadow: 0 0 0 3px #D1FAE5, 0 2px 8px rgba(5,150,105,0.15); }
+.timeline-item.tl-customer .tl-user { background: #D1FAE5; color: #065F46; }
 
 /* ===== SECTION DIVIDER ===== */
 .section-divider { text-align: center; margin: 36px 0 28px; position: relative; }
@@ -971,22 +960,22 @@ body {
 
   <div class="grid-2">
     <div class="card">
-      <div class="card-title"><span class="icon" id="ico-cu0"></span> المبيعات اليومية - مايو 2026 (تفصيلي)</div>
+      <div class="card-title"><span class="icon" data-ico="chartUp"></span> المبيعات اليومية - مايو 2026 (تفصيلي)</div>
       <div class="chart-container"><canvas id="dailySalesChart"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="icon" id="ico-pay0"></span> طرق الدفع</div>
+      <div class="card-title"><span class="icon" data-ico="payment"></span> طرق الدفع</div>
       <div class="chart-container"><canvas id="paymentMethodsChart"></canvas></div>
     </div>
   </div>
 
   <div class="grid-2">
     <div class="card">
-      <div class="card-title"><span class="icon" id="ico-bar0"></span> مقارنة شهرية</div>
+      <div class="card-title"><span class="icon" data-ico="bar"></span> مقارنة شهرية</div>
       <div class="chart-container"><canvas id="monthlyCompareChart"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="icon" id="ico-mon0"></span> ملخص مالي سريع</div>
+      <div class="card-title"><span class="icon" data-ico="money"></span> ملخص مالي سريع</div>
       <table class="data-table" style="margin-top:8px">
         <tr><td style="font-weight:600">إجمالي المبيعات</td><td class="amount positive">184,233.37 ر.س</td></tr>
         <tr><td style="font-weight:600">إجمالي المرتجعات</td><td class="amount negative">-496.00 ر.س</td></tr>
@@ -1027,12 +1016,12 @@ body {
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" id="ico-cd0"></span> المبيعات اليومية - مايو 2026</div>
+    <div class="card-title"><span class="icon" data-ico="chartDown"></span> المبيعات اليومية - مايو 2026</div>
     <div class="chart-container"><canvas id="salesDailyDetailChart"></canvas></div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" id="ico-rec0"></span> آخر الفواتير المسجلة - مايو 2026</div>
+    <div class="card-title"><span class="icon" data-ico="receipt"></span> آخر الفواتير المسجلة - مايو 2026</div>
     <div class="smart-filter-bar">
       <span class="sfb-label">🔍 فلترة ذكية</span>
       <input type="text" class="smart-filter-input" id="smartInvoiceSearch" placeholder="بحث برقم الفاتورة، المبلغ، التاريخ...">
@@ -1085,11 +1074,11 @@ body {
 
   <div class="grid-2">
     <div class="card">
-      <div class="card-title"><span class="icon" id="ico-pay0"></span> تفصيل طرق الدفع - يناير - مايو 2026</div>
+      <div class="card-title"><span class="icon" data-ico="payment"></span> تفصيل طرق الدفع - يناير - مايو 2026</div>
       <div class="chart-container"><canvas id="paymentDetailChart"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="icon" id="ico-clip0"></span> ملخص طرق الدفع</div>
+      <div class="card-title"><span class="icon" data-ico="clipboard"></span> ملخص طرق الدفع</div>
       <table class="data-table">
         <thead><tr><th>طريقة الدفع</th><th>المبلغ (ر.س)</th><th>النسبة</th></tr></thead>
         <tbody>
@@ -1128,7 +1117,7 @@ body {
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" id="ico-pkg0"></span> جميع المنتجات</div>
+    <div class="card-title"><span class="icon" data-ico="package"></span> جميع المنتجات</div>
     <div class="table-wrapper">
       <table class="data-table">
         <thead>
@@ -1191,11 +1180,11 @@ body {
 
   <div class="grid-2">
     <div class="card">
-      <div class="card-title"><span class="icon" id="ico-bar0"></span> توزيع المخزون حسب المنتج</div>
+      <div class="card-title"><span class="icon" data-ico="bar"></span> توزيع المخزون حسب المنتج</div>
       <div class="chart-container"><canvas id="inventoryChart"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="icon" id="ico-wh0"></span> ملخص المخزون</div>
+      <div class="card-title"><span class="icon" data-ico="warehouse"></span> ملخص المخزون</div>
       <div style="margin-bottom:12px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <span style="font-size:0.85rem;font-weight:500">مسحوق غسيل بفتة 1 كيلو</span>
@@ -1274,17 +1263,17 @@ body {
 
   <div class="grid-2">
     <div class="card">
-      <div class="card-title"><span class="icon" id="ico-bar0"></span> توزيع المصروفات حسب الفئة</div>
+      <div class="card-title"><span class="icon" data-ico="bar"></span> توزيع المصروفات حسب الفئة</div>
       <div class="chart-container"><canvas id="expenseCategoryChart"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="icon" id="ico-clip0"></span> ملخص فئات المصروفات</div>
+      <div class="card-title"><span class="icon" data-ico="clipboard"></span> ملخص فئات المصروفات</div>
       <div class="chart-container"><canvas id="expenseBarChart"></canvas></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" id="ico-rec0"></span> آخر 10 مصروفات</div>
+    <div class="card-title"><span class="icon" data-ico="receipt"></span> آخر 10 مصروفات</div>
     <div class="table-wrapper">
       <table class="data-table">
         <thead>
@@ -1313,7 +1302,7 @@ body {
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" id="ico-mon0"></span> تحليل هيكل التكاليف</div>
+    <div class="card-title"><span class="icon" data-ico="money"></span> تحليل هيكل التكاليف</div>
     <div class="grid-2" style="gap:16px">
       <div>
         <h4 style="margin-bottom:12px;color:var(--primary-dark)">أكبر بنود المصروفات</h4>
@@ -1363,7 +1352,7 @@ body {
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" id="ico-users0"></span> توزيع أنواع العملاء</div>
+    <div class="card-title"><span class="icon" data-ico="users"></span> توزيع أنواع العملاء</div>
     <div class="type-dist" style="margin-bottom:16px">
       <div class="type-item"><span>تموينات</span><span class="count">303</span></div>
       <div class="type-item"><span>أخرى</span><span class="count">64</span></div>
@@ -1380,17 +1369,17 @@ body {
 
   <div class="grid-2">
     <div class="card">
-      <div class="card-title"><span class="icon" id="ico-bld0"></span> أعلى 10 أحياء بالمديونية</div>
+      <div class="card-title"><span class="icon" data-ico="buildings"></span> أعلى 10 أحياء بالمديونية</div>
       <div class="chart-container"><canvas id="districtDebtChart"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="icon" id="ico-mon0"></span> أعلى 10 أحياء بالمدفوع</div>
+      <div class="card-title"><span class="icon" data-ico="money"></span> أعلى 10 أحياء بالمدفوع</div>
       <div class="chart-container"><canvas id="districtPaidChart"></canvas></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" id="ico-bld0"></span> تفصيل أعلى 10 أحياء</div>
+    <div class="card-title"><span class="icon" data-ico="buildings"></span> تفصيل أعلى 10 أحياء</div>
     <div class="table-wrapper">
       <table class="data-table">
         <thead><tr><th>الحي</th><th>عدد العملاء</th><th>المدفوع (ر.س)</th><th>المستحق (ر.س)</th><th>توزيع المديونية</th></tr></thead>
@@ -1441,7 +1430,7 @@ body {
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" id="ico-warn0"></span> أعلى العملاء مديونية</div>
+    <div class="card-title"><span class="icon" data-ico="warning"></span> أعلى العملاء مديونية</div>
     <div class="table-wrapper">
       <table class="data-table">
         <thead><tr><th>العميل</th><th>الحي</th><th>المستحق (ر.س)</th><th>المدفوع (ر.س)</th></tr></thead>
@@ -1465,7 +1454,7 @@ body {
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" id="ico-pay0"></span> آخر مدفوعات العملاء</div>
+    <div class="card-title"><span class="icon" data-ico="payment"></span> آخر مدفوعات العملاء</div>
     <div class="table-wrapper">
       <table class="data-table">
         <thead><tr><th>#</th><th>رقم العملية</th><th>العميل</th><th>المبلغ (ر.س)</th><th>التاريخ</th></tr></thead>
@@ -1534,7 +1523,7 @@ body {
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" id="ico-srch0"></span> قاعدة بيانات العملاء (575 عميل)</div>
+    <div class="card-title"><span class="icon" data-ico="search"></span> قاعدة بيانات العملاء (575 عميل)</div>
     <div class="smart-filter-bar">
       <span class="sfb-label">🔍 فلترة ذكية</span>
       <input type="text" class="smart-filter-input" id="smartCustomerSearch" placeholder="بحث باسم العميل، الحي، النوع، الهاتف...">
@@ -1581,48 +1570,48 @@ body {
 <div id="tab-activity" class="tab-panel">
 
   <div class="card">
-    <div class="card-title"><span class="icon" id="ico-doc"></span> سجل النشاطات الأخيرة</div>
+    <div class="card-title"><span class="icon" data-ico="document"></span> سجل النشاطات الأخيرة</div>
     <div class="timeline">
       <div class="timeline-item tl-customer">
         <div class="tl-user"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> مالك</div>
         <div class="action">إنشاء كود الصالحية بلاستيك ومنضفات - عميل 1745739</div>
-        <div class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> منذ 3 أيام</div>
+        <div class="time" data-date="2026-05-14"></div>
       </div>
       <div class="timeline-item tl-customer">
         <div class="tl-user"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> muhammed shamer</div>
         <div class="action">إنشاء تموينات الشمال الحديثة - عميل 6640733</div>
-        <div class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> منذ أسبوع</div>
+        <div class="time" data-date="2026-05-10"></div>
       </div>
       <div class="timeline-item tl-customer">
         <div class="tl-user"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> مالك</div>
         <div class="action">إنشاء مؤسسة طيف الثريا التجارية - عميل 1622523</div>
-        <div class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> منذ أسبوعين</div>
+        <div class="time" data-date="2026-05-03"></div>
       </div>
       <div class="timeline-item tl-customer">
         <div class="tl-user"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> muhammed shamer</div>
         <div class="action">إنشاء سوبرماركت اخواز - عميل 7915651</div>
-        <div class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> منذ أسبوعين</div>
+        <div class="time" data-date="2026-05-03"></div>
       </div>
       <div class="timeline-item tl-customer">
         <div class="tl-user"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> مالك</div>
         <div class="action">إنشاء كلين للمنظفات - عميل 5719226</div>
-        <div class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> منذ أسبوعين</div>
+        <div class="time" data-date="2026-05-03"></div>
       </div>
       <div class="timeline-item tl-price">
         <div class="tl-user" style="background:#FEF3C7;color:#92400E"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Super Admin</div>
         <div class="action">تغيير سعر الجملة مسحوق غسيل بفتة 1 كيلو من <strong>5.50</strong> إلى <strong>6.00</strong> ر.س</div>
-        <div class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> تحديث سعر</div>
+        <div class="time" data-date="2026-05-01"></div>
       </div>
       <div class="timeline-item tl-price">
         <div class="tl-user" style="background:#FEF3C7;color:#92400E"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Super Admin</div>
         <div class="action">تغيير سعر الجملة 10-مسحوق غسيل بفتة 1 كيلو من <strong>55</strong> إلى <strong>60</strong> ر.س</div>
-        <div class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> تحديث سعر</div>
+        <div class="time" data-date="2026-05-01"></div>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" id="ico-bar"></span> ملخص النشاطات</div>
+    <div class="card-title"><span class="icon" data-ico="bar"></span> ملخص النشاطات</div>
     <div class="grid-3">
       <div style="text-align:center;padding:20px;background:var(--primary-light);border-radius:var(--radius-sm);border:1px solid var(--border)">
         <div style="font-size:2rem;font-weight:800;color:var(--primary)">5</div>
@@ -1640,7 +1629,7 @@ body {
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" id="ico-user"></span> المستخدمين النشطين</div>
+    <div class="card-title"><span class="icon" data-ico="user"></span> المستخدمين النشطين</div>
     <div class="grid-3">
       <div style="padding:20px;border:1px solid var(--border);border-radius:var(--radius-sm);text-align:center;transition:all 0.3s ease">
         <div style="width:52px;height:52px;background:var(--primary-gradient);border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:1.1rem">م</div>
@@ -1690,17 +1679,17 @@ body {
 
   <div class="grid-2">
     <div class="card">
-      <div class="card-title"><span class="icon" id="ico-bar0"></span> المبيعات مقابل الربح شهرياً</div>
+      <div class="card-title"><span class="icon" data-ico="bar"></span> المبيعات مقابل الربح شهرياً</div>
       <div class="chart-container"><canvas id="monthlySalesProfitChart"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="icon" id="ico-cd0"></span> اتجاه صافي الدخل الشهري</div>
+      <div class="card-title"><span class="icon" data-ico="chartDown"></span> اتجاه صافي الدخل الشهري</div>
       <div class="chart-container"><canvas id="monthlyNetIncomeChart"></canvas></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" id="ico-clip0"></span> تفصيل الأداء الشهري</div>
+    <div class="card-title"><span class="icon" data-ico="clipboard"></span> تفصيل الأداء الشهري</div>
     <div class="table-wrapper">
       <table class="data-table" id="monthlyKpiTable">
         <thead>
@@ -1740,7 +1729,7 @@ body {
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" id="ico-warn0"></span> أعلى 10 عملاء مديونية</div>
+    <div class="card-title"><span class="icon" data-ico="warning"></span> أعلى 10 عملاء مديونية</div>
     <div class="table-wrapper">
       <table class="data-table" id="top10CustomersTable">
         <thead>
@@ -2776,19 +2765,30 @@ function exportCSV(type) {
   URL.revokeObjectURL(url);
 }
 
+// ===== TIME AGO =====
+function timeAgo(dateStr) {
+  var d = new Date(dateStr);
+  var now = new Date();
+  var diff = Math.floor((now - d) / 1000);
+  var clockSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;opacity:0.4;vertical-align:middle"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ';
+  if (diff < 60) return clockSvg + 'الآن';
+  if (diff < 3600) return clockSvg + 'منذ ' + Math.floor(diff/60) + ' دقيقة';
+  if (diff < 86400) return clockSvg + 'منذ ' + Math.floor(diff/3600) + ' ساعة';
+  var days = Math.floor(diff/86400);
+  if (days === 1) return clockSvg + 'أمس';
+  if (days < 7) return clockSvg + 'منذ ' + days + ' أيام';
+  if (days < 14) return clockSvg + 'منذ أسبوع';
+  if (days < 30) return clockSvg + 'منذ ' + Math.floor(days/7) + ' أسابيع';
+  if (days < 60) return clockSvg + 'منذ شهر';
+  var months = Math.floor(days/30);
+  return clockSvg + 'منذ ' + months + ' أشهر';
+}
+
 // ===== INJECT SVG ICONS =====
 function injectIcons() {
-  var svgMap = {
-    'ico-cu0': ICO.chartUp, 'ico-cd0': ICO.chartDown, 'ico-bar0': ICO.bar,
-    'ico-pay0': ICO.payment, 'ico-mon0': ICO.money, 'ico-rec0': ICO.receipt,
-    'ico-pkg0': ICO.package, 'ico-wh0': ICO.warehouse, 'ico-clip0': ICO.clipboard,
-    'ico-users0': ICO.users, 'ico-bld0': ICO.buildings, 'ico-warn0': ICO.warning,
-    'ico-srch0': ICO.search, 'ico-doc': ICO.document, 'ico-bar': ICO.bar,
-    'ico-user': ICO.user
-  };
-  Object.keys(svgMap).forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.innerHTML = svgMap[id];
+  document.querySelectorAll('[data-ico]').forEach(function(el) {
+    var key = el.getAttribute('data-ico');
+    if (ICO[key]) el.innerHTML = ICO[key];
   });
   document.querySelectorAll('.ch-icon').forEach(function(el) {
     var t = el.textContent.trim();
@@ -2797,6 +2797,9 @@ function injectIcons() {
     if (t === '💡') el.innerHTML = ICO.lightbulb;
     if (t === '🎯') el.innerHTML = ICO.target;
     if (t === '📋') el.innerHTML = ICO.clipboard;
+  });
+  document.querySelectorAll('.time[data-date]').forEach(function(el) {
+    el.innerHTML = timeAgo(el.getAttribute('data-date'));
   });
   document.querySelectorAll('.ch-arrow').forEach(function(el) {
     el.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
@@ -2812,8 +2815,7 @@ function injectIcons() {
     if (el.textContent.trim() === '🔴') el.outerHTML = '<span class="alert-dot red"></span>';
     if (el.textContent.trim() === '🟡') el.outerHTML = '<span class="alert-dot yellow"></span>';
   });
-  var optIcons = document.querySelectorAll('select option');
-  optIcons.forEach(function(opt) {
+  document.querySelectorAll('select option').forEach(function(opt) {
     opt.text = opt.text.replace('🟢 ','● ').replace('🟡 ','● ').replace('🔴 ','● ');
   });
   document.querySelectorAll('.sfb-chip').forEach(function(chip) {
