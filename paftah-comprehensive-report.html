@@ -425,8 +425,8 @@ body {
 .type-item[data-type="أخرى"] .count { background: #6B7280; }
 .type-item[data-type="مخبز"] { background: #FEF3C7; color: #92400E; }
 .type-item[data-type="مخبز"] .count { background: #F59E0B; }
-.type-item[data-type="شركة/مؤسسة"] { background: #E0E7FF; color: #3730A3; }
-.type-item[data-type="شركة/مؤسسة"] .count { background: #6366F1; }
+.type-item[data-type="شركة/مؤسسة"], .type-item[data-type="شركة / مؤسسة"] { background: #E0E7FF; color: #3730A3; }
+.type-item[data-type="شركة/مؤسسة"] .count, .type-item[data-type="شركة / مؤسسة"] .count { background: #6366F1; }
 .type-item[data-type="بقالة"] { background: #D1FAE5; color: #065F46; }
 .type-item[data-type="بقالة"] .count { background: #10B981; }
 .type-item[data-type="أسواق"] { background: #FCE7F3; color: #9D174D; }
@@ -899,12 +899,12 @@ body {
 <div class="tabs-container">
   <nav class="tabs-nav no-print">
     <button class="tab-btn active" onclick="switchTab('overview')">نظرة عامة</button>
+    <button class="tab-btn" onclick="switchTab('monthly')">التحليل الشهري</button>
+    <button class="tab-btn" onclick="switchTab('customers')">العملاء</button>
     <button class="tab-btn" onclick="switchTab('sales')">المبيعات والفواتير</button>
     <button class="tab-btn" onclick="switchTab('products')">المنتجات والمخزون</button>
     <button class="tab-btn" onclick="switchTab('expenses')">المصروفات</button>
-    <button class="tab-btn" onclick="switchTab('customers')">العملاء</button>
     <button class="tab-btn" onclick="switchTab('activity')">سجل النشاطات</button>
-    <button class="tab-btn" onclick="switchTab('monthly')">التحليل الشهري</button>
     <button class="export-btn" onclick="window.print()">🖨️ PDF</button>
     <button class="export-btn" onclick="exportCSV('invoices')">📊 فواتير CSV</button>
     <button class="export-btn" onclick="exportCSV('customers')">📊 عملاء CSV</button>
@@ -918,114 +918,15 @@ body {
 <!-- ==================== TAB 1: OVERVIEW ==================== -->
 <div id="tab-overview" class="tab-panel active">
 
-  <!-- EXECUTIVE SUMMARY -->
-  <div class="collapsible-section" style="margin-bottom:20px">
-    <div class="collapsible-header" onclick="toggleCollapsible(this)">
-      <div class="ch-title"><span class="ch-icon">📋</span> الملخص التنفيذي</div>
-      <span class="ch-arrow">▼</span>
-    </div>
-    <div class="collapsible-body">
-      <div class="exec-summary-text">
-        خلال الفترة من 1 يناير إلى 17 مايو 2026، بلغت إجمالي مبيعات الشركة 184,233 ر.س عبر 731 عملية بيع، محققةً ربحاً إجمالياً قدره 38,580 ر.س بنسبة هامش 20.9%. إلا أن صافي الدخل لا يزال بالسالب بمبلغ -17,771 ر.س نتيجة المصروفات التشغيلية. يُعد العميل 'أسواق افرا العربية' الأكثر مديونية بمبلغ 42,700 ر.س، فيما تبلغ إجمالي المديونية 144,572 ر.س. يوصى بالتركيز على تحصيل المديونية المتراكمة وتحديد أهداف مبيعات شهرية واضحة.
-      </div>
+  <div class="card">
+    <div class="exec-summary-text">
+      خلال الفترة من 1 يناير إلى 17 مايو 2026، بلغت إجمالي مبيعات الشركة 184,233 ر.س عبر 731 عملية بيع، محققةً ربحاً إجمالياً قدره 38,580 ر.س بنسبة هامش 20.9%. إلا أن صافي الدخل لا يزال بالسالب بمبلغ -17,771 ر.س نتيجة المصروفات التشغيلية. يُعد العميل 'أسواق افرا العربية' الأكثر مديونية بمبلغ 42,700 ر.س، فيما تبلغ إجمالي المديونية 144,572 ر.س. يوصى بالتركيز على تحصيل المديونية المتراكمة وتحديد أهداف مبيعات شهرية واضحة.
     </div>
   </div>
 
-  <!-- SALES FORECAST -->
-  <div class="collapsible-section" style="margin-bottom:20px">
-    <div class="collapsible-header" onclick="toggleCollapsible(this)">
-      <div class="ch-title"><span class="ch-icon">🔮</span> التنبؤ بالمبيعات</div>
-      <span class="ch-arrow">▼</span>
-    </div>
-    <div class="collapsible-body">
-      <div class="forecast-grid">
-        <div class="forecast-card">
-          <div class="fc-label">متوسط المبيعات اليومية</div>
-          <div class="fc-value">1,083.7 ر.س</div>
-          <div class="fc-note">بناءً على 170 يوم نشاط</div>
-        </div>
-        <div class="forecast-card">
-          <div class="fc-label">المبيعات الفعلية</div>
-          <div class="fc-value">184,233 ر.س</div>
-          <div class="fc-note">من 1 يناير إلى 17 مايو</div>
-        </div>
-        <div class="forecast-card">
-          <div class="fc-label">الربح الإجمالي</div>
-          <div class="fc-value">38,580 ر.س</div>
-          <div class="fc-note">بنسبة هامش 20.9%</div>
-        </div>
-        <div class="forecast-card" style="border-top-color:var(--danger)">
-          <div class="fc-label">صافي الدخل</div>
-          <div class="fc-value" style="color:var(--danger)">-17,771 ر.س</div>
-          <div class="fc-note">بعد خصم المصروفات</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="kpi-grid">
-    <div class="kpi-card info">
-      <div class="kpi-label">المبيعات (شامل الضريبة)</div>
-      <div class="kpi-value">184,233.37 ر.س</div>
-      <div class="kpi-sub">يناير - مايو 2026</div>
-    </div>
-    <div class="kpi-card success">
-      <div class="kpi-label">إجمالي الربح</div>
-      <div class="kpi-value">38,580.03 ر.س</div>
-      <div class="kpi-sub">هامش ربح 20.9%</div>
-    </div>
-    <div class="kpi-card danger">
-      <div class="kpi-label">صافي الدخل</div>
-      <div class="kpi-value" style="color:var(--danger)">-17,770.77 ر.س</div>
-      <div class="kpi-sub"><span class="compare up">&#9650; الشهر الماضي: -18,631.32</span></div>
-    </div>
-    <div class="kpi-card warning">
-      <div class="kpi-label">عمليات البيع</div>
-      <div class="kpi-value">731</div>
-      <div class="kpi-sub">يناير - مايو 2026</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">قيمة المخزون</div>
-      <div class="kpi-value">26,016.30 ر.س</div>
-      <div class="kpi-sub">1,772 وحدة</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">الهـدف (هذا الشهر)</div>
-      <div class="kpi-value">0.00 ر.س</div>
-      <div class="kpi-sub"><span class="kpi-badge badge-warning">لم يحدد</span></div>
-    </div>
-  </div>
-
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-title"><span class="icon" data-ico="chartUp"></span> المبيعات اليومية - مايو 2026 (تفصيلي)</div>
-      <div class="chart-container"><canvas id="dailySalesChart"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-title"><span class="icon" data-ico="payment"></span> طرق الدفع</div>
-      <div class="chart-container"><canvas id="paymentMethodsChart"></canvas></div>
-    </div>
-  </div>
-
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-title"><span class="icon" data-ico="bar"></span> مقارنة شهرية</div>
-      <div class="chart-container"><canvas id="monthlyCompareChart"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-title"><span class="icon" data-ico="money"></span> ملخص مالي سريع</div>
-      <table class="data-table" style="margin-top:8px">
-        <tr><td style="font-weight:600">إجمالي المبيعات</td><td class="amount positive">184,233.37 ر.س</td></tr>
-        <tr><td style="font-weight:600">إجمالي المرتجعات</td><td class="amount negative">-496.00 ر.س</td></tr>
-        <tr><td style="font-weight:600">صافي المبيعات</td><td class="amount">183,737.37 ر.س</td></tr>
-        <tr><td style="font-weight:600">إجمالي الربح</td><td class="amount positive">38,580.03 ر.س</td></tr>
-        <tr><td style="font-weight:600">نسبة الربح</td><td class="amount">20.9%</td></tr>
-        <tr><td style="font-weight:600">صافي الدخل</td><td class="amount negative">-17,770.77 ر.س</td></tr>
-        <tr><td style="font-weight:600">قيمة المخزون</td><td class="amount">26,016.30 ر.س</td></tr>
-        <tr><td style="font-weight:600">إجمالي العملاء</td><td class="amount">575 عميل</td></tr>
-        <tr><td style="font-weight:600">إجمالي المديونية</td><td class="amount negative">144,572 ر.س</td></tr>
-      </table>
-    </div>
+  <div class="card">
+    <div class="card-title"><span class="icon" data-ico="bar"></span> مقارنة شهرية</div>
+    <div class="chart-container"><canvas id="monthlyCompareChart"></canvas></div>
   </div>
 
 </div>
@@ -1033,28 +934,8 @@ body {
 <!-- ==================== TAB 2: SALES & INVOICES ==================== -->
 <div id="tab-sales" class="tab-panel">
 
-  <div class="kpi-grid">
-    <div class="kpi-card info">
-      <div class="kpi-label">إجمالي المبيعات</div>
-      <div class="kpi-value">184,233.37 ر.س</div>
-    </div>
-    <div class="kpi-card danger">
-      <div class="kpi-label">إجمالي المرتجعات</div>
-      <div class="kpi-value" style="color:var(--danger)">-496.00 ر.س</div>
-    </div>
-    <div class="kpi-card success">
-      <div class="kpi-label">صافي المبيعات</div>
-      <div class="kpi-value">183,737.37 ر.س</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">عدد الفواتير</div>
-      <div class="kpi-value">49</div>
-      <div class="kpi-sub">فواتير مايو المسجلة</div>
-    </div>
-  </div>
-
   <div class="card">
-    <div class="card-title"><span class="icon" data-ico="chartDown"></span> المبيعات اليومية - مايو 2026</div>
+    <div class="card-title"><span class="icon" data-ico="chartUp"></span> المبيعات اليومية - مايو 2026</div>
     <div class="chart-container"><canvas id="salesDailyDetailChart"></canvas></div>
   </div>
 
@@ -1364,60 +1245,8 @@ body {
 <!-- ==================== TAB 5: CUSTOMERS ==================== -->
 <div id="tab-customers" class="tab-panel">
 
-  <div class="kpi-grid">
-    <div class="kpi-card info">
-      <div class="kpi-label">إجمالي العملاء</div>
-      <div class="kpi-value">575</div>
-    </div>
-    <div class="kpi-card success">
-      <div class="kpi-label">إجمالي المدفوع</div>
-      <div class="kpi-value">39,120 ر.س</div>
-    </div>
-    <div class="kpi-card danger">
-      <div class="kpi-label">إجمالي المديونية</div>
-      <div class="kpi-value" style="color:var(--danger)">144,572 ر.س</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">عدد الأحياء</div>
-      <div class="kpi-value">98</div>
-      <div class="kpi-sub">90 محدد + 8 بدون حي</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">عدد المدن</div>
-      <div class="kpi-value">3</div>
-      <div class="kpi-sub">جدة + مكة + رابغ</div>
-    </div>
-  </div>
-
   <div class="card">
-    <div class="card-title"><span class="icon" data-ico="users"></span> توزيع أنواع العملاء</div>
-    <div class="type-dist" style="margin-bottom:16px">
-      <div class="type-item" data-type="تموينات"><span>تموينات</span><span class="count">303</span></div>
-      <div class="type-item" data-type="أخرى"><span>أخرى</span><span class="count">64</span></div>
-      <div class="type-item" data-type="مخبز"><span>مخبز</span><span class="count">62</span></div>
-      <div class="type-item" data-type="بقالة"><span>بقالة</span><span class="count">36</span></div>
-      <div class="type-item" data-type="أسواق"><span>أسواق</span><span class="count">35</span></div>
-      <div class="type-item" data-type="شركة/مؤسسة"><span>شركة/مؤسسة</span><span class="count">43</span></div>
-      <div class="type-item" data-type="بلاستيك ومنظفات"><span>بلاستيك ومنظفات</span><span class="count">19</span></div>
-      <div class="type-item" data-type="متجر"><span>متجر</span><span class="count">11</span></div>
-      <div class="type-item" data-type="سوبرماركت"><span>سوبرماركت</span><span class="count">2</span></div>
-    </div>
-    <div class="chart-container"><canvas id="customerTypesChart"></canvas></div>
-  </div>
-
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-title"><span class="icon" data-ico="buildings"></span> أعلى 10 أحياء بالمديونية</div>
-      <div class="chart-container"><canvas id="districtDebtChart"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-title"><span class="icon" data-ico="money"></span> أعلى 10 أحياء بالمدفوع</div>
-      <div class="chart-container"><canvas id="districtPaidChart"></canvas></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title"><span class="icon" data-ico="buildings"></span> تفصيل أعلى 10 أحياء</div>
+    <div class="card-title"><span class="icon" data-ico="warning"></span> أعلى العملاء مديونية</div>
     <div class="table-wrapper">
       <table class="data-table">
         <thead><tr><th>الحي</th><th>عدد العملاء</th><th>المدفوع (ر.س)</th><th>المستحق (ر.س)</th><th>توزيع المديونية</th></tr></thead>
@@ -1763,18 +1592,6 @@ body {
     </div>
     <div class="collapsible-body">
       <div id="monthlyInsights"></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title"><span class="icon" data-ico="warning"></span> أعلى 10 عملاء مديونية</div>
-    <div class="table-wrapper">
-      <table class="data-table" id="top10CustomersTable">
-        <thead>
-          <tr><th>#</th><th>العميل</th><th>النوع</th><th>الحي</th><th>المستحق (ر.س)</th><th>المدفوع (ر.س)</th><th>الخطر</th><th>نسبة من الإجمالي</th></tr>
-        </thead>
-        <tbody id="top10CustomersBody"></tbody>
-      </table>
     </div>
   </div>
 
@@ -2319,6 +2136,19 @@ function initCharts() {
     }
   });
 
+  var TYPE_COLORS = {
+    'مخبز': { bg: 'rgba(245,158,11,0.85)', light: '#FEF3C7', text: '#92400E', fill: '#F59E0B' },
+    'تموينات': { bg: 'rgba(59,130,246,0.85)', light: '#DBEAFE', text: '#1E40AF', fill: '#3B82F6' },
+    'شركة / مؤسسة': { bg: 'rgba(99,102,241,0.85)', light: '#E0E7FF', text: '#3730A3', fill: '#6366F1' },
+    'شركة/مؤسسة': { bg: 'rgba(99,102,241,0.85)', light: '#E0E7FF', text: '#3730A3', fill: '#6366F1' },
+    'بلاستيك ومنظفات': { bg: 'rgba(139,92,246,0.85)', light: '#EDE9FE', text: '#5B21B6', fill: '#8B5CF6' },
+    'أخرى': { bg: 'rgba(107,114,128,0.8)', light: '#F3F4F6', text: '#374151', fill: '#6B7280' },
+    'أسواق': { bg: 'rgba(236,72,153,0.85)', light: '#FCE7F3', text: '#9D174D', fill: '#EC4899' },
+    'متجر': { bg: 'rgba(249,115,22,0.85)', light: '#FFEDD5', text: '#9A3412', fill: '#F97316' },
+    'بقالة': { bg: 'rgba(16,185,129,0.85)', light: '#D1FAE5', text: '#065F46', fill: '#10B981' },
+    'سوبرماركت': { bg: 'rgba(20,184,166,0.85)', light: '#CCFBF1', text: '#134E4A', fill: '#14B8A6' }
+  };
+
   // Customer Types Chart
   new Chart(document.getElementById('customerTypesChart'), {
     type: 'bar',
@@ -2327,11 +2157,9 @@ function initCharts() {
       datasets: [{
         label: 'عدد العملاء',
         data: Object.values(PAFTAH_DATA.types),
-        backgroundColor: [
-          'rgba(59,130,246,0.85)','rgba(107,114,128,0.8)','rgba(245,158,11,0.8)',
-          'rgba(99,102,241,0.8)','rgba(16,185,129,0.8)','rgba(236,72,153,0.8)',
-          'rgba(139,92,246,0.8)','rgba(249,115,22,0.8)','rgba(20,184,166,0.8)'
-        ],
+        backgroundColor: Object.keys(PAFTAH_DATA.types).map(function(t) {
+          return (TYPE_COLORS[t] || TYPE_COLORS['أخرى']).bg;
+        }),
         borderRadius: 8
       }]
     },
