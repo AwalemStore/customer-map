@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>التقرير الشامل - بفته | مايو 2026</title>
+<title>التقرير الشامل - بفته | يناير - مايو 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
@@ -703,7 +703,7 @@ body {
     <div class="header-main">
       <img src="https://awalemstore.github.io/customer-map/paftah-logo.png" alt="بفتة" class="header-logo" onerror="this.style.display='none'">
       <h1>بفتة - التقرير الشامل</h1>
-      <p class="subtitle">منصة رواء | تقرير شهر مايو 2026 (1 - 31 مايو)</p>
+      <p class="subtitle">منصة رواء | من 1 يناير إلى 17 مايو 2026</p>
       <div class="date-badge">تاريخ التقرير: 17 مايو 2026</div>
     </div>
     <div class="header-divider"></div>
@@ -711,23 +711,23 @@ body {
     <div class="header-stats">
       <div class="header-stat">
         <div class="label">المبيعات (شامل الضريبة)</div>
-        <div class="value">7,712.00 ر.س</div>
-        <div class="sub">77% من الشهر الماضي (33,021.30)</div>
+        <div class="value">184,233.37 ر.س</div>
+        <div class="sub">يناير - مايو 2026</div>
       </div>
       <div class="header-stat">
         <div class="label">إجمالي الربح</div>
-        <div class="value">1,521.21 ر.س</div>
-        <div class="sub">الشهر الماضي: 5,905.74</div>
+        <div class="value">38,580.03 ر.س</div>
+        <div class="sub">هامش ربح 20.9%</div>
       </div>
       <div class="header-stat">
         <div class="label">صافي الدخل</div>
-        <div class="value" style="color:#FFCDD2">-4,422.30 ر.س</div>
-        <div class="sub">الشهر الماضي: -16,875.47</div>
+        <div class="value" style="color:#FFCDD2">-17,770.77 ر.س</div>
+        <div class="sub">بعد المصروفات التشغيلية</div>
       </div>
       <div class="header-stat">
         <div class="label">عمليات البيع</div>
-        <div class="value">45</div>
-        <div class="sub">الشهر الماضي: 123</div>
+        <div class="value">731</div>
+        <div class="sub">يناير - مايو 2026</div>
       </div>
       <div class="header-stat">
         <div class="label">قيمة المخزون</div>
@@ -751,12 +751,12 @@ body {
       <svg class="gauge-svg" viewBox="0 0 120 120" width="160" height="160">
         <circle class="gauge-bg" cx="60" cy="60" r="52"></circle>
         <circle class="gauge-fill" id="gaugeFill" cx="60" cy="60" r="52"
-          stroke-dasharray="326.73" stroke-dashoffset="326.73" stroke="#EF4444"></circle>
+          stroke-dasharray="326.73" stroke-dashoffset="326.73" stroke="#F59E0B"></circle>
       </svg>
       <div class="gauge-center">
-        <div class="gauge-score" id="gaugeScoreText" style="color:#EF4444">0</div>
+        <div class="gauge-score" id="gaugeScoreText" style="color:#F59E0B">0</div>
         <div class="gauge-label">الصحة المالية</div>
-        <div class="gauge-zone" id="gaugeZone" style="color:#EF4444">منطقة حمراء</div>
+        <div class="gauge-zone" id="gaugeZone" style="color:#F59E0B">منطقة صفراء</div>
       </div>
     </div>
     <div class="health-factors">
@@ -768,17 +768,17 @@ body {
       <div class="factor-item">
         <span class="factor-label">هامش الربح</span>
         <div class="factor-bar-bg"><div class="factor-bar" id="factorMargin" style="width:0%;background:var(--warning)"></div></div>
-        <span class="factor-score" id="factorMarginScore">15/25</span>
+        <span class="factor-score" id="factorMarginScore">18/25</span>
       </div>
       <div class="factor-item">
         <span class="factor-label">اتجاه المبيعات</span>
-        <div class="factor-bar-bg"><div class="factor-bar" id="factorTrend" style="width:0%;background:var(--warning)"></div></div>
-        <span class="factor-score" id="factorTrendScore">8/25</span>
+        <div class="factor-bar-bg"><div class="factor-bar" id="factorTrend" style="width:0%;background:var(--success)"></div></div>
+        <span class="factor-score" id="factorTrendScore">18/25</span>
       </div>
       <div class="factor-item">
         <span class="factor-label">كفاءة المصروفات</span>
-        <div class="factor-bar-bg"><div class="factor-bar" id="factorExpense" style="width:0%;background:var(--danger)"></div></div>
-        <span class="factor-score" id="factorExpenseScore">10/20</span>
+        <div class="factor-bar-bg"><div class="factor-bar" id="factorExpense" style="width:0%;background:var(--warning)"></div></div>
+        <span class="factor-score" id="factorExpenseScore">8/20</span>
       </div>
     </div>
   </div>
@@ -798,11 +798,7 @@ body {
       </div>
       <div class="alert-item alert-red">
         <span>🔴</span>
-        <span>صافي الدخل بالسالب: <strong>-4,422.30 ر.س</strong></span>
-      </div>
-      <div class="alert-item alert-yellow">
-        <span>🟡</span>
-        <span>مبيعات مايو نزلت 77% عن أبريل (7,712 مقابل 33,021)</span>
+        <span>صافي الدخل بالسالب: <strong>-17,770.77 ر.س</strong></span>
       </div>
       <div class="alert-item alert-yellow">
         <span>🟡</span>
@@ -843,7 +839,7 @@ body {
     </div>
     <div class="collapsible-body">
       <div class="exec-summary-text">
-        شهدت مبيعات شهر مايو 2026 انخفاضاً ملحوظاً بنسبة 77% مقارنة بشهر أبريل، حيث بلغت 7,712 ر.س مقابل 33,021 ر.س. حققت الشركة ربحاً إجمالياً قدره 1,521 ر.س بنسبة هامش 19.7%. إلا أن صافي الدخل لا يزال بالسالب بمبلغ -4,422 ر.س. يُعد العميل 'أسواق افرا العربية' الأكثر مديونية بمبلغ 42,700 ر.س، فيما تبلغ نسبة التحصيل الكلية 21.3%. يوصى بالتركيز على تحصيل المديونية المتراكمة البالغة 144,572 ر.س وتحديد أهداف مبيعات شهرية واضحة.
+        خلال الفترة من 1 يناير إلى 17 مايو 2026، بلغت إجمالي مبيعات الشركة 184,233 ر.س عبر 731 عملية بيع، محققةً ربحاً إجمالياً قدره 38,580 ر.س بنسبة هامش 20.9%. إلا أن صافي الدخل لا يزال بالسالب بمبلغ -17,771 ر.س نتيجة المصروفات التشغيلية. يُعد العميل 'أسواق افرا العربية' الأكثر مديونية بمبلغ 42,700 ر.س، فيما تبلغ إجمالي المديونية 144,572 ر.س. يوصى بالتركيز على تحصيل المديونية المتراكمة وتحديد أهداف مبيعات شهرية واضحة.
       </div>
     </div>
   </div>
@@ -858,22 +854,22 @@ body {
       <div class="forecast-grid">
         <div class="forecast-card">
           <div class="fc-label">متوسط المبيعات اليومية</div>
-          <div class="fc-value">453.6 ر.س</div>
-          <div class="fc-note">بناءً على 17 يوم نشاط</div>
+          <div class="fc-value">1,083.7 ر.س</div>
+          <div class="fc-note">بناءً على 170 يوم نشاط</div>
         </div>
         <div class="forecast-card">
-          <div class="fc-label">المتوقع للشهر (31 يوم)</div>
-          <div class="fc-value">14,062 ر.س</div>
-          <div class="fc-note">453.6 × 31 يوم</div>
+          <div class="fc-label">المبيعات الفعلية</div>
+          <div class="fc-value">184,233 ر.س</div>
+          <div class="fc-note">من 1 يناير إلى 17 مايو</div>
         </div>
         <div class="forecast-card">
-          <div class="fc-label">الربح المتوقع</div>
-          <div class="fc-value">2,770 ر.س</div>
-          <div class="fc-note">بنسبة هامش 19.7%</div>
+          <div class="fc-label">الربح الإجمالي</div>
+          <div class="fc-value">38,580 ر.س</div>
+          <div class="fc-note">بنسبة هامش 20.9%</div>
         </div>
         <div class="forecast-card" style="border-top-color:var(--danger)">
-          <div class="fc-label">صافي الدخل المتوقع</div>
-          <div class="fc-value" style="color:var(--danger)">-5,281 ر.س</div>
+          <div class="fc-label">صافي الدخل</div>
+          <div class="fc-value" style="color:var(--danger)">-17,771 ر.س</div>
           <div class="fc-note">بعد خصم المصروفات</div>
         </div>
       </div>
@@ -883,23 +879,23 @@ body {
   <div class="kpi-grid">
     <div class="kpi-card info">
       <div class="kpi-label">المبيعات (شامل الضريبة)</div>
-      <div class="kpi-value">7,712.00 ر.س</div>
-      <div class="kpi-sub"><span class="compare down">&#9660; 77% من الشهر الماضي</span></div>
+      <div class="kpi-value">184,233.37 ر.س</div>
+      <div class="kpi-sub">يناير - مايو 2026</div>
     </div>
     <div class="kpi-card success">
       <div class="kpi-label">إجمالي الربح</div>
-      <div class="kpi-value">1,521.21 ر.س</div>
-      <div class="kpi-sub"><span class="compare down">&#9660; من 5,905.74</span></div>
+      <div class="kpi-value">38,580.03 ر.س</div>
+      <div class="kpi-sub">هامش ربح 20.9%</div>
     </div>
     <div class="kpi-card danger">
       <div class="kpi-label">صافي الدخل</div>
-      <div class="kpi-value" style="color:var(--danger)">-4,422.30 ر.س</div>
-      <div class="kpi-sub"><span class="compare up">&#9650; تحسن من -16,875.47</span></div>
+      <div class="kpi-value" style="color:var(--danger)">-17,770.77 ر.س</div>
+      <div class="kpi-sub"><span class="compare up">&#9650; الشهر الماضي: -18,631.32</span></div>
     </div>
     <div class="kpi-card warning">
       <div class="kpi-label">عمليات البيع</div>
-      <div class="kpi-value">45</div>
-      <div class="kpi-sub"><span class="compare down">&#9660; من 123</span></div>
+      <div class="kpi-value">731</div>
+      <div class="kpi-sub">يناير - مايو 2026</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-label">قيمة المخزون</div>
@@ -915,7 +911,7 @@ body {
 
   <div class="grid-2">
     <div class="card">
-      <div class="card-title"><span class="icon">📈</span> المبيعات اليومية - مايو 2026</div>
+      <div class="card-title"><span class="icon">📈</span> المبيعات اليومية - مايو 2026 (تفصيلي)</div>
       <div class="chart-container"><canvas id="dailySalesChart"></canvas></div>
     </div>
     <div class="card">
@@ -932,12 +928,12 @@ body {
     <div class="card">
       <div class="card-title"><span class="icon">💰</span> ملخص مالي سريع</div>
       <table class="data-table" style="margin-top:8px">
-        <tr><td style="font-weight:600">إجمالي المبيعات</td><td class="amount positive">7,712.00 ر.س</td></tr>
+        <tr><td style="font-weight:600">إجمالي المبيعات</td><td class="amount positive">184,233.37 ر.س</td></tr>
         <tr><td style="font-weight:600">إجمالي المرتجعات</td><td class="amount negative">-496.00 ر.س</td></tr>
-        <tr><td style="font-weight:600">صافي المبيعات</td><td class="amount">7,216.00 ر.س</td></tr>
-        <tr><td style="font-weight:600">إجمالي الربح</td><td class="amount positive">1,521.21 ر.س</td></tr>
-        <tr><td style="font-weight:600">نسبة الربح</td><td class="amount">19.7%</td></tr>
-        <tr><td style="font-weight:600">صافي الدخل</td><td class="amount negative">-4,422.30 ر.س</td></tr>
+        <tr><td style="font-weight:600">صافي المبيعات</td><td class="amount">183,737.37 ر.س</td></tr>
+        <tr><td style="font-weight:600">إجمالي الربح</td><td class="amount positive">38,580.03 ر.س</td></tr>
+        <tr><td style="font-weight:600">نسبة الربح</td><td class="amount">20.9%</td></tr>
+        <tr><td style="font-weight:600">صافي الدخل</td><td class="amount negative">-17,770.77 ر.س</td></tr>
         <tr><td style="font-weight:600">قيمة المخزون</td><td class="amount">26,016.30 ر.س</td></tr>
         <tr><td style="font-weight:600">إجمالي العملاء</td><td class="amount">575 عميل</td></tr>
         <tr><td style="font-weight:600">إجمالي المديونية</td><td class="amount negative">144,572 ر.س</td></tr>
@@ -953,7 +949,7 @@ body {
   <div class="kpi-grid">
     <div class="kpi-card info">
       <div class="kpi-label">إجمالي المبيعات</div>
-      <div class="kpi-value">7,712.00 ر.س</div>
+      <div class="kpi-value">184,233.37 ر.س</div>
     </div>
     <div class="kpi-card danger">
       <div class="kpi-label">إجمالي المرتجعات</div>
@@ -961,11 +957,12 @@ body {
     </div>
     <div class="kpi-card success">
       <div class="kpi-label">صافي المبيعات</div>
-      <div class="kpi-value">7,216.00 ر.س</div>
+      <div class="kpi-value">183,737.37 ر.س</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-label">عدد الفواتير</div>
-      <div class="kpi-value">45</div>
+      <div class="kpi-value">49</div>
+      <div class="kpi-sub">فواتير مايو المسجلة</div>
     </div>
   </div>
 
@@ -975,7 +972,7 @@ body {
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon">🧾</span> جميع الفواتير - مايو 2026 (45 فاتورة)</div>
+    <div class="card-title"><span class="icon">🧾</span> آخر الفواتير المسجلة - مايو 2026</div>
     <div class="smart-filter-bar">
       <span class="sfb-label">🔍 فلترة ذكية</span>
       <input type="text" class="smart-filter-input" id="smartInvoiceSearch" placeholder="بحث برقم الفاتورة، المبلغ، التاريخ...">
@@ -990,10 +987,12 @@ body {
         <input type="number" class="sfb-range-input" id="smartInvoiceMax" placeholder="إلى (ر.س)">
       </div>
       <select class="sfb-select" id="smartInvoiceDate">
-        <option value="all">كل الأيام</option>
-        <option value="1-5">1 - 5 مايو</option>
-        <option value="6-10">6 - 10 مايو</option>
-        <option value="11-16">11 - 16 مايو</option>
+        <option value="all">كل الفترة</option>
+        <option value="month-1">يناير 2026</option>
+        <option value="month-2">فبراير 2026</option>
+        <option value="month-3">مارس 2026</option>
+        <option value="month-4">أبريل 2026</option>
+        <option value="month-5">مايو 2026</option>
       </select>
       <button class="sfb-sort-btn" id="smartInvoiceSort" onclick="toggleInvoiceSort()">
         ترتيب <span id="invoiceSortIcon">↓</span>
@@ -1026,7 +1025,7 @@ body {
 
   <div class="grid-2">
     <div class="card">
-      <div class="card-title"><span class="icon">💳</span> تفصيل طرق الدفع - مايو</div>
+      <div class="card-title"><span class="icon">💳</span> تفصيل طرق الدفع - يناير - مايو 2026</div>
       <div class="chart-container"><canvas id="paymentDetailChart"></canvas></div>
     </div>
     <div class="card">
@@ -1034,14 +1033,14 @@ body {
       <table class="data-table">
         <thead><tr><th>طريقة الدفع</th><th>المبلغ (ر.س)</th><th>النسبة</th></tr></thead>
         <tbody>
-          <tr><td>نقدي</td><td class="amount positive">7,549.00</td><td>86.4%</td></tr>
-          <tr><td>آجل</td><td class="amount negative">-7,507.00</td><td>-</td></tr>
-          <tr><td>بطاقة ائتمانية</td><td class="amount">1,041.60</td><td>11.9%</td></tr>
-          <tr><td>رواء باي</td><td class="amount">290.00</td><td>3.3%</td></tr>
+          <tr><td>نقدي</td><td class="amount positive">29,494.50</td><td>23.7%</td></tr>
+          <tr><td>آجل</td><td class="amount">144,571.87</td><td>-</td></tr>
+          <tr><td>بطاقة ائتمانية</td><td class="amount negative">-50,923.03</td><td>-</td></tr>
+          <tr><td>رواء باي</td><td class="amount">1,047.00</td><td>0.8%</td></tr>
         </tbody>
         <tfoot>
           <tr style="background:var(--primary-light);font-weight:700">
-            <td>الإجمالي (شامل الضريبة)</td><td>1,373.60</td><td>100%</td>
+            <td>الإجمالي (شامل الضريبة)</td><td>124,190.34</td><td>100%</td>
           </tr>
         </tfoot>
       </table>
@@ -1207,8 +1206,8 @@ body {
   <div class="kpi-grid">
     <div class="kpi-card danger">
       <div class="kpi-label">صافي الدخل</div>
-      <div class="kpi-value" style="color:var(--danger)">-4,422.30 ر.س</div>
-      <div class="kpi-sub">الشهر الماضي: -16,875.47</div>
+      <div class="kpi-value" style="color:var(--danger)">-17,770.77 ر.س</div>
+      <div class="kpi-sub">الشهر الماضي: -18,631.32</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-label">عدد المصروفات</div>
@@ -1216,7 +1215,7 @@ body {
     </div>
     <div class="kpi-card">
       <div class="kpi-label">إجمالي الربح</div>
-      <div class="kpi-value">1,521.21 ر.س</div>
+      <div class="kpi-value">38,580.03 ر.س</div>
     </div>
   </div>
 
@@ -1609,7 +1608,7 @@ body {
 <div class="report-footer">
   <img src="https://awalemstore.github.io/customer-map/paftah-logo.png" alt="بفتة" class="footer-logo" onerror="this.style.display='none'">
   <p style="font-weight:600;color:var(--primary)">بفته - التقرير الشامل</p>
-  <p>منصة رواء | مايو 2026</p>
+  <p>منصة رواء | يناير - مايو 2026</p>
   <p style="margin-top:4px;font-size:0.7rem;color:var(--text-secondary)">تم إنشاء هذا التقرير تلقائياً - جميع الأرقام من منصة رواء</p>
 </div>
 
@@ -1738,9 +1737,9 @@ function populateInvoicesSmart() {
     if (inv.amount < minAmt) return false;
     if (inv.amount > maxAmt) return false;
     if (dateRange !== 'all') {
-      const day = parseInt(inv.date.split('-')[2]);
-      const [minD, maxD] = dateRange.split('-').map(Number);
-      if (day < minD || day > maxD) return false;
+      var month = parseInt(inv.date.split('-')[1]);
+      var filterMonth = parseInt(dateRange.split('-')[1]);
+      if (month !== filterMonth) return false;
     }
     if (search) {
       return inv.num.toLowerCase().includes(search) ||
@@ -1871,101 +1870,13 @@ function filterInvoices() { populateInvoicesSmart(); }
 function filterInvoiceType(type, btn) { currentInvoiceFilter = type; populateInvoicesSmart(); }
 function filterCustomers() { populateCustomersSmart(); }
 function buildCustomerTypeFilters() {}
-    return true;
-  });
-  let total = 0;
-  let html = '';
-  filtered.forEach((inv, i) => {
-    const isReturn = inv.type === 'return';
-    const amt = isReturn ? -inv.amount : inv.amount;
-    total += amt;
-    html += '<tr class="' + (isReturn ? 'return-row' : '') + '">' +
-      '<td>' + (i+1) + '</td>' +
-      '<td>' + inv.date + '</td>' +
-      '<td><code style="background:#F3F0FF;padding:2px 8px;border-radius:4px">' + inv.num + '</code></td>' +
-      '<td><span class="' + (isReturn ? 'status-return' : 'status-sale') + '">' + (isReturn ? 'مرتجع' : 'بيع') + '</span></td>' +
-      '<td class="amount ' + (isReturn ? 'negative' : 'positive') + '">' + (isReturn ? '-' : '') + fmt(inv.amount) + '</td>' +
-      '</tr>';
-  });
-  tbody.innerHTML = html;
-  document.getElementById('invoicesTotal').textContent = fmt(total) + ' ر.س';
-}
 
-let currentInvoiceFilter = 'all';
-function filterInvoices() { populateInvoices(currentInvoiceFilter); }
-function filterInvoiceType(type, btn) {
-  currentInvoiceFilter = type;
-  document.querySelectorAll('#tab-sales .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  populateInvoices(type);
-}
-
-// ===== POPULATE CUSTOMERS TABLE =====
 function getCustomerRisk(c) {
   if (c.p >= c.db) return { cls: 'risk-green', color: '#10B981', label: 'ممتاز' };
   if (c.db <= c.p * 2 && c.p > 0) return { cls: 'risk-yellow', color: '#F59E0B', label: 'متوسط' };
   if (c.db > c.p * 2 && c.p > 0) return { cls: 'risk-red', color: '#EF4444', label: 'خطر' };
   if (c.db > 0 && c.p === 0) return { cls: 'risk-black', color: '#6B7280', label: 'متوقف' };
   return { cls: 'risk-green', color: '#10B981', label: 'ممتاز' };
-}
-
-let customerTypeFilter = '';
-function populateCustomers() {
-  const search = document.getElementById('customerSearch').value.toLowerCase();
-  const tbody = document.getElementById('customerBody');
-  let filtered = PAFTAH_DATA.customers.filter(c => {
-    if (customerTypeFilter && c.t !== customerTypeFilter) return false;
-    if (search) {
-      return c.n.toLowerCase().includes(search) ||
-             c.d.toLowerCase().includes(search) ||
-             c.t.toLowerCase().includes(search) ||
-             (c.ph && c.ph.includes(search));
-    }
-    return true;
-  });
-  let html = '';
-  filtered.forEach((c, i) => {
-    var risk = getCustomerRisk(c);
-    html += '<tr>' +
-      '<td>' + (i+1) + '</td>' +
-      '<td style="font-weight:500">' + c.n + '</td>' +
-      '<td><span class="tag tag-purple">' + c.t + '</span></td>' +
-      '<td>' + c.d + '</td>' +
-      '<td>' + (c.ph || '-') + '</td>' +
-      '<td class="amount positive">' + fmt(c.p) + '</td>' +
-      '<td class="amount ' + (c.db > 0 ? 'negative' : '') + '">' + fmt(c.db) + '</td>' +
-      '<td><span class="risk-dot" style="background:' + risk.color + '" title="' + risk.label + '"></span></td>' +
-      '</tr>';
-  });
-  tbody.innerHTML = html;
-  document.getElementById('customerCount').textContent = 'عرض ' + filtered.length + ' من ' + PAFTAH_DATA.customers.length + ' عميل';
-}
-
-function filterCustomers() { populateCustomers(); }
-
-function buildCustomerTypeFilters() {
-  const container = document.getElementById('customerTypeFilters');
-  const types = Object.keys(PAFTAH_DATA.types);
-  container.innerHTML = '';
-  var allBtn = document.createElement('button');
-  allBtn.className = 'filter-btn active';
-  allBtn.textContent = '\u0627\u0644\u0643\u0644';
-  allBtn.onclick = function() { setCustomerTypeFilter('', allBtn); };
-  container.appendChild(allBtn);
-  types.forEach(function(t) {
-    var btn = document.createElement('button');
-    btn.className = 'filter-btn';
-    btn.textContent = t + ' (' + PAFTAH_DATA.types[t] + ')';
-    btn.onclick = function() { setCustomerTypeFilter(t, btn); };
-    container.appendChild(btn);
-  });
-}
-
-function setCustomerTypeFilter(type, btn) {
-  customerTypeFilter = type;
-  document.querySelectorAll('#customerTypeFilters .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  populateCustomers();
 }
 
 // ===== CHARTS =====
@@ -2031,7 +1942,7 @@ function initCharts() {
     data: {
       labels: ['نقدي', 'آجل', 'بطاقة ائتمانية', 'رواء باي'],
       datasets: [{
-        data: [7549, 7507, 1041.60, 290],
+        data: [29494.50, 144571.87, 50923.03, 1047],
         backgroundColor: ['#6C3FC5', '#EF4444', '#10B981', '#F59E0B'],
         borderWidth: 3,
         borderColor: '#fff'
@@ -2053,8 +1964,7 @@ function initCharts() {
     data: {
       labels: ['المبيعات', 'عمليات البيع', 'إجمالي الربح', 'صافي الدخل'],
       datasets: [
-        { label: 'أبريل 2026', data: [33021.30, 123, 5905.74, -16875.47], backgroundColor: 'rgba(108,63,197,0.3)', borderColor: '#6C3FC5', borderWidth: 2 },
-        { label: 'مايو 2026', data: [7712, 45, 1521.21, -4422.30], backgroundColor: 'rgba(108,63,197,0.8)', borderColor: '#6C3FC5', borderWidth: 2 }
+        { label: '2026 (يناير - مايو)', data: [184233.37, 731, 38580.03, -17770.77], backgroundColor: 'rgba(108,63,197,0.8)', borderColor: '#6C3FC5', borderWidth: 2 }
       ]
     },
     options: {
@@ -2111,7 +2021,7 @@ function initCharts() {
       labels: ['نقدي', 'آجل', 'بطاقة ائتمانية', 'رواء باي'],
       datasets: [{
         label: 'المبلغ (ر.س)',
-        data: [7549, -7507, 1041.60, 290],
+        data: [29494.50, 144571.87, -50923.03, 1047],
         backgroundColor: ['#6C3FC5', '#EF4444', '#10B981', '#F59E0B'],
         borderRadius: 8
       }]
@@ -2268,8 +2178,8 @@ function toggleCollapsible(header) {
 
 // ===== HEALTH SCORE ANIMATION =====
 function animateHealthScore() {
-  var score = 48;
-  var circumference = 2 * Math.PI * 52; // ~326.73
+  var score = 59;
+  var circumference = 2 * Math.PI * 52;
   var offset = circumference - (score / 100) * circumference;
   var fill = document.getElementById('gaugeFill');
   var scoreText = document.getElementById('gaugeScoreText');
@@ -2281,7 +2191,6 @@ function animateHealthScore() {
   scoreText.style.color = color;
   zone.style.color = color;
   zone.textContent = zoneText;
-  // Animate score number
   var current = 0;
   var step = score / 40;
   var interval = setInterval(function() {
@@ -2289,12 +2198,11 @@ function animateHealthScore() {
     if (current >= score) { current = score; clearInterval(interval); }
     scoreText.textContent = Math.round(current);
   }, 30);
-  // Animate factor bars
   setTimeout(function() {
     document.getElementById('factorCollection').style.width = '50%';
-    document.getElementById('factorMargin').style.width = '60%';
-    document.getElementById('factorTrend').style.width = '32%';
-    document.getElementById('factorExpense').style.width = '50%';
+    document.getElementById('factorMargin').style.width = '72%';
+    document.getElementById('factorTrend').style.width = '72%';
+    document.getElementById('factorExpense').style.width = '40%';
   }, 200);
 }
 
