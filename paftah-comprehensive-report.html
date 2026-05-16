@@ -2398,7 +2398,8 @@ function buildTop10Customers() {
       '<td>' + pct + '%</td>' +
       '</tr>';
   });
-  document.getElementById('top10CustomersBody').innerHTML = html;
+  var el = document.getElementById('top10CustomersBody');
+  if (el) el.innerHTML = html;
 }
 
 function buildMonthlyRecommendations() {
