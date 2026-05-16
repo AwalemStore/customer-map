@@ -1978,52 +1978,6 @@ function initCharts() {
     netData.push(daily[key].net);
   }
 
-  // Daily Sales Chart (Overview)
-  new Chart(document.getElementById('dailySalesChart'), {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'صافي المبيعات اليومية',
-        data: netData,
-        backgroundColor: netData.map(v => v >= 0 ? 'rgba(51,48,136,0.75)' : 'rgba(239,68,68,0.7)'),
-        borderRadius: 6,
-        borderSkipped: false
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { rtl: true, callbacks: { label: (c) => fmt(c.raw) + ' ر.س' } } },
-      scales: {
-        y: { beginAtZero: true, grid: { color: '#F3F0F8' }, ticks: { callback: v => v.toLocaleString() } },
-        x: { grid: { display: false }, title: { display: true, text: 'يوم من مايو' } }
-      }
-    }
-  });
-
-  // Payment Methods (Overview)
-  new Chart(document.getElementById('paymentMethodsChart'), {
-    type: 'doughnut',
-    data: {
-      labels: ['نقدي', 'آجل', 'بطاقة ائتمانية', 'رواء باي'],
-      datasets: [{
-        data: [29494.50, 144571.87, 50923.03, 1047],
-        backgroundColor: ['#333088', '#EF4444', '#10B981', '#F59E0B'],
-        borderWidth: 3,
-        borderColor: '#fff'
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', rtl: true, labels: { padding: 16, usePointStyle: true } },
-        tooltip: { rtl: true, callbacks: { label: (c) => c.label + ': ' + fmt(c.raw) + ' ر.س' } }
-      }
-    }
-  });
-
   // Monthly Comparison
   new Chart(document.getElementById('monthlyCompareChart'), {
     type: 'bar',
