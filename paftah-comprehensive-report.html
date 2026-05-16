@@ -1249,6 +1249,78 @@ body {
     <div class="card-title"><span class="icon" data-ico="warning"></span> أعلى العملاء مديونية</div>
     <div class="table-wrapper">
       <table class="data-table">
+        <thead><tr><th>العميل</th><th>الحي</th><th>المستحق (ر.س)</th><th>المدفوع (ر.س)</th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:600">اسواق افرا العربية</td><td>الحمدانية</td><td class="amount negative">42,700</td><td>0</td></tr>
+          <tr><td style="font-weight:600">شركة المتحدون الاولى</td><td>المحجر</td><td class="amount negative">5,589</td><td>820</td></tr>
+          <tr><td style="font-weight:600">المميز بلاستيك ومنظفات</td><td>الشرفية</td><td class="amount negative">3,910</td><td>0</td></tr>
+          <tr><td style="font-weight:600">اماكن دبي للتسوق العزيزية</td><td>مشرفه</td><td class="amount negative">3,490</td><td>0</td></tr>
+          <tr><td style="font-weight:600">الصالة الاقتصادية المتميزة العزيزية</td><td>-</td><td class="amount negative">3,075</td><td>0</td></tr>
+          <tr><td style="font-weight:600">شركة عالم الاقتصادي</td><td>الصفا</td><td class="amount negative">3,050</td><td>0</td></tr>
+        </tbody>
+        <tfoot>
+          <tr style="background:#FEE2E2;font-weight:700">
+            <td colspan="2">إجمالي مديونية أعلى 6 عملاء</td>
+            <td>61,814 ر.س</td>
+            <td>820 ر.س</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon" data-ico="payment"></span> آخر مدفوعات العملاء</div>
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead><tr><th>#</th><th>رقم العملية</th><th>العميل</th><th>المبلغ (ر.س)</th><th>التاريخ</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Pay-175</td><td>تموينات نخبة البشائر</td><td class="amount">58</td><td>May 16</td></tr>
+          <tr><td>2</td><td>Pay-174</td><td>تموينات العروس 2</td><td class="amount">88</td><td>May 14</td></tr>
+          <tr><td>3</td><td>Pay-173</td><td>تموينات التسامح</td><td class="amount">100</td><td>May 14</td></tr>
+          <tr><td>4</td><td>Pay-172</td><td>مؤسسة الوطنية باك للتجاره بلاستيك ونظافة</td><td class="amount">1,500</td><td>May 13</td></tr>
+          <tr><td>5</td><td>Pay-171</td><td>تموينات ضياء</td><td class="amount">118</td><td>May 13</td></tr>
+          <tr><td>6</td><td>Pay-170</td><td>تموينات ومخابز ساعة الانطلاق</td><td class="amount">150</td><td>May 13</td></tr>
+          <tr><td>7</td><td>Pay-169</td><td>تموينات ياسر صالح القحطاني</td><td class="amount">100</td><td>May 13</td></tr>
+          <tr><td>8</td><td>Pay-168</td><td>بقالة سلة تالا</td><td class="amount">50</td><td>May 13</td></tr>
+          <tr><td>9</td><td>Pay-167</td><td>تموينات الخلود</td><td class="amount">116</td><td>May 12</td></tr>
+          <tr><td>10</td><td>Pay-166</td><td>تموينات سامي</td><td class="amount">58</td><td>May 12</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon" data-ico="users"></span> توزيع أنواع العملاء</div>
+    <div class="type-dist" style="margin-bottom:16px">
+      <div class="type-item" data-type="تموينات"><span>تموينات</span><span class="count">303</span></div>
+      <div class="type-item" data-type="أخرى"><span>أخرى</span><span class="count">64</span></div>
+      <div class="type-item" data-type="مخبز"><span>مخبز</span><span class="count">62</span></div>
+      <div class="type-item" data-type="بقالة"><span>بقالة</span><span class="count">36</span></div>
+      <div class="type-item" data-type="أسواق"><span>أسواق</span><span class="count">35</span></div>
+      <div class="type-item" data-type="شركة / مؤسسة"><span>شركة / مؤسسة</span><span class="count">43</span></div>
+      <div class="type-item" data-type="بلاستيك ومنظفات"><span>بلاستيك ومنظفات</span><span class="count">19</span></div>
+      <div class="type-item" data-type="متجر"><span>متجر</span><span class="count">11</span></div>
+      <div class="type-item" data-type="سوبرماركت"><span>سوبرماركت</span><span class="count">2</span></div>
+    </div>
+    <div class="chart-container"><canvas id="customerTypesChart"></canvas></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="icon" data-ico="buildings"></span> أعلى 10 أحياء بالمديونية</div>
+      <div class="chart-container"><canvas id="districtDebtChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon" data-ico="money"></span> أعلى 10 أحياء بالمدفوع</div>
+      <div class="chart-container"><canvas id="districtPaidChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon" data-ico="buildings"></span> تفصيل أعلى 10 أحياء</div>
+    <div class="table-wrapper">
+      <table class="data-table">
         <thead><tr><th>الحي</th><th>عدد العملاء</th><th>المدفوع (ر.س)</th><th>المستحق (ر.س)</th><th>توزيع المديونية</th></tr></thead>
         <tbody>
           <tr>
@@ -1291,51 +1363,6 @@ body {
             <td style="font-weight:600">الاجاويد</td><td>15</td><td>739</td><td class="amount negative">896</td>
             <td><div class="progress-bar" style="width:150px"><div class="progress-fill" style="width:12.7%;background:var(--success)"></div></div></td>
           </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title"><span class="icon" data-ico="warning"></span> أعلى العملاء مديونية</div>
-    <div class="table-wrapper">
-      <table class="data-table">
-        <thead><tr><th>العميل</th><th>الحي</th><th>المستحق (ر.س)</th><th>المدفوع (ر.س)</th></tr></thead>
-        <tbody>
-          <tr><td style="font-weight:600">اسواق افرا العربية</td><td>الحمدانية</td><td class="amount negative">42,700</td><td>0</td></tr>
-          <tr><td style="font-weight:600">شركة المتحدون الاولى</td><td>المحجر</td><td class="amount negative">5,589</td><td>820</td></tr>
-          <tr><td style="font-weight:600">المميز بلاستيك ومنظفات</td><td>الشرفية</td><td class="amount negative">3,910</td><td>0</td></tr>
-          <tr><td style="font-weight:600">اماكن دبي للتسوق العزيزية</td><td>مشرفه</td><td class="amount negative">3,490</td><td>0</td></tr>
-          <tr><td style="font-weight:600">الصالة الاقتصادية المتميزة العزيزية</td><td>-</td><td class="amount negative">3,075</td><td>0</td></tr>
-          <tr><td style="font-weight:600">شركة عالم الاقتصادي</td><td>الصفا</td><td class="amount negative">3,050</td><td>0</td></tr>
-        </tbody>
-        <tfoot>
-          <tr style="background:#FEE2E2;font-weight:700">
-            <td colspan="2">إجمالي مديونية أعلى 6 عملاء</td>
-            <td>61,814 ر.س</td>
-            <td>820 ر.س</td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title"><span class="icon" data-ico="payment"></span> آخر مدفوعات العملاء</div>
-    <div class="table-wrapper">
-      <table class="data-table">
-        <thead><tr><th>#</th><th>رقم العملية</th><th>العميل</th><th>المبلغ (ر.س)</th><th>التاريخ</th></tr></thead>
-        <tbody>
-          <tr><td>1</td><td>Pay-175</td><td>تموينات نخبة البشائر</td><td class="amount">58</td><td>May 16</td></tr>
-          <tr><td>2</td><td>Pay-174</td><td>تموينات العروس 2</td><td class="amount">88</td><td>May 14</td></tr>
-          <tr><td>3</td><td>Pay-173</td><td>تموينات التسامح</td><td class="amount">100</td><td>May 14</td></tr>
-          <tr><td>4</td><td>Pay-172</td><td>مؤسسة الوطنية باك للتجاره بلاستيك ونظافة</td><td class="amount">1,500</td><td>May 13</td></tr>
-          <tr><td>5</td><td>Pay-171</td><td>تموينات ضياء</td><td class="amount">118</td><td>May 13</td></tr>
-          <tr><td>6</td><td>Pay-170</td><td>تموينات ومخابز ساعة الانطلاق</td><td class="amount">150</td><td>May 13</td></tr>
-          <tr><td>7</td><td>Pay-169</td><td>تموينات ياسر صالح القحطاني</td><td class="amount">100</td><td>May 13</td></tr>
-          <tr><td>8</td><td>Pay-168</td><td>بقالة سلة تالا</td><td class="amount">50</td><td>May 13</td></tr>
-          <tr><td>9</td><td>Pay-167</td><td>تموينات الخلود</td><td class="amount">116</td><td>May 12</td></tr>
-          <tr><td>10</td><td>Pay-166</td><td>تموينات سامي</td><td class="amount">58</td><td>May 12</td></tr>
         </tbody>
       </table>
     </div>
