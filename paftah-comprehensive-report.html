@@ -409,21 +409,46 @@ body {
 
 /* Mobile */
 @media (max-width: 768px) {
-  .report-header { padding: 24px 16px 20px; }
-  .header-brand h1 { font-size: 1.5rem; }
-  .header-stats { grid-template-columns: 1fr 1fr; }
-  .header-stat .value { font-size: 1rem; }
-  .tabs-container { padding: 0 12px; }
-  .tab-btn { padding: 10px 14px; font-size: 0.8rem; }
-  .main-content { padding: 0 12px 30px; margin-top: 16px; }
-  .card { padding: 16px; }
-  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .report-header { padding: 0; }
+  .header-main { padding: 28px 16px 16px; }
+  .header-logo { width: 64px; height: 64px; }
+  .header-main h1 { font-size: 1.4rem; }
+  .header-main .subtitle { font-size: 0.85rem; }
+  .header-main .date-badge { font-size: 0.75rem; padding: 6px 16px; }
+  .header-content { padding: 14px 12px 18px; }
+  .header-stats { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .header-stat { padding: 10px 12px; }
+  .header-stat .value { font-size: 0.95rem; }
+  .header-stat .label { font-size: 0.68rem; }
+  .header-stat .sub { font-size: 0.62rem; }
+  .tabs-container { padding: 0 8px; }
+  .tab-btn { padding: 9px 10px; font-size: 0.72rem; }
+  .main-content { padding: 0 8px 20px; margin-top: 12px; }
+  .card { padding: 12px; border-radius: 12px; }
+  .card-title { font-size: 0.9rem; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kpi-card { padding: 12px; }
+  .kpi-value { font-size: 1rem; }
+  .kpi-label { font-size: 0.72rem; }
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .data-table { font-size: 0.75rem; }
+  .data-table th, .data-table td { padding: 8px 6px; }
+  .chart-container { height: 250px !important; }
   .header-top { flex-direction: column; }
+  .search-input { font-size: 0.8rem; padding: 8px 12px; }
+  .filter-select { font-size: 0.8rem; padding: 8px 8px; }
 }
 @media (max-width: 480px) {
+  .header-main { padding: 20px 12px 12px; }
+  .header-logo { width: 52px; height: 52px; }
+  .header-main h1 { font-size: 1.15rem; }
+  .header-main .subtitle { font-size: 0.78rem; }
   .kpi-grid { grid-template-columns: 1fr; }
   .header-stats { grid-template-columns: 1fr; }
+  .tab-btn { padding: 8px 8px; font-size: 0.65rem; }
+  .card { padding: 10px; }
+  .kpi-value { font-size: 0.9rem; }
+  .chart-container { height: 200px !important; }
 }
 
 /* Invoice status badges */
