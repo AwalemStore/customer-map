@@ -451,41 +451,61 @@ body {
 /* ===== PRINT ===== */
 @media print {
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-  body { background: white !important; font-size: 11px; line-height: 1.5; }
-  @page { margin: 1.2cm; size: A4; }
+  body { background: white !important; font-size: 10px; line-height: 1.5; }
+  @page { margin: 1cm; size: A4; }
   .no-print { display: none !important; }
   .tabs-nav { display: none !important; }
   .tab-panel { display: block !important; opacity: 1 !important; position: static !important; height: auto !important; overflow: visible !important; }
-  .report-header { padding: 20px 0 12px !important; border-bottom: 3px solid #333088 !important; }
-  .header-main { padding: 10px 16px 8px !important; animation: none !important; }
-  .header-logo { width: 70px; height: 70px; margin-bottom: 10px; animation: none !important; }
-  .header-main h1 { font-size: 1.4rem; }
-  .header-content { padding: 10px 16px 14px !important; }
-  .header-stats { gap: 6px !important; }
-  .header-stat { padding: 8px 10px !important; }
-  .header-stat .value { font-size: 0.9rem; }
-  .main-content { padding: 0 0 16px !important; margin-top: 8px !important; }
-  .card { box-shadow: none !important; border: 1px solid #e0e0e0 !important; break-inside: avoid; margin-bottom: 14px !important; padding: 14px !important; border-radius: 8px !important; }
-  .card-title { font-size: 0.9rem; margin-bottom: 10px; }
-  .kpi-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 8px !important; margin-bottom: 14px !important; }
-  .kpi-card { padding: 10px !important; break-inside: avoid; }
-  .kpi-value { font-size: 1rem; }
-  .kpi-label { font-size: 0.65rem; }
-  .kpi-sub { font-size: 0.6rem; }
+  .report-header { padding: 12px 0 8px !important; border-bottom: 2px solid #333088 !important; }
+  .report-header::before, .report-header::after { display: none !important; }
+  .header-main { padding: 8px 12px 6px !important; animation: none !important; }
+  .header-logo { width: 56px; height: 56px; margin-bottom: 6px; animation: none !important; }
+  .header-main h1 { font-size: 1.2rem; margin-bottom: 2px; }
+  .header-main .subtitle { font-size: 0.75rem; margin-bottom: 6px; }
+  .header-main .date-badge { font-size: 0.65rem; padding: 4px 14px; }
+  .header-divider { margin: 0 12px; }
+  .header-content { padding: 8px 12px 10px !important; }
+  .header-stats { gap: 4px !important; grid-template-columns: repeat(3, 1fr) !important; }
+  .header-stat { padding: 6px 8px !important; border-radius: 6px !important; }
+  .header-stat .value { font-size: 0.8rem; }
+  .header-stat .label { font-size: 0.6rem; }
+  .header-stat .sub { font-size: 0.55rem; }
+  .exec-dashboard { padding: 8px 0 0 !important; }
+  .exec-grid { gap: 8px !important; grid-template-columns: repeat(4, 1fr) !important; }
+  .exec-kpi { padding: 10px !important; break-inside: avoid; }
+  .exec-kpi-value { font-size: 1rem !important; }
+  .exec-kpi-title { font-size: 0.65rem !important; }
+  .exec-kpi-sub { font-size: 0.55rem !important; }
+  .exec-signal-dot { width: 6px !important; height: 6px !important; animation: none !important; }
+  .main-content { padding: 0 0 12px !important; margin-top: 6px !important; }
+  .card { box-shadow: none !important; border: 1px solid #ddd !important; break-inside: avoid; margin-bottom: 10px !important; padding: 10px !important; border-radius: 6px !important; }
+  .card-title { font-size: 0.8rem; margin-bottom: 6px; }
+  .card-title .icon { width: 24px; height: 24px; }
+  .card-title .icon svg { width: 14px; height: 14px; }
+  .kpi-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; margin-bottom: 10px !important; }
+  .kpi-card { padding: 8px !important; break-inside: avoid; }
+  .kpi-value { font-size: 0.85rem; }
+  .kpi-label { font-size: 0.55rem; }
+  .kpi-sub { font-size: 0.5rem; }
   .grid-2, .grid-3, .grid-4 { break-inside: avoid; }
-  .chart-container { height: 220px !important; break-inside: avoid; }
-  .data-table { font-size: 0.72rem; break-inside: avoid; }
-  .data-table th { padding: 6px 8px !important; background: #EEEDF7 !important; }
-  .data-table td { padding: 5px 8px !important; }
-  .health-score-section { break-inside: avoid; }
-  .collapsible-section { break-inside: avoid; }
-  .collapsible-body { display: block !important; max-height: none !important; }
-  .collapsible-toggle { display: none !important; }
-  .collapsible-body { padding-top: 10px !important; }
-  .report-footer { padding: 16px 0 !important; border-top: 2px solid #333088; margin-top: 20px; }
-  .filter-row, .search-box, .export-btn { display: none !important; }
+  .grid-2 { grid-template-columns: 1fr 1fr !important; }
+  .grid-3 { grid-template-columns: repeat(3, 1fr) !important; }
+  .chart-container { height: 180px !important; break-inside: avoid; }
+  .data-table { font-size: 0.65rem; break-inside: avoid; }
+  .data-table th { padding: 4px 6px !important; background: #EEEDF7 !important; font-size: 0.6rem; }
+  .data-table td { padding: 3px 6px !important; }
+  .collapsible-section { break-inside: avoid; box-shadow: none !important; border: 1px solid #ddd !important; }
+  .collapsible-body { display: block !important; max-height: none !important; opacity: 1 !important; padding: 0 16px 12px !important; }
+  .collapsible-header { padding: 8px 16px !important; }
+  .collapsible-header .ch-arrow { display: none !important; }
+  .report-footer { padding: 12px 0 !important; border-top: 2px solid #333088; margin-top: 12px; }
+  .filter-row, .search-box, .export-btn, .smart-filter-bar, .sfb-result-count { display: none !important; }
   .alert-item { break-inside: avoid; }
+  .alert-dot { print-color-adjust: exact !important; }
   canvas { max-width: 100% !important; height: auto !important; }
+  .type-item { print-color-adjust: exact !important; }
+  .timeline-item { break-inside: avoid; }
+  .timeline { gap: 6px; }
 }
 
 /* ===== MOBILE: TABLET (≤768px) ===== */
@@ -2731,6 +2751,7 @@ function animateCounters() {
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
+  injectIcons();
   buildSmartCustomerFilters();
   populateInvoicesSmart();
   populateCustomersSmart();
@@ -2844,7 +2865,6 @@ function injectIcons() {
     chip.innerHTML = chip.innerHTML.replace('🟢 ','').replace('🟡 ','').replace('🔴 ','');
   });
 }
-document.addEventListener('DOMContentLoaded', injectIcons);
 </script>
 
 </body>
