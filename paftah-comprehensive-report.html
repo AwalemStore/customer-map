@@ -1738,8 +1738,11 @@ function switchTab(tabId) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tabId).classList.add('active');
   event.target.classList.add('active');
-  // Trigger chart resize
-  window.dispatchEvent(new Event('resize'));
+  setTimeout(() => {
+    Object.values(Chart.instances).forEach(c => {
+      if (c.canvas.closest('.tab-panel.active')) c.resize();
+    });
+  }, 50);
 }
 
 // ===== FORMAT NUMBER =====
