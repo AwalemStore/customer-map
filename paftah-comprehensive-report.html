@@ -720,6 +720,47 @@ body {
   .collapsible-header .ch-arrow { display: none; }
   .health-score-section { page-break-inside: avoid; }
 }
+.exec-dashboard { padding: 24px 24px 0; max-width: 1400px; margin: 0 auto; }
+.exec-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+.exec-kpi {
+  background: var(--card); border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow); position: relative; overflow: hidden;
+  transition: all 0.3s ease; border: 1px solid var(--border);
+}
+.exec-kpi:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.exec-kpi-title { font-size: 0.78rem; color: var(--text-secondary); font-weight: 500; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.exec-kpi-value { font-size: 1.6rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.exec-kpi-sub { font-size: 0.72rem; color: var(--text-secondary); line-height: 1.5; }
+.exec-signal-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.exec-signal-dot.red { background: #DC2626; box-shadow: 0 0 8px rgba(220,38,38,0.4); }
+.exec-signal-dot.yellow { background: #F59E0B; box-shadow: 0 0 8px rgba(245,158,11,0.4); }
+.exec-signal-dot.green { background: #059669; box-shadow: 0 0 8px rgba(5,150,105,0.4); }
+.exec-kpi::before {
+  content: ''; position: absolute; top: 0; right: 0; left: 0; height: 3px;
+  background: var(--primary-gradient);
+}
+.exec-bar {
+  background: var(--card); border-radius: var(--radius); padding: 16px 20px;
+  box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px;
+  border: 1px solid var(--border);
+}
+.exec-bar-track { flex: 1; height: 10px; background: #E8E5F0; border-radius: 5px; overflow: hidden; }
+.exec-bar-fill { height: 100%; background: linear-gradient(90deg, #DC2626, #EA580C); border-radius: 5px; width: 100%; }
+.exec-bar-label { font-size: 0.82rem; font-weight: 700; color: var(--danger); white-space: nowrap; }
+.exec-bar-icon { font-size: 1.2rem; }
+@media (max-width: 768px) {
+  .exec-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .exec-grid { grid-template-columns: 1fr; }
+  .exec-kpi-value { font-size: 1.3rem; }
+  .exec-dashboard { padding: 16px 10px 0; }
+}
+@media print {
+  .exec-dashboard { padding: 16px 0 0; }
+  .exec-kpi { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+  .exec-bar { box-shadow: none; border: 1px solid #ddd; }
+}
 </style>
 </head>
 <body>
@@ -771,6 +812,36 @@ body {
   </div>
   </div>
 </header>
+
+<div class="exec-dashboard">
+  <div class="exec-grid">
+    <div class="exec-kpi">
+      <div class="exec-kpi-title"><span class="exec-signal-dot red"></span> الإيرادات المحصلة</div>
+      <div class="exec-kpi-value">39,120 ر.س</div>
+      <div class="exec-kpi-sub">نسبة التحصيل 21.2% من إجمالي المبيعات</div>
+    </div>
+    <div class="exec-kpi">
+      <div class="exec-kpi-title"><span class="exec-signal-dot red"></span> صافي الدخل</div>
+      <div class="exec-kpi-value" style="color:var(--danger)">-17,770.77 ر.س</div>
+      <div class="exec-kpi-sub">خسارة صافية بعد المصروفات</div>
+    </div>
+    <div class="exec-kpi">
+      <div class="exec-kpi-title"><span class="exec-signal-dot red"></span> تركيز المخاطر</div>
+      <div class="exec-kpi-value">29.5%</div>
+      <div class="exec-kpi-sub">عميل واحد (أفرا) يمثل 29.5% من الديون</div>
+    </div>
+    <div class="exec-kpi">
+      <div class="exec-kpi-title"><span class="exec-signal-dot yellow"></span> اتجاه المبيعات</div>
+      <div class="exec-kpi-value" style="color:var(--warning)">-76.7%</div>
+      <div class="exec-kpi-sub">مارس كان الأقوى (74,854) | تراجع حاد</div>
+    </div>
+  </div>
+  <div class="exec-bar">
+    <span class="exec-bar-icon">⚠️</span>
+    <div class="exec-bar-track"><div class="exec-bar-fill"></div></div>
+    <span class="exec-bar-label">الحالة العامة: تحتاج تدخل عاجل</span>
+  </div>
+</div>
 
 <!-- HEALTH SCORE -->
 <div class="health-score-section no-print">
@@ -851,6 +922,9 @@ body {
     <button class="tab-btn" onclick="switchTab('activity')">سجل النشاطات</button>
     <button class="tab-btn" onclick="switchTab('monthly')">التحليل الشهري</button>
     <button class="export-btn" onclick="window.print()">🖨️ PDF</button>
+    <button class="export-btn" onclick="exportCSV('invoices')">📊 فواتير CSV</button>
+    <button class="export-btn" onclick="exportCSV('customers')">📊 عملاء CSV</button>
+    <button class="export-btn" onclick="exportCSV('monthly')">📊 شهري CSV</button>
   </nav>
 </div>
 
@@ -2721,6 +2795,37 @@ document.addEventListener('DOMContentLoaded', () => {
   initCharts();
   initMonthlyCharts();
 });
+
+function exportCSV(type) {
+  var csv = '\uFEFF';
+  var filename = '';
+  if (type === 'invoices') {
+    csv += 'التاريخ,رقم الفاتورة,النوع,المبلغ\n';
+    invoices.forEach(function(i) {
+      csv += i.date + ',' + i.num + ',' + (i.type === 'sale' ? 'بيع' : 'مرتجع') + ',' + i.amount + '\n';
+    });
+    filename = 'فواتير_بفته.csv';
+  } else if (type === 'customers') {
+    csv += 'العميل,النوع,الحي,الهاتف,المدفوع,المديونية\n';
+    PAFTAH_DATA.customers.forEach(function(c) {
+      csv += '"' + c.n + '","' + c.t + '","' + (c.district || '') + '","' + (c.ph || '') + '",' + c.p + ',' + c.db + '\n';
+    });
+    filename = 'عملاء_بفته.csv';
+  } else if (type === 'monthly') {
+    csv += 'الشهر,المبيعات,العمليات,الربح,صافي الدخل,الهامش%\n';
+    PAFTAH_DATA.monthly.forEach(function(m) {
+      csv += m.month + ',' + m.sales + ',' + m.ops + ',' + m.profit + ',' + m.netIncome + ',' + m.margin + '\n';
+    });
+    filename = 'تحليل_شهري_بفته.csv';
+  }
+  var blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 </script>
 
 </body>
