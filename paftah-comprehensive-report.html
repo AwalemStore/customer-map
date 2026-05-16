@@ -9,23 +9,24 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700;800&display=swap');
 :root {
-  --primary: #9982BB;
-  --primary-dark: #7B6499;
-  --primary-light: #F0EBF5;
-  --primary-gradient: linear-gradient(135deg, #7B6499, #9982BB, #BAAED0);
-  --accent: #D97706;
+  --primary: #333088;
+  --primary-dark: #252266;
+  --primary-light: #EEEDF7;
+  --primary-gradient: linear-gradient(135deg, #252266, #333088, #4A46A8);
+  --accent: #9982BB;
+  --accent-light: #F3F0F8;
   --success: #059669;
   --danger: #DC2626;
   --warning: #EA580C;
   --info: #2563EB;
-  --bg: #F8F7FC;
+  --bg: #F7F7FB;
   --card: #FFFFFF;
-  --text: #1E1B4B;
-  --text-secondary: #6B7280;
-  --border: #E8E5F0;
-  --shadow: 0 1px 3px rgba(75,29,135,0.04), 0 4px 20px rgba(75,29,135,0.06);
-  --shadow-lg: 0 4px 6px rgba(75,29,135,0.05), 0 16px 48px rgba(75,29,135,0.1);
-  --shadow-xl: 0 8px 12px rgba(75,29,135,0.06), 0 24px 64px rgba(75,29,135,0.14);
+  --text: #1A1840;
+  --text-secondary: #5C5C7A;
+  --border: #E0DFEB;
+  --shadow: 0 1px 3px rgba(51,48,136,0.04), 0 4px 20px rgba(51,48,136,0.06);
+  --shadow-lg: 0 4px 6px rgba(51,48,136,0.05), 0 16px 48px rgba(51,48,136,0.1);
+  --shadow-xl: 0 8px 12px rgba(51,48,136,0.06), 0 24px 64px rgba(51,48,136,0.14);
   --radius: 20px;
   --radius-sm: 12px;
   --radius-xs: 8px;
@@ -60,7 +61,7 @@ body {
   left: 0;
   right: 0;
   height: 100%;
-  background: linear-gradient(135deg, rgba(91,33,182,0.03) 0%, transparent 50%, rgba(91,33,182,0.02) 100%);
+  background: linear-gradient(135deg, rgba(51,48,136,0.03) 0%, transparent 50%, rgba(51,48,136,0.02) 100%);
   pointer-events: none;
 }
 .report-header::after {
@@ -71,7 +72,7 @@ body {
   transform: translateX(-50%);
   width: 400px;
   height: 160px;
-  background: radial-gradient(ellipse, rgba(91,33,182,0.04) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(51,48,136,0.04) 0%, transparent 70%);
   pointer-events: none;
 }
 @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
@@ -97,7 +98,7 @@ body {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--primary); color: white;
   padding: 10px 28px; border-radius: 100px; font-size: 0.82rem; font-weight: 600;
-  box-shadow: 0 4px 16px rgba(91,33,182,0.25);
+  box-shadow: 0 4px 16px rgba(51,48,136,0.25);
 }
 .header-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 0 24px; }
 .header-content { position: relative; z-index: 2; max-width: 1400px; margin: 0 auto; padding: 20px 24px 28px; }
@@ -108,7 +109,7 @@ body {
   border: 1px solid var(--border); border-top: 3px solid var(--primary);
   transition: all 0.3s ease;
 }
-.header-stat:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(91,33,182,0.08); }
+.header-stat:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(51,48,136,0.08); }
 .header-stat .label { font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
 .header-stat .value { font-size: 1.3rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
 .header-stat .sub { font-size: 0.68rem; color: var(--text-secondary); margin-top: 2px; }
@@ -136,7 +137,7 @@ body {
 .tab-btn:hover { color: var(--primary); background: var(--primary-light); }
 .tab-btn.active {
   background: var(--primary-gradient); color: white;
-  box-shadow: 0 4px 16px rgba(91,33,182,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+  box-shadow: 0 4px 16px rgba(51,48,136,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
 }
 
 /* ===== MAIN ===== */
@@ -166,11 +167,11 @@ body {
 }
 .card-title .icon {
   width: 40px; height: 40px;
-  background: linear-gradient(135deg, var(--primary-light), #DDD6FE);
+  background: linear-gradient(135deg, var(--accent-light), var(--accent));
   border-radius: var(--radius-xs);
   display: flex; align-items: center; justify-content: center;
   font-size: 1.15rem;
-  box-shadow: 0 2px 8px rgba(91,33,182,0.1);
+  box-shadow: 0 2px 8px rgba(51,48,136,0.1);
 }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
@@ -217,11 +218,11 @@ body {
 /* ===== TABLES ===== */
 .table-wrapper { overflow-x: auto; border-radius: var(--radius-sm); }
 .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.84rem; }
-.data-table thead { background: linear-gradient(135deg, var(--primary-light), #DDD6FE); }
+.data-table thead { background: linear-gradient(135deg, var(--primary-light), var(--accent-light)); }
 .data-table th {
   padding: 14px 18px; font-weight: 600; color: var(--primary-dark);
   text-align: right; white-space: nowrap;
-  border-bottom: 2px solid rgba(91,33,182,0.15);
+  border-bottom: 2px solid rgba(51,48,136,0.15);
   font-size: 0.8rem; letter-spacing: 0.02em;
 }
 .data-table th:first-child { border-radius: 0 var(--radius-xs) 0 0; }
@@ -246,7 +247,7 @@ body {
   transition: all 0.3s ease; margin-bottom: 18px;
   background: #FAFAFE;
 }
-.search-box:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(91,33,182,0.08); background: white; }
+.search-box:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(51,48,136,0.08); background: white; }
 
 /* ===== SMART FILTER BAR ===== */
 .smart-filter-bar {
@@ -266,7 +267,7 @@ body {
   font-family: inherit; font-size: 0.84rem;
   transition: all 0.3s ease; background: #FAFAFE;
 }
-.smart-filter-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(91,33,182,0.06); background: white; }
+.smart-filter-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(51,48,136,0.06); background: white; }
 .sfb-select {
   padding: 9px 14px; border: 1.5px solid var(--border); border-radius: 100px;
   font-family: inherit; font-size: 0.8rem; color: var(--text);
@@ -340,7 +341,7 @@ body {
   transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
 }
 .filter-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
-.filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 2px 10px rgba(91,33,182,0.3); }
+.filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 2px 10px rgba(51,48,136,0.3); }
 
 /* ===== PROGRESS BAR ===== */
 .progress-bar { height: 8px; background: #F0ECFA; border-radius: 100px; overflow: hidden; margin-top: 6px; }
@@ -348,7 +349,7 @@ body {
 
 /* ===== TAGS ===== */
 .tag { display: inline-block; padding: 4px 12px; border-radius: 100px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.02em; }
-.tag-purple { background: #F0EBF5; color: #9982BB; }
+.tag-purple { background: var(--accent-light); color: var(--accent); }
 .tag-green { background: #D1FAE5; color: #065F46; }
 .tag-red { background: #FEE2E2; color: #991B1B; }
 .tag-blue { background: #DBEAFE; color: #1E40AF; }
@@ -366,7 +367,7 @@ body {
   content: ''; position: absolute; right: -23px; top: 20px;
   width: 12px; height: 12px; background: var(--primary);
   border-radius: 50%; border: 3px solid var(--card);
-  box-shadow: 0 0 0 3px var(--primary-light), 0 2px 8px rgba(91,33,182,0.2);
+  box-shadow: 0 0 0 3px var(--primary-light), 0 2px 8px rgba(51,48,136,0.2);
 }
 .timeline-item .time { font-size: 0.73rem; color: var(--text-secondary); font-weight: 500; }
 .timeline-item .action { font-size: 0.88rem; font-weight: 500; }
@@ -412,7 +413,7 @@ body {
   text-align: center; padding: 32px 24px;
   font-size: 0.78rem; color: var(--text-secondary);
   border-top: 1px solid var(--border);
-  background: linear-gradient(to bottom, transparent, rgba(91,33,182,0.02));
+  background: linear-gradient(to bottom, transparent, rgba(51,48,136,0.02));
 }
 .report-footer .footer-logo { width: 32px; height: 32px; border-radius: 8px; margin-bottom: 8px; background: white; padding: 4px; }
 .report-footer p { margin: 2px 0; }
@@ -425,7 +426,7 @@ body {
   .no-print { display: none !important; }
   .tabs-nav { display: none !important; }
   .tab-panel { display: block !important; opacity: 1 !important; position: static !important; height: auto !important; overflow: visible !important; }
-  .report-header { padding: 20px 0 12px !important; border-bottom: 3px solid #5B21B6 !important; }
+  .report-header { padding: 20px 0 12px !important; border-bottom: 3px solid #333088 !important; }
   .header-main { padding: 10px 16px 8px !important; animation: none !important; }
   .header-logo { width: 70px; height: 70px; margin-bottom: 10px; animation: none !important; }
   .header-main h1 { font-size: 1.4rem; }
@@ -444,14 +445,14 @@ body {
   .grid-2, .grid-3, .grid-4 { break-inside: avoid; }
   .chart-container { height: 220px !important; break-inside: avoid; }
   .data-table { font-size: 0.72rem; break-inside: avoid; }
-  .data-table th { padding: 6px 8px !important; background: #f3f0ff !important; }
+  .data-table th { padding: 6px 8px !important; background: #EEEDF7 !important; }
   .data-table td { padding: 5px 8px !important; }
   .health-score-section { break-inside: avoid; }
   .collapsible-section { break-inside: avoid; }
   .collapsible-body { display: block !important; max-height: none !important; }
   .collapsible-toggle { display: none !important; }
   .collapsible-body { padding-top: 10px !important; }
-  .report-footer { padding: 16px 0 !important; border-top: 2px solid #5B21B6; margin-top: 20px; }
+  .report-footer { padding: 16px 0 !important; border-top: 2px solid #333088; margin-top: 20px; }
   .filter-row, .search-box, .export-btn { display: none !important; }
   .alert-item { break-inside: avoid; }
   canvas { max-width: 100% !important; height: auto !important; }
@@ -571,8 +572,8 @@ body {
 /* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #DDD6FE; border-radius: 100px; }
-::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+::-webkit-scrollbar-thumb { background: var(--accent-light); border-radius: 100px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
 /* ===== COLLAPSIBLE SECTIONS ===== */
 .collapsible-section {
@@ -1103,7 +1104,7 @@ body {
           <tr>
             <td>1</td>
             <td style="font-weight:600">بفته 250 جرام</td>
-            <td><code style="background:#F3F0FF;padding:2px 8px;border-radius:4px">281035000034</code></td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px">281035000034</code></td>
             <td><span class="tag tag-purple">بفتة</span></td>
             <td><strong>440</strong></td>
             <td>-</td>
@@ -1111,7 +1112,7 @@ body {
           <tr>
             <td>2</td>
             <td style="font-weight:600">كرتون بفتة 250 جرام</td>
-            <td><code style="background:#F3F0FF;padding:2px 8px;border-radius:4px">170234769886</code></td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px">170234769886</code></td>
             <td><span class="tag tag-purple">بفتة</span></td>
             <td><strong>11</strong></td>
             <td>-</td>
@@ -1119,7 +1120,7 @@ body {
           <tr>
             <td>3</td>
             <td style="font-weight:600">مسحوق غسيل 2.5 كيلو</td>
-            <td><code style="background:#F3F0FF;padding:2px 8px;border-radius:4px">135849020000</code></td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px">135849020000</code></td>
             <td><span class="tag tag-purple">بفتة</span></td>
             <td><strong>24</strong></td>
             <td>ليدر اجكس</td>
@@ -1127,7 +1128,7 @@ body {
           <tr>
             <td>4</td>
             <td style="font-weight:600">4-مسحوق غسيل 2.5 كيلو</td>
-            <td><code style="background:#F3F0FF;padding:2px 8px;border-radius:4px">136215939622</code></td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px">136215939622</code></td>
             <td><span class="tag tag-purple">بفتة</span></td>
             <td><strong>6</strong></td>
             <td>ليدر اجكس</td>
@@ -1135,7 +1136,7 @@ body {
           <tr>
             <td>5</td>
             <td style="font-weight:600">مسحوق غسيل ملابس 25 كيلو اتوماتيك</td>
-            <td><code style="background:#F3F0FF;padding:2px 8px;border-radius:4px">261175234969</code></td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px">261175234969</code></td>
             <td><span class="tag tag-purple">بفتة</span></td>
             <td><strong>290</strong></td>
             <td>-</td>
@@ -1143,7 +1144,7 @@ body {
           <tr>
             <td>6</td>
             <td style="font-weight:600">مسحوق غسيل بفتة 1 كيلو</td>
-            <td><code style="background:#F3F0FF;padding:2px 8px;border-radius:4px">184295086075</code></td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px">184295086075</code></td>
             <td><span class="tag tag-purple">بفتة</span></td>
             <td><strong>910</strong></td>
             <td>-</td>
@@ -1151,7 +1152,7 @@ body {
           <tr>
             <td>7</td>
             <td style="font-weight:600">10-مسحوق غسيل بفتة 1 كيلو (كرتون)</td>
-            <td><code style="background:#F3F0FF;padding:2px 8px;border-radius:4px">184521820853</code></td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px">184521820853</code></td>
             <td><span class="tag tag-purple">بفتة</span></td>
             <td><strong>91</strong></td>
             <td>-</td>
@@ -1897,7 +1898,7 @@ function populateInvoicesSmart() {
     html += '<tr class="' + (isReturn ? 'return-row' : '') + '">' +
       '<td>' + (i+1) + '</td>' +
       '<td>' + inv.date + '</td>' +
-      '<td><code style="background:#F3F0FF;padding:2px 8px;border-radius:4px">' + inv.num + '</code></td>' +
+      '<td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px">' + inv.num + '</code></td>' +
       '<td><span class="' + (isReturn ? 'status-return' : 'status-sale') + '">' + (isReturn ? 'مرتجع' : 'بيع') + '</span></td>' +
       '<td class="amount ' + (isReturn ? 'negative' : 'positive') + '">' + (isReturn ? '-' : '') + fmt(inv.amount) + '</td>' +
       '</tr>';
@@ -2018,8 +2019,8 @@ function getCustomerRisk(c) {
 const chartFont = { family: "'IBM Plex Sans Arabic', sans-serif" };
 const purpleGrad = (ctx) => {
   const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 400);
-  g.addColorStop(0, 'rgba(108,63,197,0.8)');
-  g.addColorStop(1, 'rgba(108,63,197,0.1)');
+  g.addColorStop(0, 'rgba(51,48,136,0.85)');
+  g.addColorStop(1, 'rgba(51,48,136,0.1)');
   return g;
 };
 const greenGrad = (ctx) => {
@@ -2055,7 +2056,7 @@ function initCharts() {
       datasets: [{
         label: 'صافي المبيعات اليومية',
         data: netData,
-        backgroundColor: netData.map(v => v >= 0 ? 'rgba(108,63,197,0.7)' : 'rgba(239,68,68,0.7)'),
+        backgroundColor: netData.map(v => v >= 0 ? 'rgba(51,48,136,0.75)' : 'rgba(239,68,68,0.7)'),
         borderRadius: 6,
         borderSkipped: false
       }]
@@ -2065,7 +2066,7 @@ function initCharts() {
       maintainAspectRatio: false,
       plugins: { legend: { display: false }, tooltip: { rtl: true, callbacks: { label: (c) => fmt(c.raw) + ' ر.س' } } },
       scales: {
-        y: { beginAtZero: true, grid: { color: '#F3F0FF' }, ticks: { callback: v => v.toLocaleString() } },
+        y: { beginAtZero: true, grid: { color: '#F3F0F8' }, ticks: { callback: v => v.toLocaleString() } },
         x: { grid: { display: false }, title: { display: true, text: 'يوم من مايو' } }
       }
     }
@@ -2078,7 +2079,7 @@ function initCharts() {
       labels: ['نقدي', 'آجل', 'بطاقة ائتمانية', 'رواء باي'],
       datasets: [{
         data: [29494.50, 144571.87, 50923.03, 1047],
-        backgroundColor: ['#6C3FC5', '#EF4444', '#10B981', '#F59E0B'],
+        backgroundColor: ['#333088', '#EF4444', '#10B981', '#F59E0B'],
         borderWidth: 3,
         borderColor: '#fff'
       }]
@@ -2099,14 +2100,14 @@ function initCharts() {
     data: {
       labels: ['المبيعات', 'عمليات البيع', 'إجمالي الربح', 'صافي الدخل'],
       datasets: [
-        { label: '2026 (يناير - مايو)', data: [184233.37, 731, 38580.03, -17770.77], backgroundColor: 'rgba(108,63,197,0.8)', borderColor: '#6C3FC5', borderWidth: 2 }
+        { label: '2026 (يناير - مايو)', data: [184233.37, 731, 38580.03, -17770.77], backgroundColor: 'rgba(51,48,136,0.85)', borderColor: '#333088', borderWidth: 2 }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: { legend: { position: 'top', rtl: true }, tooltip: { rtl: true, callbacks: { label: (c) => c.dataset.label + ': ' + fmt(c.raw) } } },
-      scales: { y: { beginAtZero: true, grid: { color: '#F3F0FF' } }, x: { grid: { display: false } } }
+      scales: { y: { beginAtZero: true, grid: { color: '#F3F0F8' } }, x: { grid: { display: false } } }
     }
   });
 
@@ -2119,12 +2120,12 @@ function initCharts() {
         {
           label: 'المبيعات',
           data: salesData,
-          borderColor: '#6C3FC5',
-          backgroundColor: 'rgba(108,63,197,0.1)',
+          borderColor: '#333088',
+          backgroundColor: 'rgba(51,48,136,0.1)',
           fill: true,
           tension: 0.4,
           pointRadius: 4,
-          pointBackgroundColor: '#6C3FC5'
+          pointBackgroundColor: '#333088'
         },
         {
           label: 'المرتجعات',
@@ -2143,7 +2144,7 @@ function initCharts() {
       maintainAspectRatio: false,
       plugins: { legend: { position: 'top', rtl: true }, tooltip: { rtl: true, callbacks: { label: (c) => c.dataset.label + ': ' + fmt(Math.abs(c.raw)) + ' ر.س' } } },
       scales: {
-        y: { grid: { color: '#F3F0FF' }, ticks: { callback: v => v.toLocaleString() } },
+        y: { grid: { color: '#F3F0F8' }, ticks: { callback: v => v.toLocaleString() } },
         x: { grid: { display: false }, title: { display: true, text: 'يوم من مايو' } }
       }
     }
@@ -2157,7 +2158,7 @@ function initCharts() {
       datasets: [{
         label: 'المبلغ (ر.س)',
         data: [29494.50, 144571.87, -50923.03, 1047],
-        backgroundColor: ['#6C3FC5', '#EF4444', '#10B981', '#F59E0B'],
+        backgroundColor: ['#333088', '#EF4444', '#10B981', '#F59E0B'],
         borderRadius: 8
       }]
     },
@@ -2166,7 +2167,7 @@ function initCharts() {
       maintainAspectRatio: false,
       indexAxis: 'y',
       plugins: { legend: { display: false }, tooltip: { rtl: true, callbacks: { label: (c) => fmt(c.raw) + ' ر.س' } } },
-      scales: { x: { grid: { color: '#F3F0FF' }, ticks: { callback: v => v.toLocaleString() } }, y: { grid: { display: false } } }
+      scales: { x: { grid: { color: '#F3F0F8' }, ticks: { callback: v => v.toLocaleString() } }, y: { grid: { display: false } } }
     }
   });
 
@@ -2177,7 +2178,7 @@ function initCharts() {
       labels: ['مسحوق غسيل بفتة 1 كيلو', 'بفته 250 جرام', 'مسحوق 25 كيلو', 'كرتون بفتة 1 كيلو', 'مسحوق 2.5 كيلو', 'كرتون بفتة 250 جم', '4-مسحوق 2.5 كيلو'],
       datasets: [{
         data: [910, 440, 290, 91, 24, 11, 6],
-        backgroundColor: ['#6C3FC5', '#3B82F6', '#10B981', '#F59E0B', '#F97316', '#EC4899', '#8B5CF6'],
+        backgroundColor: ['#333088', '#3B82F6', '#10B981', '#F59E0B', '#F97316', '#EC4899', '#8B5CF6'],
         borderWidth: 3,
         borderColor: '#fff'
       }]
@@ -2199,7 +2200,7 @@ function initCharts() {
       labels: ['ضريبة القيمة المضافة', 'الرواتب والرسوم الإدارية', 'الرسوم الحكومية', 'ايجار المستودع', 'مصاريف اخرى', 'اتصالات'],
       datasets: [{
         data: [13903.03, 3250, 2188.40, 900, 15, 288],
-        backgroundColor: ['#EF4444', '#6C3FC5', '#F59E0B', '#3B82F6', '#10B981', '#EC4899'],
+        backgroundColor: ['#EF4444', '#333088', '#F59E0B', '#3B82F6', '#10B981', '#EC4899'],
         borderWidth: 3,
         borderColor: '#fff'
       }]
@@ -2222,7 +2223,7 @@ function initCharts() {
       datasets: [{
         label: 'المبلغ (ر.س)',
         data: [13903.03, 3250, 2188.40, 900, 288, 15],
-        backgroundColor: ['rgba(239,68,68,0.8)', 'rgba(108,63,197,0.8)', 'rgba(245,158,11,0.8)', 'rgba(59,130,246,0.8)', 'rgba(236,72,153,0.8)', 'rgba(16,185,129,0.8)'],
+        backgroundColor: ['rgba(239,68,68,0.8)', 'rgba(51,48,136,0.85)', 'rgba(245,158,11,0.8)', 'rgba(59,130,246,0.8)', 'rgba(236,72,153,0.8)', 'rgba(16,185,129,0.8)'],
         borderRadius: 8
       }]
     },
@@ -2231,7 +2232,7 @@ function initCharts() {
       maintainAspectRatio: false,
       indexAxis: 'y',
       plugins: { legend: { display: false }, tooltip: { rtl: true, callbacks: { label: (c) => fmt(c.raw) + ' ر.س' } } },
-      scales: { x: { grid: { color: '#F3F0FF' }, ticks: { callback: v => v.toLocaleString() } }, y: { grid: { display: false } } }
+      scales: { x: { grid: { color: '#F3F0F8' }, ticks: { callback: v => v.toLocaleString() } }, y: { grid: { display: false } } }
     }
   });
 
@@ -2244,7 +2245,7 @@ function initCharts() {
         label: 'عدد العملاء',
         data: Object.values(PAFTAH_DATA.types),
         backgroundColor: [
-          'rgba(108,63,197,0.8)','rgba(59,130,246,0.8)','rgba(16,185,129,0.8)',
+          'rgba(51,48,136,0.85)','rgba(59,130,246,0.8)','rgba(16,185,129,0.8)',
           'rgba(245,158,11,0.8)','rgba(239,68,68,0.8)','rgba(236,72,153,0.8)',
           'rgba(139,92,246,0.8)','rgba(20,184,166,0.8)','rgba(249,115,22,0.8)'
         ],
@@ -2255,7 +2256,7 @@ function initCharts() {
       responsive: true,
       maintainAspectRatio: false,
       plugins: { legend: { display: false }, tooltip: { rtl: true } },
-      scales: { y: { beginAtZero: true, grid: { color: '#F3F0FF' } }, x: { grid: { display: false } } }
+      scales: { y: { beginAtZero: true, grid: { color: '#F3F0F8' } }, x: { grid: { display: false } } }
     }
   });
 
@@ -2320,8 +2321,8 @@ function initMonthlyCharts() {
         {
           label: 'المبيعات',
           data: salesArr,
-          backgroundColor: 'rgba(108,63,197,0.7)',
-          borderColor: '#6C3FC5',
+          backgroundColor: 'rgba(51,48,136,0.75)',
+          borderColor: '#333088',
           borderWidth: 2,
           borderRadius: 8,
           yAxisID: 'y',
@@ -2352,7 +2353,7 @@ function initMonthlyCharts() {
         tooltip: { rtl: true, callbacks: { label: function(c) { return c.dataset.label + ': ' + fmt(c.raw) + ' ر.س'; } } }
       },
       scales: {
-        y: { type: 'linear', position: 'right', beginAtZero: true, grid: { color: '#F3F0FF' }, ticks: { callback: function(v) { return (v/1000).toFixed(0) + 'K'; } }, title: { display: true, text: 'المبيعات (ر.س)' } },
+        y: { type: 'linear', position: 'right', beginAtZero: true, grid: { color: '#F3F0F8' }, ticks: { callback: function(v) { return (v/1000).toFixed(0) + 'K'; } }, title: { display: true, text: 'المبيعات (ر.س)' } },
         y1: { type: 'linear', position: 'left', beginAtZero: true, grid: { drawOnChartArea: false }, ticks: { callback: function(v) { return (v/1000).toFixed(0) + 'K'; } }, title: { display: true, text: 'الربح (ر.س)' } },
         x: { grid: { display: false } }
       }
@@ -2372,7 +2373,7 @@ function initMonthlyCharts() {
             return ctx.p1.parsed.y >= 0 ? '#10B981' : '#EF4444';
           }
         },
-        backgroundColor: 'rgba(91,33,182,0.05)',
+        backgroundColor: 'rgba(51,48,136,0.05)',
         fill: true,
         tension: 0.4,
         pointRadius: 6,
@@ -2390,7 +2391,7 @@ function initMonthlyCharts() {
         tooltip: { rtl: true, callbacks: { label: function(c) { return 'صافي الدخل: ' + fmt(c.raw) + ' ر.س'; } } }
       },
       scales: {
-        y: { grid: { color: '#F3F0FF' }, ticks: { callback: function(v) { return v.toLocaleString(); } } },
+        y: { grid: { color: '#F3F0F8' }, ticks: { callback: function(v) { return v.toLocaleString(); } } },
         x: { grid: { display: false } }
       }
     }
@@ -2402,7 +2403,7 @@ function initMonthlyCharts() {
       labels: labels,
       datasets: [
         { label: 'نقدي', data: md.map(function(m) { return m.payments.cash; }), backgroundColor: 'rgba(16,185,129,0.7)', borderRadius: 4 },
-        { label: 'آجل', data: md.map(function(m) { return m.payments.ajel; }), backgroundColor: 'rgba(108,63,197,0.7)', borderRadius: 4 },
+        { label: 'آجل', data: md.map(function(m) { return m.payments.ajel; }), backgroundColor: 'rgba(51,48,136,0.75)', borderRadius: 4 },
         { label: 'بطاقة', data: md.map(function(m) { return m.payments.card; }), backgroundColor: 'rgba(239,68,68,0.7)', borderRadius: 4 },
         { label: 'رواء باي', data: md.map(function(m) { return m.payments.rewaapay; }), backgroundColor: 'rgba(245,158,11,0.7)', borderRadius: 4 }
       ]
@@ -2415,7 +2416,7 @@ function initMonthlyCharts() {
         tooltip: { rtl: true, callbacks: { label: function(c) { return c.dataset.label + ': ' + fmt(c.raw) + ' ر.س'; } } }
       },
       scales: {
-        y: { grid: { color: '#F3F0FF' }, ticks: { callback: function(v) { return v.toLocaleString(); } } },
+        y: { grid: { color: '#F3F0F8' }, ticks: { callback: function(v) { return v.toLocaleString(); } } },
         x: { grid: { display: false } }
       }
     }
