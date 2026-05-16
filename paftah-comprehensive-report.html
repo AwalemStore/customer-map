@@ -35,6 +35,7 @@
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
 
 body {
   font-family: 'IBM Plex Sans Arabic', sans-serif;
@@ -43,7 +44,9 @@ body {
   line-height: 1.75;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  animation: pageLoad 0.6s ease-out;
 }
+@keyframes pageLoad { from { opacity: 0; } to { opacity: 1; } }
 
 /* ===== HEADER ===== */
 .report-header {
@@ -113,6 +116,7 @@ body {
 .header-stat .label { font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
 .header-stat .value { font-size: 1.3rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
 .header-stat .sub { font-size: 0.68rem; color: var(--text-secondary); margin-top: 2px; }
+.header-stat .value.negative { color: var(--danger); }
 
 /* ===== TABS ===== */
 .tabs-container {
@@ -236,7 +240,8 @@ body {
   transition: background 0.2s;
 }
 .data-table tbody tr { transition: background 0.2s; }
-.data-table tbody tr:hover { background: #FAF8FF; }
+.data-table tbody tr:nth-child(even) { background: #FAFAFE; }
+.data-table tbody tr:hover { background: #F5F0FF; }
 .data-table .amount { font-weight: 700; font-variant-numeric: tabular-nums; }
 .data-table .positive { color: var(--success); }
 .data-table .negative { color: var(--danger); }
@@ -721,6 +726,21 @@ body {
 .geo-legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: var(--text-secondary); }
 .geo-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
 
+/* ===== BACK TO TOP ===== */
+.back-to-top {
+  position: fixed; bottom: 28px; left: 28px; z-index: 999;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--primary-gradient); color: white;
+  border: none; cursor: pointer; box-shadow: 0 4px 20px rgba(51,48,136,0.35);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; visibility: hidden; transform: translateY(16px);
+  transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.back-to-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+.back-to-top:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(51,48,136,0.45); }
+.back-to-top svg { width: 22px; height: 22px; }
+@media print { .back-to-top { display: none !important; } }
+
 /* ===== ANIMATED COUNTER ===== */
 .kpi-value[data-counted] { /* marker */ }
 
@@ -819,7 +839,7 @@ body {
       </div>
       <div class="header-stat">
         <div class="label">صافي الدخل</div>
-        <div class="value" style="color:#FFCDD2">-17,770.77 ر.س</div>
+        <div class="value negative">-17,770.77 ر.س</div>
         <div class="sub">بعد المصروفات التشغيلية</div>
       </div>
       <div class="header-stat">
@@ -871,24 +891,24 @@ body {
 <div class="exec-dashboard no-print" style="padding-top:12px;margin-top:12px">
   <div class="collapsible-section">
     <div class="collapsible-header" onclick="toggleCollapsible(this)">
-      <div class="ch-title"><span class="ch-icon">🔔</span> تنبيهات ذكية</div>
+      <div class="ch-title"><span class="ch-icon" data-ico="warning"></span> تنبيهات ذكية</div>
       <span class="ch-arrow">▼</span>
     </div>
     <div class="collapsible-body">
       <div class="alert-item alert-red">
-        <span>🔴</span>
+        <span class="alert-dot red"></span>
         <span>عميل واحد (<strong>اسواق افرا العربية</strong>) عليه 42,700 ر.س = 29.5% من إجمالي المديونية</span>
       </div>
       <div class="alert-item alert-red">
-        <span>🔴</span>
+        <span class="alert-dot red"></span>
         <span>صافي الدخل بالسالب: <strong>-17,770.77 ر.س</strong></span>
       </div>
       <div class="alert-item alert-yellow">
-        <span>🟡</span>
+        <span class="alert-dot yellow"></span>
         <span>6 عملاء مديونيتهم 61,814 ر.س بدون أي سداد</span>
       </div>
       <div class="alert-item alert-yellow">
-        <span>🟡</span>
+        <span class="alert-dot yellow"></span>
         <span>نسبة التحصيل الكلية 21.3% (تحت المطلوب)</span>
       </div>
     </div>
@@ -905,10 +925,10 @@ body {
     <button class="tab-btn" onclick="switchTab('products')">المنتجات والمخزون</button>
     <button class="tab-btn" onclick="switchTab('expenses')">المصروفات</button>
     <button class="tab-btn" onclick="switchTab('activity')">سجل النشاطات</button>
-    <button class="export-btn" onclick="window.print()">🖨️ PDF</button>
-    <button class="export-btn" onclick="exportCSV('invoices')">📊 فواتير CSV</button>
-    <button class="export-btn" onclick="exportCSV('customers')">📊 عملاء CSV</button>
-    <button class="export-btn" onclick="exportCSV('monthly')">📊 شهري CSV</button>
+    <button class="export-btn" onclick="window.print()"><span data-ico="print"></span> PDF</button>
+    <button class="export-btn" onclick="exportCSV('invoices')"><span data-ico="document"></span> فواتير CSV</button>
+    <button class="export-btn" onclick="exportCSV('customers')"><span data-ico="users"></span> عملاء CSV</button>
+    <button class="export-btn" onclick="exportCSV('monthly')"><span data-ico="clipboard"></span> شهري CSV</button>
   </nav>
 </div>
 
@@ -1371,7 +1391,7 @@ body {
   <!-- CUSTOMER RISK CLASSIFICATION -->
   <div class="collapsible-section" style="margin-bottom:20px">
     <div class="collapsible-header" onclick="toggleCollapsible(this)">
-      <div class="ch-title"><span class="ch-icon">⚡</span> تحليل مخاطر العملاء</div>
+      <div class="ch-title"><span class="ch-icon" data-ico="bolt"></span> تحليل مخاطر العملاء</div>
       <span class="ch-arrow">▼</span>
     </div>
     <div class="collapsible-body">
@@ -1383,7 +1403,7 @@ body {
   <!-- AGING REPORT -->
   <div class="collapsible-section" style="margin-bottom:20px">
     <div class="collapsible-header" onclick="toggleCollapsible(this)">
-      <div class="ch-title"><span class="ch-icon">⏳</span> تقادم المديونية</div>
+      <div class="ch-title"><span class="ch-icon" data-ico="calendar"></span> تقادم المديونية</div>
       <span class="ch-arrow">▼</span>
     </div>
     <div class="collapsible-body">
@@ -1402,7 +1422,7 @@ body {
   <!-- GEOGRAPHIC MAP -->
   <div class="collapsible-section" style="margin-bottom:20px">
     <div class="collapsible-header" onclick="toggleCollapsible(this)">
-      <div class="ch-title"><span class="ch-icon">🗺️</span> خريطة توزيع العملاء</div>
+      <div class="ch-title"><span class="ch-icon" data-ico="buildings"></span> خريطة توزيع العملاء</div>
       <span class="ch-arrow">▼</span>
     </div>
     <div class="collapsible-body">
@@ -1425,10 +1445,10 @@ body {
       <select class="sfb-select" id="smartCustomerDistrict"></select>
       <select class="sfb-select" id="smartCustomerRisk">
         <option value="all">كل المخاطر</option>
-        <option value="risk-green">🟢 ممتاز</option>
-        <option value="risk-yellow">🟡 متوسط</option>
-        <option value="risk-red">🔴 خطر</option>
-        <option value="risk-black">⚫ متوقف</option>
+        <option value="risk-green">ممتاز</option>
+        <option value="risk-yellow">متوسط</option>
+        <option value="risk-red">خطر</option>
+        <option value="risk-black">متوقف</option>
       </select>
       <div class="sfb-range-group">
         <input type="number" class="sfb-range-input" id="smartCustomerMinDebt" placeholder="أقل دين">
@@ -1441,10 +1461,10 @@ body {
       <button class="sfb-clear" onclick="clearCustomerFilters()">مسح الفلاتر</button>
     </div>
     <div class="sfb-chips" id="customerRiskChips" style="margin-bottom:10px">
-      <span class="sfb-chip risk-green" onclick="toggleRiskChip('risk-green',this)">🟢 ممتاز</span>
-      <span class="sfb-chip risk-yellow" onclick="toggleRiskChip('risk-yellow',this)">🟡 متوسط</span>
-      <span class="sfb-chip risk-red" onclick="toggleRiskChip('risk-red',this)">🔴 خطر</span>
-      <span class="sfb-chip risk-black" onclick="toggleRiskChip('risk-black',this)">⚫ متوقف</span>
+      <span class="sfb-chip risk-green" onclick="toggleRiskChip('risk-green',this)">ممتاز</span>
+      <span class="sfb-chip risk-yellow" onclick="toggleRiskChip('risk-yellow',this)">متوسط</span>
+      <span class="sfb-chip risk-red" onclick="toggleRiskChip('risk-red',this)">خطر</span>
+      <span class="sfb-chip risk-black" onclick="toggleRiskChip('risk-black',this)">متوقف</span>
     </div>
     <div class="sfb-result-count" id="customerFilterCount"></div>
     <div class="table-wrapper" style="max-height:500px;overflow-y:auto">
@@ -1596,7 +1616,7 @@ body {
 
   <div class="collapsible-section" style="margin-bottom:20px">
     <div class="collapsible-header" onclick="toggleCollapsible(this)">
-      <div class="ch-title"><span class="ch-icon">💳</span> طرق الدفع الشهرية</div>
+      <div class="ch-title"><span class="ch-icon" data-ico="payment"></span> طرق الدفع الشهرية</div>
       <span class="ch-arrow">▼</span>
     </div>
     <div class="collapsible-body">
@@ -1614,7 +1634,7 @@ body {
 
   <div class="collapsible-section" style="margin-bottom:20px">
     <div class="collapsible-header" onclick="toggleCollapsible(this)">
-      <div class="ch-title"><span class="ch-icon">💡</span> رؤى وتحليلات رئيسية</div>
+      <div class="ch-title"><span class="ch-icon" data-ico="lightbulb"></span> رؤى وتحليلات رئيسية</div>
       <span class="ch-arrow">▼</span>
     </div>
     <div class="collapsible-body">
@@ -1624,7 +1644,7 @@ body {
 
   <div class="collapsible-section" style="margin-bottom:20px">
     <div class="collapsible-header" onclick="toggleCollapsible(this)">
-      <div class="ch-title"><span class="ch-icon">🎯</span> التوصيات والخطوات المطلوبة</div>
+      <div class="ch-title"><span class="ch-icon" data-ico="target"></span> التوصيات والخطوات المطلوبة</div>
       <span class="ch-arrow">▼</span>
     </div>
     <div class="collapsible-body">
@@ -1643,6 +1663,10 @@ body {
   <p>جميع البيانات من منصة رواء | يناير - مايو 2026</p>
   <p style="margin-top:4px;font-size:0.7rem;color:var(--text-secondary)">تم إنشاء هذا التقرير تلقائياً - جميع الأرقام من منصة رواء</p>
 </div>
+
+<button class="back-to-top no-print" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="العودة للأعلى">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
 
 <script>
 const ICO = {
@@ -2381,16 +2405,17 @@ function buildMonthlyPaymentsTable() {
 
 function buildMonthlyInsights() {
   var insights = [
-    { type: 'alert-yellow', icon: '💡', text: '<strong>أفضل شهر:</strong> مارس (74,854 ر.س - 40.6% من الإجمالي) - أعلى مبيعات رغم أقل عدد عمليات' },
-    { type: 'alert-yellow', icon: '💡', text: '<strong>أسوأ شهر:</strong> مايو (7,712 ر.س) - لكنه 17 يوم فقط من الشهر' },
-    { type: 'alert-yellow', icon: '💡', text: '<strong>الشهر الوحيد المربح</strong> (صافي دخل إيجابي): فبراير (+5,358 ر.س)' },
-    { type: 'alert-yellow', icon: '💡', text: '<strong>متوسط قيمة الفاتورة:</strong> يناير 124.19 | فبراير 191.74 | مارس 571.40 | أبريل 268.46 | مايو 171.38 ر.س' },
-    { type: 'alert-yellow', icon: '💡', text: '<strong>أعلى هامش ربح:</strong> فبراير 23.8% | <strong>أدنى هامش ربح:</strong> أبريل 17.9%' },
-    { type: 'alert-yellow', icon: '💡', text: '<strong>تنبؤ مايو الكامل:</strong> 7,712 ÷ 17 × 31 = ~14,080 ر.س (إذا استمر المعدل)' }
+    { type: 'alert-yellow', icon: 'lightbulb', text: '<strong>أفضل شهر:</strong> مارس (74,854 ر.س - 40.6% من الإجمالي) - أعلى مبيعات رغم أقل عدد عمليات' },
+    { type: 'alert-yellow', icon: 'lightbulb', text: '<strong>أسوأ شهر:</strong> مايو (7,712 ر.س) - لكنه 17 يوم فقط من الشهر' },
+    { type: 'alert-yellow', icon: 'lightbulb', text: '<strong>الشهر الوحيد المربح</strong> (صافي دخل إيجابي): فبراير (+5,358 ر.س)' },
+    { type: 'alert-yellow', icon: 'lightbulb', text: '<strong>متوسط قيمة الفاتورة:</strong> يناير 124.19 | فبراير 191.74 | مارس 571.40 | أبريل 268.46 | مايو 171.38 ر.س' },
+    { type: 'alert-yellow', icon: 'lightbulb', text: '<strong>أعلى هامش ربح:</strong> فبراير 23.8% | <strong>أدنى هامش ربح:</strong> أبريل 17.9%' },
+    { type: 'alert-yellow', icon: 'lightbulb', text: '<strong>تنبؤ مايو الكامل:</strong> 7,712 ÷ 17 × 31 = ~14,080 ر.س (إذا استمر المعدل)' }
   ];
   var html = '';
   insights.forEach(function(i) {
-    html += '<div class="alert-item ' + i.type + '"><span>' + i.icon + '</span><span>' + i.text + '</span></div>';
+    var icoSvg = ICO[i.icon] || '';
+    html += '<div class="alert-item ' + i.type + '">' + (icoSvg ? '<span style="width:18px;height:18px;display:inline-flex;flex-shrink:0;color:var(--warning)">' + icoSvg + '</span>' : '') + '<span>' + i.text + '</span></div>';
   });
   document.getElementById('monthlyInsights').innerHTML = html;
 }
@@ -2419,16 +2444,16 @@ function buildTop10Customers() {
 
 function buildMonthlyRecommendations() {
   var recs = [
-    { type: 'alert-red', icon: '1️⃣', text: '<strong>التركيز على تحصيل الديون:</strong> 144,572 ر.س = 78.5% من المبيعات غير محصلة - أولوية قصوى' },
-    { type: 'alert-red', icon: '2️⃣', text: '<strong>خطر التركيز العالي:</strong> أسواق افرا العربية تشكل 29.5% من إجمالي المديونية - يجب تنويع قاعدة العملاء' },
-    { type: 'alert-yellow', icon: '3️⃣', text: '<strong>استهداف العملاء الكبار:</strong> مارس حقق أعلى مبيعات رغم أقل عدد عمليات - ركز على العملاء ذوي القيمة العالية' },
-    { type: 'alert-red', icon: '4️⃣', text: '<strong>تقليص المصروفات:</strong> صافي الدخل سلبي في 4 من 5 أشهر - مراجعة المصروفات التشغيلية ضرورية' },
-    { type: 'alert-yellow', icon: '5️⃣', text: '<strong>تنويع قنوات التحصيل:</strong> 75% من المبيعات آجل - تشجيع الدفع النقدي والإلكتروني' },
-    { type: 'alert-yellow', icon: '6️⃣', text: '<strong>مراجعة سياسة البطاقات الائتمانية:</strong> مبالغ سالبة في كل شهر - التحقق من الأسباب ومعالجتها' }
+    { type: 'alert-red', icon: '1', text: '<strong>التركيز على تحصيل الديون:</strong> 144,572 ر.س = 78.5% من المبيعات غير محصلة - أولوية قصوى' },
+    { type: 'alert-red', icon: '2', text: '<strong>خطر التركيز العالي:</strong> أسواق افرا العربية تشكل 29.5% من إجمالي المديونية - يجب تنويع قاعدة العملاء' },
+    { type: 'alert-yellow', icon: '3', text: '<strong>استهداف العملاء الكبار:</strong> مارس حقق أعلى مبيعات رغم أقل عدد عمليات - ركز على العملاء ذوي القيمة العالية' },
+    { type: 'alert-red', icon: '4', text: '<strong>تقليص المصروفات:</strong> صافي الدخل سلبي في 4 من 5 أشهر - مراجعة المصروفات التشغيلية ضرورية' },
+    { type: 'alert-yellow', icon: '5', text: '<strong>تنويع قنوات التحصيل:</strong> 75% من المبيعات آجل - تشجيع الدفع النقدي والإلكتروني' },
+    { type: 'alert-yellow', icon: '6', text: '<strong>مراجعة سياسة البطاقات الائتمانية:</strong> مبالغ سالبة في كل شهر - التحقق من الأسباب ومعالجتها' }
   ];
   var html = '';
-  recs.forEach(function(r) {
-    html += '<div class="alert-item ' + r.type + '"><span>' + r.icon + '</span><span>' + r.text + '</span></div>';
+  recs.forEach(function(r, idx) {
+    html += '<div class="alert-item ' + r.type + '"><span style="width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;background:' + (r.type === 'alert-red' ? '#FEE2E2' : '#FEF3C7') + ';color:' + (r.type === 'alert-red' ? 'var(--danger)' : 'var(--warning)') + ';border-radius:50%;font-size:0.72rem;font-weight:800;flex-shrink:0">' + r.icon + '</span><span>' + r.text + '</span></div>';
   });
   document.getElementById('monthlyRecommendations').innerHTML = html;
 }
@@ -2602,6 +2627,11 @@ document.addEventListener('DOMContentLoaded', () => {
   buildRiskGrid();
   buildAgingReport();
   buildGeoMap();
+
+  var btt = document.querySelector('.back-to-top');
+  window.addEventListener('scroll', function() {
+    btt.classList.toggle('visible', window.scrollY > 400);
+  });
 });
 
 function exportCSV(type) {
