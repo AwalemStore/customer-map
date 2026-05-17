@@ -212,8 +212,18 @@ function buildInvoiceArray(apiInvoices) {
 }
 
 function updateHtmlReport(paftahData, invoiceArray, monthlyStats, dailyCharts, inventoryValue) {
-  const htmlPath = join(REPO_ROOT, 'paftah-comprehensive-report.html');
+  const htmlPath = join(REPO_ROOT, 'index.html');
   let html = readFileSync(htmlPath, 'utf-8');
+
+  // Update LAST_UPDATED
+  const now = new Date();
+  const offset = 3 * 60;
+  const local = new Date(now.getTime() + offset * 60 * 1000);
+  const ts = local.toISOString().replace('Z', '+03:00');
+  html = html.replace(
+    /const LAST_UPDATED = "[^"]*"/,
+    `const LAST_UPDATED = "${ts}"`
+  );
 
   // Replace PAFTAH_DATA
   const dataStart = html.indexOf('const PAFTAH_DATA = ');
