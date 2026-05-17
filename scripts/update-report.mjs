@@ -212,7 +212,7 @@ function buildInvoiceArray(apiInvoices) {
 }
 
 function updateHtmlReport(paftahData, invoiceArray, monthlyStats, dailyCharts, inventoryValue) {
-  const htmlPath = join(REPO_ROOT, 'index.html');
+  const htmlPath = join(REPO_ROOT, 'paftah-comprehensive-report.html');
   let html = readFileSync(htmlPath, 'utf-8');
 
   // Update LAST_UPDATED

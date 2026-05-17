@@ -27,14 +27,14 @@ jobs:
       - name: Check for changes
         id: git-check
         run: |
-          git diff --quiet index.html || echo "changed=true" >> $GITHUB_OUTPUT
+          git diff --quiet paftah-comprehensive-report.html || echo "changed=true" >> $GITHUB_OUTPUT
 
       - name: Commit and push if changed
         if: steps.git-check.outputs.changed == 'true'
         run: |
           git config user.name "Paftah Bot"
           git config user.email "bot@paftah.com"
-          git add index.html
+          git add paftah-comprehensive-report.html
           TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
           git commit -m "auto: update report - ${TIMESTAMP}"
           git push
