@@ -1,0 +1,54 @@
+name: Update Paftah Report
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      force_update:
+        description: 'Force update regardless of changes'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Update report from Rewaa API
+        env:
+          REWAA_EMAIL: info@paftah.com
+          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
+        run: node scripts/update-report.mjs
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --quiet paftah-comprehensive-report.html || echo "changed=true" >> $GITHUB_OUTPUT
+          git diff --quiet data/raw-api-data.json || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push if changed
+        if: steps.git-check.outputs.changed == 'true' || github.event.inputs.force_update == 'true'
+        run: |
+          git config user.name "Paftah Bot"
+          git config user.email "bot@paftah.com"
+          git add paftah-comprehensive-report.html data/raw-api-data.json
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
+          git commit -m "auto: update report - ${TIMESTAMP}"
+          git push
+
+      - name: Deploy to GitHub Pages
+        if: steps.git-check.outputs.changed == 'true' || github.event.inputs.force_update == 'true'
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages
