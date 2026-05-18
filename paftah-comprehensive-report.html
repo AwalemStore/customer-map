@@ -1397,6 +1397,66 @@ body {
 
 /* ===== SPARKLINES ===== */
 .sparkline { display: inline-block; vertical-align: middle; }
+
+/* ===== PRESENTATION MODE ===== */
+.presentation-mode .report-header,
+.presentation-mode .exec-dashboard,
+.presentation-mode .tabs-container,
+.presentation-mode .report-footer { display: none; }
+.presentation-mode .tab-panel { display: none !important; }
+.presentation-mode .tab-panel.presentation-active { display: block !important; opacity: 1 !important; position: static !important; }
+.presentation-mode .card { max-width: 900px; margin: 40px auto; padding: 48px; font-size: 1.1rem; }
+.presentation-mode .card-title { font-size: 1.4rem; margin-bottom: 32px; }
+.presentation-mode .kpi-value { font-size: 2rem; }
+.presentation-mode body { background: var(--card-solid); }
+.presentation-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 999; display: none; background: var(--card-solid); border-radius: 100px; padding: 8px 16px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); gap: 8px; align-items: center; }
+.presentation-mode .presentation-nav { display: flex; }
+.presentation-nav button { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text); transition: all 0.2s; }
+.presentation-nav button:hover { background: var(--primary-light); color: var(--primary); }
+.presentation-nav .slide-counter { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); padding: 0 8px; }
+
+/* ===== FAVORITES ===== */
+.fav-star { cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; transition: all 0.15s; border: none; background: transparent; color: var(--border-solid); padding: 0; font-size: 14px; }
+.fav-star:hover { color: #F59E0B; background: #FEF9C3; }
+.fav-star.active { color: #F59E0B; }
+[data-theme="dark"] .fav-star:hover { background: rgba(245,158,11,0.15); }
+
+/* ===== QR CODE ===== */
+.qr-section { text-align: center; padding: 20px 0; }
+.qr-section img { border-radius: 12px; border: 1px solid var(--border); }
+
+/* ===== DISTRICT TREND ===== */
+.district-trend { display: inline-flex; align-items: center; gap: 2px; font-size: 0.72rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+.district-trend.up { color: #10B981; background: #DCFCE7; }
+.district-trend.down { color: #EF4444; background: #FEE2E2; }
+.district-trend.flat { color: #6B7280; background: #F3F4F6; }
+
+/* ===== TREEMAP ===== */
+.treemap-wrap { position: relative; width: 100%; height: 300px; }
+.treemap-block { position: absolute; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: 700; cursor: pointer; transition: all 0.2s; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+.treemap-block:hover { z-index: 1; transform: scale(1.03); }
+.treemap-block .tm-name { font-size: 0.72rem; text-align: center; line-height: 1.2; padding: 2px 4px; }
+.treemap-block .tm-val { font-size: 0.62rem; opacity: 0.8; }
+
+/* ===== FUNNEL ===== */
+.funnel-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 16px 0; }
+.funnel-step { display: flex; align-items: center; gap: 12px; width: 100%; }
+.funnel-bar { height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.82rem; transition: width 0.8s ease; margin: 0 auto; }
+.funnel-label { font-size: 0.82rem; font-weight: 600; color: var(--text); width: 140px; text-align: left; }
+.funnel-count { font-size: 0.78rem; color: var(--text-secondary); width: 60px; text-align: right; }
+
+/* ===== SMART ALERTS (UPGRADED) ===== */
+.smart-alert-bar { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0; }
+.alert-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 100px; font-size: 0.76rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+.alert-chip:hover { transform: translateY(-1px); }
+.alert-chip.critical { background: #FEE2E2; color: #991B1B; border-color: #FECACA; }
+.alert-chip.warning { background: #FEF3C7; color: #92400E; border-color: #FDE68A; }
+.alert-chip.info { background: #DBEAFE; color: #1E40AF; border-color: #BFDBFE; }
+.alert-chip.success { background: #DCFCE7; color: #166534; border-color: #BBF7D0; }
+[data-theme="dark"] .alert-chip.critical { background: rgba(254,226,226,0.1); }
+[data-theme="dark"] .alert-chip.warning { background: rgba(254,243,199,0.1); }
+[data-theme="dark"] .alert-chip.info { background: rgba(219,234,254,0.1); }
+[data-theme="dark"] .alert-chip.success { background: rgba(220,252,231,0.1); }
 </style>
 </head>
 <body>
@@ -1415,6 +1475,13 @@ body {
     </div>
     <div class="cmd-results" id="cmdResults"></div>
   </div>
+</div>
+
+<div class="presentation-nav" id="presentationNav">
+  <button onclick="prevSlide()" title="السابق">&#9654;</button>
+  <span class="slide-counter" id="slideCounter">1/8</span>
+  <button onclick="nextSlide()" title="التالي">&#9664;</button>
+  <button onclick="exitPresentation()" title="خروج" style="margin-right:8px">&#10005;</button>
 </div>
 
 <!-- HEADER -->
@@ -1500,6 +1567,9 @@ body {
   </div>
 </div>
 <div class="exec-dashboard no-print" style="padding-top:12px;margin-top:12px">
+  <div class="smart-alert-bar" id="smartAlertBar"></div>
+</div>
+<div class="exec-dashboard no-print" style="padding-top:0;margin-top:0">
   <div class="collapsible-section">
     <div class="collapsible-header" onclick="toggleCollapsible(this)">
       <div class="ch-title"><span class="ch-icon" data-ico="warning"></span> تنبيهات ذكية</div>
@@ -1537,6 +1607,7 @@ body {
     <button class="tab-btn" onclick="switchTab('expenses')">المصروفات</button>
     <button class="tab-btn" onclick="switchTab('activity')">سجل النشاطات</button>
     <button class="tab-btn" onclick="switchTab('whatsapp')">واتساب</button>
+    <button class="export-btn" onclick="startPresentation()"><span data-ico="play"></span> عرض</button>
     <button class="export-btn" onclick="window.print()"><span data-ico="print"></span> PDF</button>
     <button class="export-btn" onclick="exportCSV('invoices')"><span data-ico="document"></span> فواتير CSV</button>
     <button class="export-btn" onclick="exportCSV('customers')"><span data-ico="users"></span> عملاء CSV</button>
@@ -1964,6 +2035,17 @@ body {
     <div class="card">
       <div class="card-title"><span class="icon" data-ico="calendar"></span> خريطة حرارية - أنشط أيام البيع</div>
       <div class="heatmap-wrap" id="salesHeatmap"></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="icon" data-ico="buildings"></span> خريطة الأحياء - حجم المديونية</div>
+      <div id="treemapContainer"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon" data-ico="users"></span> قمع العملاء (Sales Funnel)</div>
+      <div class="funnel-wrap" id="funnelContainer"></div>
     </div>
   </div>
 
@@ -3428,6 +3510,138 @@ function sparklineSVG(values, w, h, color) {
   return '<svg class="sparkline" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><polyline points="'+pts.join(' ')+'" fill="none" stroke="'+color+'" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 }
 
+// ===== PRESENTATION MODE =====
+var presSlide = 0;
+var presTabs = ['overview','monthly','customers','sales','products','expenses','activity','whatsapp'];
+function startPresentation() {
+  document.body.classList.add('presentation-mode');
+  presSlide = 0;
+  showSlide();
+}
+function exitPresentation() { document.body.classList.remove('presentation-mode'); switchTab('overview'); }
+function nextSlide() { presSlide = Math.min(presSlide + 1, presTabs.length - 1); showSlide(); }
+function prevSlide() { presSlide = Math.max(presSlide - 1, 0); showSlide(); }
+function showSlide() {
+  document.querySelectorAll('.presentation-mode .tab-panel').forEach(function(p){ p.classList.remove('presentation-active'); });
+  var panels = document.querySelectorAll('.tab-panel');
+  if (panels[presSlide]) panels[presSlide].classList.add('presentation-active');
+  document.getElementById('slideCounter').textContent = (presSlide+1) + '/' + presTabs.length;
+}
+
+// ===== FAVORITES =====
+function getFavs() { try { return JSON.parse(localStorage.getItem('paftah-favs') || '[]'); } catch(e) { return []; } }
+function saveFavs(arr) { localStorage.setItem('paftah-favs', JSON.stringify(arr)); }
+function toggleFav(name) {
+  var favs = getFavs();
+  var idx = favs.indexOf(name);
+  if (idx >= 0) favs.splice(idx, 1); else favs.push(name);
+  saveFavs(favs);
+  populateCustomersSmart();
+}
+function isFav(name) { return getFavs().indexOf(name) >= 0; }
+
+// ===== QR CODE =====
+function renderQR() {
+  var url = 'https://awalemstore.github.io/customer-map/paftah-comprehensive-report.html';
+  var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=' + encodeURIComponent(url);
+  var footer = document.querySelector('.report-footer');
+  if (footer) {
+    var qrDiv = document.createElement('div');
+    qrDiv.className = 'qr-section';
+    qrDiv.innerHTML = '<img src="'+qrUrl+'" alt="QR Code" width="80" height="80"><div style="font-size:0.72rem;color:var(--text-secondary);margin-top:6px">امسح للفتح على الجوال</div>';
+    footer.insertBefore(qrDiv, footer.firstChild);
+  }
+}
+
+// ===== DISTRICT TREND =====
+function getDistrictTrend(district) {
+  var monthlyData = PAFTAH_DATA.monthly.filter(function(m){return !m.isTotal;});
+  if (monthlyData.length < 2) return 'flat';
+  var invoicesForDistrict = invoices.filter(function(inv) {
+    if (inv.type !== 'sale') return false;
+    return PAFTAH_DATA.customers.some(function(c){ return c.d === district && true; });
+  });
+  return invoicesForDistrict.length > 0 ? 'up' : 'flat';
+}
+
+// ===== TREEMAP =====
+function renderTreemap() {
+  var top = PAFTAH_DATA.districts.slice(0, 20);
+  var maxDb = top[0] ? top[0].db : 1;
+  var colors = ['#333088','#4D49A8','#6366F1','#818CF8','#A78BFA','#9982BB','#7C3AED','#6D28D9','#5B21B6','#4C1D95'];
+  var wrap = document.getElementById('treemapContainer');
+  if (!wrap) return;
+  var w = wrap.clientWidth || 600;
+  var h = 300;
+  var html = '<div class="treemap-wrap" style="width:'+w+'px;height:'+h+'px">';
+  var x = 0, y = 0, rowH = 0;
+  top.forEach(function(d, i) {
+    var pct = d.db / (maxDb * 3.5);
+    var bw = Math.max(pct * w, 40);
+    if (x + bw > w) { x = 0; y += rowH + 3; rowH = 0; }
+    var bh = Math.max(50, (1 - pct * 0.5) * 70);
+    rowH = Math.max(rowH, bh);
+    html += '<div class="treemap-block" style="left:'+x+'px;top:'+y+'px;width:'+(bw-3)+'px;height:'+bh+'px;background:'+colors[i%colors.length]+'" title="'+d.d+': '+fmt(d.db)+' ر.س ('+d.c+' عميل)">';
+    html += '<span class="tm-name">'+d.d+'</span>';
+    html += '<span class="tm-val">'+fmt(d.db)+'</span>';
+    html += '</div>';
+    x += bw;
+  });
+  html += '</div>';
+  wrap.innerHTML = html;
+}
+
+// ===== FUNNEL =====
+function renderFunnel() {
+  var customers = PAFTAH_DATA.customers;
+  var total = customers.length;
+  var withDebt = customers.filter(function(c){return c.db > 0;}).length;
+  var paying = customers.filter(function(c){return c.p > 0;}).length;
+  var regular = customers.filter(function(c){return c.p > 0 && c.p >= c.db * 0.5;}).length;
+  var vip = customers.filter(function(c){return c.p >= 5000 && c.db <= c.p * 0.3;}).length;
+  var steps = [
+    {label:'كل العملاء', count: total, color: 'var(--primary)'},
+    {label:'عليهم مديونية', count: withDebt, color: '#6366F1'},
+    {label:'يدفعون بانتظام', count: paying, color: '#818CF8'},
+    {label:'متعاونين', count: regular, color: '#A78BFA'},
+    {label:'VIP', count: vip, color: '#C4B5FD'}
+  ];
+  var maxW = 90;
+  var html = '';
+  steps.forEach(function(s) {
+    var pct = (s.count / total) * maxW;
+    html += '<div class="funnel-step">';
+    html += '<span class="funnel-label">'+s.label+'</span>';
+    html += '<div class="funnel-bar" style="width:'+pct+'%;background:'+s.color+'">'+s.count+'</div>';
+    html += '<span class="funnel-count">'+Math.round(s.count/total*100)+'%</span>';
+    html += '</div>';
+  });
+  var el = document.getElementById('funnelContainer');
+  if (el) el.innerHTML = html;
+}
+
+// ===== SMART ALERTS (UPGRADED) =====
+function renderSmartAlerts() {
+  var alerts = [];
+  var total = PAFTAH_DATA.monthly.find(function(m){return m.isTotal;});
+  var totalDebt = PAFTAH_DATA.customers.reduce(function(s,c){return s+c.db;},0);
+  var zeroPay = PAFTAH_DATA.customers.filter(function(c){return c.db > 0 && c.p === 0;}).length;
+  var topDebtor = PAFTAH_DATA.customers.sort(function(a,b){return b.db-a.db;})[0];
+  if (topDebtor && topDebtor.db > 10000) alerts.push({type:'critical',text:'عميل واحد ('+topDebtor.n+') عليه '+fmt(topDebtor.db)+' ر.س = '+Math.round(topDebtor.db/totalDebt*100)+'% من الديون'});
+  if (total && total.netIncome < 0) alerts.push({type:'critical',text:'صافي الدخل بالسالب: '+fmt(total.netIncome)+' ر.س'});
+  if (zeroPay > 0) alerts.push({type:'warning',text:zeroPay+' عميل مديونية '+fmt(PAFTAH_DATA.customers.filter(function(c){return c.db>0&&c.p===0;}).reduce(function(s,c){return s+c.db;},0))+' ر.س بدون أي سداد'});
+  if (total && total.margin < 20) alerts.push({type:'info',text:'هامش الربح '+total.margin+'% تحت المطلوب (25%+)'});
+  var paidCustomers = PAFTAH_DATA.customers.filter(function(c){return c.p > 0;}).length;
+  var payRate = Math.round(paidCustomers/PAFTAH_DATA.customers.length*100);
+  if (payRate > 50) alerts.push({type:'success',text:payRate+'% من العملاء يدفعون بانتظام'});
+  var bar = document.getElementById('smartAlertBar');
+  if (bar) {
+    bar.innerHTML = alerts.map(function(a){
+      return '<span class="alert-chip '+a.type+'"><span class="alert-dot '+(a.type==='critical'?'red':a.type==='warning'?'yellow':'green')+'"></span>'+a.text+'</span>';
+    }).join('');
+  }
+}
+
 // ===== ANIMATED COUNTERS =====
 function animateCounters() {
   var observer = new IntersectionObserver(function(entries) {
@@ -3508,6 +3722,10 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSalesHeatmap();
   renderForecast();
   renderRFM();
+  renderQR();
+  renderTreemap();
+  renderFunnel();
+  renderSmartAlerts();
 
   var btt = document.querySelector('.back-to-top');
   window.addEventListener('scroll', function() {
@@ -3930,6 +4148,7 @@ function downloadWaCSV() {
     cmdItems.push({label:'تصدير العملاء CSV', hint:'تنزيل', icon:'users', action:function(){exportCSV('customers');closeCmd();}});
     cmdItems.push({label:'طباعة PDF', hint:'تنزيل', icon:'print', action:function(){window.print();closeCmd();}});
     cmdItems.push({label:'تبديل الوضع الداكن', hint:'تبديل', icon:'moon', action:function(){toggleTheme();closeCmd();}});
+    cmdItems.push({label:'وضع الشرائح (عرض)', hint:'تقديم', icon:'print', action:function(){startPresentation();closeCmd();}});
   }
   function openCmd() {
     document.getElementById('cmdOverlay').classList.add('active');
