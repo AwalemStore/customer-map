@@ -1212,7 +1212,7 @@ body {
     <div class="header-main">
       <img src="https://awalemstore.github.io/customer-map/paftah-logo.png" alt="بفتة" class="header-logo" onerror="this.style.display='none'">
       <h1>بفتة - التقرير الشامل</h1>
-      <p class="subtitle">جميع البيانات من منصة رواء | من 1 يناير إلى 17 مايو 2026</p>
+      <p class="subtitle" id="subtitleDates">جميع البيانات من منصة رواء | من 1 يناير إلى 17 مايو 2026</p>
       <div class="update-badge" id="updateBadge">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         <span id="updateText">آخر تحديث: 17 مايو 2026 - 03:28 ص</span>
@@ -1865,7 +1865,7 @@ body {
     <div class="table-wrapper" style="max-height:500px;overflow-y:auto">
       <table class="data-table" id="customerTable">
         <thead style="position:sticky;top:0;z-index:2">
-          <tr><th>#</th><th>العميل</th><th>النوع</th><th>الحي</th><th>الهاتف</th><th>المدفوع</th><th>المستحق</th><th>الخطر</th></tr>
+          <tr><th>#</th><th>العميل</th><th>النوع</th><th>الحي</th><th>الهاتف</th><th>المدفوع</th><th>المستحق</th><th>الحالة</th></tr>
         </thead>
         <tbody id="customerBody"></tbody>
       </table>
@@ -2392,12 +2392,15 @@ function populateCustomersSmart() {
     var risk = getCustomerRisk(c);
     html += '<tr>' +
       '<td>' + (i+1) + '</td>' +
-      '<td style="font-weight:500"><span class="risk-dot" style="background:' + risk.color + '" title="' + risk.label + '"></span> ' + c.n + '</td>' +
+      '<td style="font-weight:500">' + c.n + '</td>' +
       '<td><span class="tag tag-purple">' + c.t + '</span></td>' +
       '<td>' + c.d + '</td>' +
       '<td>' + (c.ph || '-') + '</td>' +
       '<td class="amount positive">' + fmt(c.p) + '</td>' +
       '<td class="amount ' + (c.db > 0 ? 'negative' : '') + '">' + fmt(c.db) + '</td>' +
+      '<td><span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:100px;font-size:0.7rem;font-weight:700;background:' + risk.bg + ';color:' + risk.color + '">' +
+      '<span style="width:6px;height:6px;border-radius:50%;background:' + risk.color + '"></span>' +
+      risk.label + '</span></td>' +
       '</tr>';
   });
   document.getElementById('customerBody').innerHTML = html;
@@ -2429,11 +2432,11 @@ function filterCustomers() { populateCustomersSmart(); }
 function buildCustomerTypeFilters() {}
 
 function getCustomerRisk(c) {
-  if (c.p >= c.db) return { cls: 'risk-green', color: '#10B981', label: 'ممتاز' };
-  if (c.db <= c.p * 2 && c.p > 0) return { cls: 'risk-yellow', color: '#F59E0B', label: 'متوسط' };
-  if (c.db > c.p * 2 && c.p > 0) return { cls: 'risk-red', color: '#EF4444', label: 'خطر' };
-  if (c.db > 0 && c.p === 0) return { cls: 'risk-black', color: '#6B7280', label: 'متوقف' };
-  return { cls: 'risk-green', color: '#10B981', label: 'ممتاز' };
+  if (c.p >= c.db) return { cls: 'risk-green', color: '#10B981', bg: '#DCFCE7', label: 'ممتاز' };
+  if (c.db <= c.p * 2 && c.p > 0) return { cls: 'risk-yellow', color: '#D97706', bg: '#FEF3C7', label: 'متوسط' };
+  if (c.db > c.p * 2 && c.p > 0) return { cls: 'risk-red', color: '#DC2626', bg: '#FEE2E2', label: 'خطر' };
+  if (c.db > 0 && c.p === 0) return { cls: 'risk-black', color: '#6B7280', bg: '#F3F4F6', label: 'متوقف' };
+  return { cls: 'risk-green', color: '#10B981', bg: '#DCFCE7', label: 'ممتاز' };
 }
 
 // ===== CHARTS =====
@@ -3080,6 +3083,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const timeStr = `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
     const dateStr = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
     document.getElementById('updateText').textContent = `آخر تحديث: ${dateStr} - ${timeStr}`;
+    var subEl = document.getElementById('subtitleDates');
+    if (subEl && PAFTAH_DATA.monthly) {
+      var lastMonth = PAFTAH_DATA.monthly.filter(m => !m.isTotal).pop();
+      var endDay = lastMonth && lastMonth.note ? lastMonth.note.replace(/[^0-9]/g,'') : d.getDate();
+      var endMonthIdx = d.getMonth();
+      var endYear = d.getFullYear();
+      subEl.textContent = 'جميع البيانات من منصة رواء | من 1 يناير إلى ' + endDay + ' ' + months[endMonthIdx] + ' ' + endYear;
+    }
   } catch(e) {}
   injectIcons();
   buildSmartCustomerFilters();

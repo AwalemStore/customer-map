@@ -225,6 +225,16 @@ function updateHtmlReport(paftahData, invoiceArray, monthlyStats, dailyCharts, i
     `const LAST_UPDATED = "${ts}"`
   );
 
+  // Update subtitle dates
+  const arMonths = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const lastInvoice = invoiceArray.length > 0 ? invoiceArray[invoiceArray.length - 1] : null;
+  const endDate = lastInvoice ? new Date(lastInvoice.date) : local;
+  const endDateStr = `${endDate.getDate()} ${arMonths[endDate.getMonth()]} ${endDate.getFullYear()}`;
+  html = html.replace(
+    /id="subtitleDates"[^>]*>[^<]*/ ,
+    `id="subtitleDates">جميع البيانات من منصة رواء | من 1 يناير إلى ${endDateStr}`
+  );
+
   // Replace PAFTAH_DATA
   const dataStart = html.indexOf('const PAFTAH_DATA = ');
   const dataEnd = html.indexOf('};', dataStart) + 2;
