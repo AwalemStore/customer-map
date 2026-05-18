@@ -1344,6 +1344,59 @@ body {
 .wf-bar.total { background: linear-gradient(90deg, var(--primary), #818CF8); }
 .wf-bar.connector { background: transparent; border: 1px dashed var(--border-solid); color: var(--text-secondary); }
 .wf-value { font-size: 0.76rem; font-weight: 700; color: var(--text); white-space: nowrap; width: 80px; text-align: right; flex-shrink: 0; }
+
+/* ===== HEALTH GAUGE ===== */
+.health-gauge-wrap { display: flex; align-items: center; gap: 24px; padding: 16px 0; }
+.health-gauge { position: relative; width: 180px; height: 100px; flex-shrink: 0; }
+.health-gauge svg { width: 100%; height: 100%; }
+.health-gauge-text { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); text-align: center; }
+.health-gauge-text .score { font-size: 1.8rem; font-weight: 800; color: var(--text); line-height: 1; }
+.health-gauge-text .label { font-size: 0.68rem; color: var(--text-secondary); margin-top: 2px; }
+.health-details { flex: 1; }
+.health-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 0.82rem; }
+.health-item .hi-label { width: 100px; color: var(--text-secondary); font-weight: 500; }
+.health-item .hi-bar { flex: 1; height: 6px; background: rgba(0,0,0,0.05); border-radius: 100px; overflow: hidden; }
+[data-theme="dark"] .health-item .hi-bar { background: rgba(255,255,255,0.05); }
+.health-item .hi-fill { height: 100%; border-radius: 100px; transition: width 1s ease; }
+.health-item .hi-val { font-weight: 700; font-size: 0.78rem; width: 44px; text-align: right; }
+
+/* ===== SALES HEATMAP ===== */
+.heatmap-wrap { overflow-x: auto; padding: 8px 0; }
+.heatmap-grid { display: grid; gap: 3px; min-width: 600px; }
+.heatmap-cell { border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 600; min-height: 32px; transition: transform 0.15s; cursor: default; }
+.heatmap-cell:hover { transform: scale(1.15); z-index: 1; }
+.heatmap-cell.header { background: transparent; color: var(--text-secondary); font-weight: 700; font-size: 0.7rem; }
+.heatmap-legend { display: flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 0.72rem; color: var(--text-secondary); }
+.heatmap-legend .swatch { width: 14px; height: 14px; border-radius: 3px; }
+
+/* ===== FORECAST ===== */
+.forecast-card { display: inline-flex; align-items: center; gap: 10px; padding: 14px 20px; border-radius: var(--radius-sm); border: 1px dashed var(--primary); background: var(--primary-light); margin-top: 12px; }
+.forecast-card .fc-icon { font-size: 1.3rem; }
+.forecast-card .fc-val { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
+.forecast-card .fc-range { font-size: 0.76rem; color: var(--text-secondary); }
+
+/* ===== RFM SEGMENTS ===== */
+.rfm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.rfm-seg { padding: 16px; border-radius: var(--radius-sm); text-align: center; border: 1px solid var(--border); transition: all 0.2s; cursor: default; }
+.rfm-seg:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.rfm-seg .seg-icon { font-size: 1.6rem; margin-bottom: 6px; }
+.rfm-seg .seg-name { font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.rfm-seg .seg-count { font-size: 1.4rem; font-weight: 800; }
+.rfm-seg .seg-pct { font-size: 0.72rem; color: var(--text-secondary); }
+
+/* ===== LOYALTY BADGES ===== */
+.loyalty-badge { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 100px; font-size: 0.62rem; font-weight: 700; }
+.loyalty-gold { background: #FEF3C7; color: #92400E; }
+.loyalty-silver { background: #F3F4F6; color: #4B5563; }
+.loyalty-bronze { background: #FED7AA; color: #9A3412; }
+.loyalty-new { background: #DBEAFE; color: #1E40AF; }
+[data-theme="dark"] .loyalty-gold { background: rgba(254,243,199,0.15); }
+[data-theme="dark"] .loyalty-silver { background: rgba(243,244,246,0.1); }
+[data-theme="dark"] .loyalty-bronze { background: rgba(254,215,170,0.15); }
+[data-theme="dark"] .loyalty-new { background: rgba(219,234,254,0.15); }
+
+/* ===== SPARKLINES ===== */
+.sparkline { display: inline-block; vertical-align: middle; }
 </style>
 </head>
 <body>
@@ -1440,7 +1493,12 @@ body {
   </div>
 </div>
 
-<!-- SMART ALERTS -->
+<div class="exec-dashboard no-print" style="padding-top:0">
+  <div class="card" style="padding:20px 28px">
+    <div class="card-title" style="margin-bottom:12px"><span class="icon" data-ico="chartUp"></span> مؤشر صحة العمل</div>
+    <div class="health-gauge-wrap" id="healthGauge"></div>
+  </div>
+</div>
 <div class="exec-dashboard no-print" style="padding-top:12px;margin-top:12px">
   <div class="collapsible-section">
     <div class="collapsible-header" onclick="toggleCollapsible(this)">
@@ -1507,6 +1565,8 @@ body {
     <div class="card-title"><span class="icon" data-ico="chartUp"></span> تحليل الشلال - من المبيعات إلى الصافي</div>
     <div class="waterfall-wrap" id="waterfallChart"></div>
   </div>
+
+  <div class="card" id="forecastCard"></div>
 
 </div>
 
@@ -1893,6 +1953,17 @@ body {
     <div class="card">
       <div class="card-title"><span class="icon" data-ico="money"></span> أعلى 10 أحياء بالمدفوع</div>
       <div class="chart-container"><canvas id="districtPaidChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="icon" data-ico="users"></span> تحليل RFM - شرائح العملاء</div>
+      <div class="rfm-grid" id="rfmGrid"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon" data-ico="calendar"></span> خريطة حرارية - أنشط أيام البيع</div>
+      <div class="heatmap-wrap" id="salesHeatmap"></div>
     </div>
   </div>
 
@@ -3205,6 +3276,158 @@ function buildGeoMap() {
   document.getElementById('geoMapContainer').innerHTML = svgParts.join('');
 }
 
+// ===== HEALTH GAUGE =====
+function calcHealthScore() {
+  var m = PAFTAH_DATA.monthly;
+  var total = m.find(function(x){return x.isTotal;}) || m[m.length-1];
+  var collectionRate = total.sales > 0 ? (total.sales - PAFTAH_DATA.customers.reduce(function(s,c){return s+c.db;},0)) / total.sales * 100 : 0;
+  collectionRate = Math.max(0, Math.min(100, collectionRate));
+  var marginScore = Math.min(100, total.margin * 4);
+  var paidCustomers = PAFTAH_DATA.customers.filter(function(c){return c.p > 0;}).length;
+  var paymentScore = Math.min(100, (paidCustomers / PAFTAH_DATA.customers.length) * 100);
+  var growthScore = m.length > 2 ? Math.min(100, Math.max(0, 50 + (m[2].sales - m[3].sales) / m[2].sales * 50)) : 50;
+  var overall = Math.round(collectionRate * 0.35 + marginScore * 0.25 + paymentScore * 0.2 + growthScore * 0.2);
+  return { overall: overall, collection: Math.round(collectionRate), margin: Math.round(marginScore), payment: Math.round(paymentScore), growth: Math.round(growthScore) };
+}
+
+function renderHealthGauge() {
+  var h = calcHealthScore();
+  var color = h.overall >= 70 ? '#10B981' : h.overall >= 40 ? '#F59E0B' : '#EF4444';
+  var label = h.overall >= 70 ? 'جيد' : h.overall >= 40 ? 'يحتاج تحسين' : 'حرج';
+  var deg = (h.overall / 100) * 180;
+  var html = '<div class="health-gauge"><svg viewBox="0 0 200 110">';
+  html += '<path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="' + 'var(--border-solid)' + '" stroke-width="12" stroke-linecap="round"/>';
+  html += '<path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="' + color + '" stroke-width="12" stroke-linecap="round" stroke-dasharray="' + (deg/180*251.3) + ' 251.3" style="filter:drop-shadow(0 0 6px '+color+'40)"/>';
+  html += '</svg><div class="health-gauge-text"><div class="score" style="color:'+color+'">' + h.overall + '</div><div class="label">' + label + '</div></div></div>';
+  html += '<div class="health-details">';
+  var items = [
+    {l:'التحصيل',v:h.collection,c:'var(--success)'},
+    {l:'الهامش',v:h.margin,c:'var(--info)'},
+    {l:'السداد',v:h.payment,c:'var(--warning)'},
+    {l:'النمو',v:h.growth,c:'var(--primary)'}
+  ];
+  items.forEach(function(it){
+    html += '<div class="health-item"><span class="hi-label">'+it.l+'</span><div class="hi-bar"><div class="hi-fill" style="width:'+it.v+'%;background:'+it.c+'"></div></div><span class="hi-val" style="color:'+it.c+'">'+it.v+'%</span></div>';
+  });
+  html += '</div>';
+  document.getElementById('healthGauge').innerHTML = html;
+}
+
+// ===== SALES HEATMAP =====
+function renderSalesHeatmap() {
+  var days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  if (!invoices || !invoices.length) return;
+  var dayMap = {};
+  var maxVal = 0;
+  invoices.forEach(function(inv) {
+    if (inv.type === 'return') return;
+    var d = new Date(inv.date);
+    var day = d.getDay();
+    var week = Math.ceil(d.getDate() / 7);
+    var key = day + '-' + week;
+    dayMap[key] = (dayMap[key] || 0) + inv.amount;
+    if (dayMap[key] > maxVal) maxVal = dayMap[key];
+  });
+  if (maxVal === 0) maxVal = 1;
+  var html = '<div class="heatmap-grid" style="grid-template-columns:60px repeat(5,1fr)">';
+  html += '<div class="heatmap-cell header"></div>';
+  for (var w = 1; w <= 5; w++) html += '<div class="heatmap-cell header">أسبوع '+w+'</div>';
+  for (var dy = 0; dy < 7; dy++) {
+    html += '<div class="heatmap-cell header" style="justify-content:flex-start">'+days[dy]+'</div>';
+    for (var wk = 1; wk <= 5; wk++) {
+      var val = dayMap[dy+'-'+wk] || 0;
+      var intensity = val / maxVal;
+      var bg = intensity === 0 ? 'rgba(0,0,0,0.03)' : 'rgba(51,48,136,' + (0.08 + intensity * 0.7) + ')';
+      var fg = intensity > 0.4 ? 'white' : 'var(--text)';
+      if (document.documentElement.getAttribute('data-theme') === 'dark' && intensity === 0) bg = 'rgba(255,255,255,0.03)';
+      html += '<div class="heatmap-cell" style="background:'+bg+';color:'+fg+'" title="'+days[dy]+' أسبوع '+wk+': '+fmt(val)+' ر.س">'+(val > 0 ? (val >= 1000 ? Math.round(val/1000)+'K' : Math.round(val)) : '')+'</div>';
+    }
+  }
+  html += '</div>';
+  html += '<div class="heatmap-legend"><span>أقل</span>';
+  [0.05,0.2,0.4,0.6,0.8].forEach(function(i){
+    html += '<span class="swatch" style="background:rgba(51,48,136,'+i+')"></span>';
+  });
+  html += '<span>أكثر</span></div>';
+  document.getElementById('salesHeatmap').innerHTML = html;
+}
+
+// ===== FORECAST =====
+function renderForecast() {
+  var m = PAFTAH_DATA.monthly.filter(function(x){return !x.isTotal;});
+  if (m.length < 3) return;
+  var last = m[m.length - 1];
+  var prev = m[m.length - 2];
+  var prevPrev = m[m.length - 3];
+  var avgGrowth = ((prev.sales / prevPrev.sales) + (last.sales / prev.sales)) / 2;
+  var dailyAvg = last.sales / (last.note ? parseInt(last.note.split('-').pop()) : 30);
+  var daysInMonth = new Date(2026, m.length, 0).getDate();
+  var forecastFull = dailyAvg * daysInMonth;
+  var projected = last.sales * avgGrowth;
+  var predicted = Math.round((forecastFull + projected) / 2);
+  var low = Math.round(predicted * 0.8);
+  var high = Math.round(predicted * 1.2);
+  var trend = projected > last.sales ? '↑ صعودي' : '↓ تراجعي';
+  var trendColor = projected > last.sales ? 'var(--success)' : 'var(--danger)';
+  var html = '<div class="card-title"><span class="icon" data-ico="calendar"></span> توقعات الشهر القادم</div>';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">';
+  html += '<div class="forecast-card"><div class="fc-val">' + fmt(predicted) + ' ر.س</div><div class="fc-range">متوقع (' + trend + ')</div></div>';
+  html += '<div style="font-size:0.82rem;color:var(--text-secondary)">نطاق التوقع: <strong>' + fmt(low) + '</strong> — <strong>' + fmt(high) + '</strong> ر.س</div>';
+  html += '<div style="font-size:0.78rem;color:var(--text-secondary)">بناءً على اتجاه آخر 3 أشهر ومتوسط المبيعات اليومية</div>';
+  html += '</div>';
+  document.getElementById('forecastCard').innerHTML = html;
+}
+
+// ===== RFM ANALYSIS =====
+function renderRFM() {
+  var customers = PAFTAH_DATA.customers;
+  var totalDebt = customers.reduce(function(s,c){return s+c.db;},0);
+  var segments = {
+    vip: {name:'VIP',icon:'&#9813;',count:0,color:'#F59E0B',bg:'#FEF3C7',criteria:'عملاء بأعلى مدفوعات وأقل ديون'},
+    active: {name:'نشط',icon:'&#9679;',count:0,color:'#10B981',bg:'#DCFCE7',criteria:'عملاء يدفعون بانتظام'},
+    atrisk: {name:'معرض للخطر',icon:'&#9650;',count:0,color:'#F97316',bg:'#FFEDD5',criteria:'عملاء بدأوا يتأخرون'},
+    lost: {name:'نام',icon:'&#9632;',count:0,color:'#EF4444',bg:'#FEE2E2',criteria:'عملاء بدون سداد ومديونية عالية'},
+    new: {name:'جديد',icon:'&#9733;',count:0,color:'#3B82F6',bg:'#DBEAFE',criteria:'عملاء بدون مديونية'}
+  };
+  customers.forEach(function(c) {
+    if (c.db <= 0 && c.p <= 0) { segments.new.count++; return; }
+    if (c.p >= c.db * 1.5 && c.p > 500) { segments.vip.count++; return; }
+    if (c.p > 0 && c.db <= c.p * 2) { segments.active.count++; return; }
+    if (c.db > 0 && c.p === 0) { segments.lost.count++; return; }
+    segments.atrisk.count++;
+  });
+  var html = '';
+  Object.keys(segments).forEach(function(k) {
+    var s = segments[k];
+    var pct = (s.count / customers.length * 100).toFixed(1);
+    html += '<div class="rfm-seg" style="background:'+s.bg+';border-color:'+s.color+'30">';
+    html += '<div class="seg-icon" style="color:'+s.color+'">'+s.icon+'</div>';
+    html += '<div class="seg-name">'+s.name+'</div>';
+    html += '<div class="seg-count" style="color:'+s.color+'">'+s.count+'</div>';
+    html += '<div class="seg-pct">'+pct+'% - '+s.criteria+'</div>';
+    html += '</div>';
+  });
+  document.getElementById('rfmGrid').innerHTML = html;
+}
+
+// ===== LOYALTY BADGES =====
+function getLoyalty(c) {
+  if (c.p >= 5000 && c.db <= c.p * 0.3) return {cls:'loyalty-gold',label:'ذهبي'};
+  if (c.p >= 1000 && c.db <= c.p) return {cls:'loyalty-silver',label:'فضي'};
+  if (c.p > 0) return {cls:'loyalty-bronze',label:'برونزي'};
+  return {cls:'loyalty-new',label:'جديد'};
+}
+
+// ===== SPARKLINE HELPER =====
+function sparklineSVG(values, w, h, color) {
+  if (!values || values.length < 2) return '';
+  var max = Math.max.apply(null, values);
+  var min = Math.min.apply(null, values);
+  var range = max - min || 1;
+  var pts = values.map(function(v,i){ return (i/(values.length-1))*w+','+(h-((v-min)/range)*h); });
+  return '<svg class="sparkline" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><polyline points="'+pts.join(' ')+'" fill="none" stroke="'+color+'" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
 // ===== ANIMATED COUNTERS =====
 function animateCounters() {
   var observer = new IntersectionObserver(function(entries) {
@@ -3281,6 +3504,10 @@ document.addEventListener('DOMContentLoaded', () => {
   buildGeoMap();
   animateCounters();
   renderWaterfall();
+  renderHealthGauge();
+  renderSalesHeatmap();
+  renderForecast();
+  renderRFM();
 
   var btt = document.querySelector('.back-to-top');
   window.addEventListener('scroll', function() {
