@@ -3086,7 +3086,7 @@ document.addEventListener('DOMContentLoaded', () => {
     var subEl = document.getElementById('subtitleDates');
     if (subEl && PAFTAH_DATA.monthly) {
       var lastMonth = PAFTAH_DATA.monthly.filter(m => !m.isTotal).pop();
-      var endDay = lastMonth && lastMonth.note ? lastMonth.note.split('-').pop().replace(/\D/g,'') : d.getDate();
+      var endDay = d.getDate();
       var endMonthIdx = d.getMonth();
       var endYear = d.getFullYear();
       subEl.textContent = 'جميع البيانات من منصة رواء | من 1 يناير إلى ' + endDay + ' ' + months[endMonthIdx] + ' ' + endYear;
