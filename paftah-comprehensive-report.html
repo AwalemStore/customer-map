@@ -9,10 +9,10 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700;800&display=swap');
 :root {
-  --primary: #6366F1;
-  --primary-dark: #4338CA;
-  --primary-light: #EEF2FF;
-  --primary-gradient: linear-gradient(135deg, #6366F1, #818CF8);
+  --primary: #333088;
+  --primary-dark: #2A2770;
+  --primary-light: #EDEDF7;
+  --primary-gradient: linear-gradient(135deg, #333088, #4D49A8);
   --accent: #A78BFA;
   --accent-light: #F5F3FF;
   --success: #10B981;
@@ -85,19 +85,19 @@ body {
 .header-top-decor { display: none; }
 .header-main { padding: 48px 24px 28px; text-align: center; animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
 .header-logo {
-  width: 80px;
-  height: 80px;
-  border-radius: 22px;
+  width: 140px;
+  height: 140px;
+  border-radius: 0;
   object-fit: contain;
   margin-bottom: 20px;
   border: none;
-  box-shadow: 0 8px 32px rgba(99,102,241,0.12), 0 0 0 1px rgba(99,102,241,0.06);
-  background: white;
-  padding: 12px;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
   animation: scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease;
 }
-.header-logo:hover { transform: scale(1.08) translateY(-2px); box-shadow: 0 12px 40px rgba(99,102,241,0.18), 0 0 0 1px rgba(99,102,241,0.08); }
+.header-logo:hover { transform: scale(1.05); }
 .header-main h1 {
   font-size: 2.1rem;
   font-weight: 800;
