@@ -176,3 +176,11 @@ const idx = html.indexOf('// ===== TAXES TAB');
 if (idx > -1) html = html.substring(0, idx) + dataStr + html.substring(idx);
 writeFileSync(htmlPath, html, 'utf-8');
 console.log('\n✓ Dashboard with separated cash sales vs collections');
+
+// DEBUG: daily charts API
+const start = new Date(Date.UTC(2026, 6, 1)); start.setUTCHours(start.getUTCHours() - 3);
+const end = new Date(Date.UTC(2026, 7, 1)); end.setUTCHours(end.getUTCHours() - 3);
+const dcRes = await fetch(`${API_BASE}/reporting-bridge/dashboard/charts/days?startDate=${start.toISOString()}&endDate=${end.toISOString()}&timezone=Asia/Riyadh&startTime=00:00:00&endTime=23:59:59`, { headers: { accept: "application/json", authorization: `Bearer ${token}` } });
+const dcData = await dcRes.json();
+console.log("DAILY CHARTS:", JSON.stringify(dcData).substring(0, 2000));
+
