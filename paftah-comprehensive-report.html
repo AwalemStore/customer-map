@@ -1614,6 +1614,7 @@ body {
     <button class="tab-btn" onclick="switchTab('products')">المنتجات والمخزون</button>
     <button class="tab-btn" onclick="switchTab('expenses')">المصروفات</button>
     <button class="tab-btn" onclick="switchTab('tax')">ضرائب Q2</button>
+    <button class="tab-btn" onclick="switchTab('q1returns')">مرتجعات Q1</button>
     <button class="tab-btn" onclick="switchTab('activity')">سجل النشاطات</button>
     <button class="tab-btn" onclick="switchTab('whatsapp')">واتساب</button>
   </nav>
@@ -2311,6 +2312,89 @@ body {
 
 </div>
 
+<!-- ==================== TAB: Q1 RETURNS IN Q2 ==================== -->
+<div id="tab-q1returns" class="tab-panel">
+  <div class="card" style="border-top:4px solid var(--danger)">
+    <div class="card-title"><span class="icon" data-ico="warning"></span> مرتجعات Q1 المُرجعة في Q2 — خصم ضريبي</div>
+    <div class="exec-summary-text" style="border-right-color:var(--danger);margin-bottom:16px">
+      هذه قائمة بالفواتير التي <strong>بِيعت في الربع الأول (يناير-مارس)</strong> وتم <strong>إرجاعها في الربع الثاني (أبريل-يونيو)</strong>.<br>
+      بما أن ضرائب Q1 سُدّدت على أساس الاستحقاق، فهذه المرتجعات <strong>تُخصم من ضريبة Q2</strong> على الأساس النقدي.
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card danger">
+        <div class="kpi-label">عدد المرتجعات</div>
+        <div class="kpi-value" id="q1retCount">0</div>
+      </div>
+      <div class="kpi-card danger">
+        <div class="kpi-label">إجمالي المرتجعات (ر.س)</div>
+        <div class="kpi-value" id="q1retTotal">0</div>
+      </div>
+      <div class="kpi-card success">
+        <div class="kpi-label">الخصم الضريبي 15% (ر.س)</div>
+        <div class="kpi-value" id="q1retVAT" style="color:var(--success)">0</div>
+        <div class="kpi-sub">يُخصم من ضريبة Q2</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">الصافي بدون ضريبة</div>
+        <div class="kpi-value" id="q1retNet">0</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon" data-ico="receipt"></span> تفاصيل المرتجعات</div>
+    <div class="table-wrapper">
+      <table class="data-table" id="q1returnsTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>العميل</th>
+            <th>فاتورة المرتجع</th>
+            <th>تاريخ المرتجع</th>
+            <th>مبلغ المرتجع</th>
+            <th>الضريبة 15%</th>
+            <th>الصافي</th>
+            <th>فواتير Q1 الأصلية</th>
+            <th>مبيعات Q1</th>
+          </tr>
+        </thead>
+        <tbody id="q1returnsBody"></tbody>
+        <tfoot>
+          <tr style="background:var(--primary-light);font-weight:700">
+            <td colspan="4">الإجمالي</td>
+            <td id="q1retFootTotal">0</td>
+            <td id="q1retFootVAT">0</td>
+            <td id="q1retFootNet">0</td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:10px">
+      <button class="wa-btn wa-btn-dark" onclick="exportQ1ReturnsCSV()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        تصدير CSV
+      </button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon" data-ico="lightbulb"></span> ملخص الخصم الضريبي لـ Q2</div>
+    <div class="kpi-grid">
+      <div class="kpi-card success">
+        <div class="kpi-label">ضريبة Q2 المستحقة (تحصيل)</div>
+        <div class="kpi-value" id="q1retTaxDue">0 ر.س</div>
+      </div>
+      <div class="kpi-card danger">
+        <div class="kpi-label">خصم مرتجعات Q1</div>
+        <div class="kpi-value" id="q1retTaxDeduction" style="color:var(--danger)">0 ر.س</div>
+      </div>
+      <div class="kpi-card warning">
+        <div class="kpi-label">صافي الضريبة المستحقة</div>
+        <div class="kpi-value" id="q1retTaxNet" style="color:var(--warning)">0 ر.س</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ==================== TAB 6: ACTIVITY LOG ==================== -->
 <div id="tab-activity" class="tab-panel">
 
@@ -2677,6 +2761,7 @@ function switchTab(tabId) {
   event.target.classList.add('active');
   if (tabId === 'whatsapp' && !waInitialized) { waInitialized = true; initWa(); }
   if (tabId === 'tax') { initTaxTab(); }
+  if (tabId === 'q1returns') { initQ1ReturnsTab(); }
   setTimeout(() => {
     Object.values(Chart.instances).forEach(c => {
       if (c.canvas.closest('.tab-panel.active')) c.resize();
@@ -3912,6 +3997,40 @@ function exportCSV(type) {
 
 
 const Q2_TAX_DATA = {"totalCollected":21026,"totalSales":22972.999999199994,"customerCount":106,"invoiceCount":145,"vatAmount":2742.5217391304245,"netAmount":18283.478260869597,"customers":[{"name":"مؤسسة هبة بنت محسن ابن حسني الجمال التجارية","totalPaid":4740,"totalSales":4740,"invoiceCount":2,"firstDate":"2026-04-18","lastDate":"2026-04-29","vat":618.26,"net":4121.74},{"name":"شركة عالم الاقتصادي للمواد الغذائية","totalPaid":3050,"totalSales":3050,"invoiceCount":2,"firstDate":"2026-04-09","lastDate":"2026-04-22","vat":397.83,"net":2652.17},{"name":"مؤسسة الوطنية باك للتجاره بلاستيك ونظافة","totalPaid":1500,"totalSales":1500,"invoiceCount":1,"firstDate":"2026-04-20","lastDate":"2026-04-20","vat":195.65,"net":1304.35},{"name":"ساحل جدة بلاستيك ومنضفات","totalPaid":1025,"totalSales":1500,"invoiceCount":1,"firstDate":"2026-04-26","lastDate":"2026-04-26","vat":133.7,"net":891.3},{"name":"كود الصالحية بلاستيك ومنظفات","totalPaid":1000,"totalSales":1000,"invoiceCount":1,"firstDate":"2026-05-13","lastDate":"2026-05-13","vat":130.43,"net":869.57},{"name":"مركز الروضة للبلاستيك وادوات النظافة","totalPaid":560,"totalSales":560,"invoiceCount":1,"firstDate":"2026-04-26","lastDate":"2026-04-26","vat":73.04,"net":486.96},{"name":"مركز الحسيني بلاستيك ومنضفات","totalPaid":410,"totalSales":410,"invoiceCount":1,"firstDate":"2026-04-01","lastDate":"2026-04-01","vat":53.48,"net":356.52},{"name":"اماكن دبي للتسوق- الحمدانية","totalPaid":380,"totalSales":1000,"invoiceCount":1,"firstDate":"2026-05-13","lastDate":"2026-05-13","vat":49.57,"net":330.43},{"name":"مغاسل الماسة","totalPaid":345,"totalSales":345,"invoiceCount":2,"firstDate":"2026-04-11","lastDate":"2026-05-03","vat":45,"net":300},{"name":"تموينات مالك","totalPaid":296,"totalSales":296,"invoiceCount":3,"firstDate":"2026-04-08","lastDate":"2026-05-10","vat":38.61,"net":257.39},{"name":"تموينات الامين فور","totalPaid":265,"totalSales":265,"invoiceCount":4,"firstDate":"2026-04-19","lastDate":"2026-06-22","vat":34.57,"net":230.43},{"name":"شركة ترند التجارية","totalPaid":240,"totalSales":240,"invoiceCount":1,"firstDate":"2026-04-04","lastDate":"2026-04-04","vat":31.3,"net":208.7},{"name":"تموينات افاق العالي","totalPaid":236,"totalSales":236,"invoiceCount":2,"firstDate":"2026-04-22","lastDate":"2026-05-17","vat":30.78,"net":205.22},{"name":"تموينات رنا الخير","totalPaid":236,"totalSales":236,"invoiceCount":2,"firstDate":"2026-04-01","lastDate":"2026-04-01","vat":30.78,"net":205.22},{"name":"تموينات الصقر","totalPaid":210,"totalSales":210,"invoiceCount":2,"firstDate":"2026-06-04","lastDate":"2026-06-24","vat":27.39,"net":182.61},{"name":"أسواق الصبياني","totalPaid":207,"totalSales":207,"invoiceCount":1,"firstDate":"2026-06-13","lastDate":"2026-06-13","vat":27,"net":180},{"name":"تموينات الجنات الطبيعية","totalPaid":180,"totalSales":180,"invoiceCount":2,"firstDate":"2026-04-02","lastDate":"2026-05-10","vat":23.48,"net":156.52},{"name":"تموينات سلوى","totalPaid":170,"totalSales":170,"invoiceCount":3,"firstDate":"2026-05-17","lastDate":"2026-06-08","vat":22.17,"net":147.83},{"name":"تموينات مير","totalPaid":145,"totalSales":145,"invoiceCount":1,"firstDate":"2026-06-20","lastDate":"2026-06-20","vat":18.91,"net":126.09},{"name":"تموينات التوفير الاولى","totalPaid":140,"totalSales":345,"invoiceCount":2,"firstDate":"2026-04-13","lastDate":"2026-06-24","vat":18.26,"net":121.74},{"name":"اسواق تفاح","totalPaid":136.5,"totalSales":136.5,"invoiceCount":3,"firstDate":"2026-04-02","lastDate":"2026-06-04","vat":17.8,"net":118.7},{"name":"مخبز  و تموينات لنا","totalPaid":127,"totalSales":127,"invoiceCount":1,"firstDate":"2026-06-18","lastDate":"2026-06-18","vat":16.57,"net":110.43},{"name":"تموينات الشعلة المتطورة للمواد الغذائية","totalPaid":127,"totalSales":127,"invoiceCount":1,"firstDate":"2026-06-06","lastDate":"2026-06-06","vat":16.57,"net":110.43},{"name":"غير محدد","totalPaid":121.5,"totalSales":531.5,"invoiceCount":3,"firstDate":"2026-04-01","lastDate":"2026-06-21","vat":15.85,"net":105.65},{"name":"مخابز و تموينات البدر همس","totalPaid":120,"totalSales":120,"invoiceCount":2,"firstDate":"2026-04-05","lastDate":"2026-06-22","vat":15.65,"net":104.35},{"name":"الفلاح مارت","totalPaid":120,"totalSales":120,"invoiceCount":2,"firstDate":"2026-04-28","lastDate":"2026-06-03","vat":15.65,"net":104.35},{"name":"baraka mini market","totalPaid":120,"totalSales":120,"invoiceCount":2,"firstDate":"2026-04-23","lastDate":"2026-05-10","vat":15.65,"net":104.35},{"name":"تموينات النهدي","totalPaid":118,"totalSales":118,"invoiceCount":1,"firstDate":"2026-04-05","lastDate":"2026-04-05","vat":15.39,"net":102.61},{"name":"TEN ELEVEN","totalPaid":118,"totalSales":118,"invoiceCount":1,"firstDate":"2026-04-04","lastDate":"2026-04-04","vat":15.39,"net":102.61},{"name":"Al Shifa super market","totalPaid":118,"totalSales":118,"invoiceCount":1,"firstDate":"2026-04-01","lastDate":"2026-04-01","vat":15.39,"net":102.61},{"name":"بقالة صفاء","totalPaid":115,"totalSales":115,"invoiceCount":2,"firstDate":"2026-04-01","lastDate":"2026-04-23","vat":15,"net":100},{"name":"تموينات2021","totalPaid":105,"totalSales":105,"invoiceCount":1,"firstDate":"2026-06-08","lastDate":"2026-06-08","vat":13.7,"net":91.3},{"name":"سوبرماركت الاخوان","totalPaid":102,"totalSales":102,"invoiceCount":2,"firstDate":"2026-04-28","lastDate":"2026-05-24","vat":13.3,"net":88.7},{"name":"تموينات دكان عيشة","totalPaid":100,"totalSales":100,"invoiceCount":2,"firstDate":"2026-06-03","lastDate":"2026-06-06","vat":13.04,"net":86.96},{"name":"تموينات التسامح","totalPaid":100,"totalSales":100,"invoiceCount":1,"firstDate":"2026-04-25","lastDate":"2026-04-25","vat":13.04,"net":86.96},{"name":"تموينات الاسرة السعيدة الفضيلة","totalPaid":90,"totalSales":150,"invoiceCount":3,"firstDate":"2026-04-05","lastDate":"2026-06-01","vat":11.74,"net":78.26},{"name":"اسواق ابيات الكرم","totalPaid":72.5,"totalSales":72.5,"invoiceCount":1,"firstDate":"2026-06-22","lastDate":"2026-06-22","vat":9.46,"net":63.04},{"name":"تموينات سامي 4","totalPaid":65,"totalSales":65,"invoiceCount":1,"firstDate":"2026-06-16","lastDate":"2026-06-16","vat":8.48,"net":56.52},{"name":"اسواق حمزه","totalPaid":65,"totalSales":65,"invoiceCount":1,"firstDate":"2026-06-10","lastDate":"2026-06-10","vat":8.48,"net":56.52},{"name":"تموينات المستقبل السلامة","totalPaid":62,"totalSales":62,"invoiceCount":1,"firstDate":"2026-06-15","lastDate":"2026-06-15","vat":8.09,"net":53.91},{"name":"تموينات سامي","totalPaid":62,"totalSales":62,"invoiceCount":1,"firstDate":"2026-06-10","lastDate":"2026-06-10","vat":8.09,"net":53.91},{"name":"تموينات كنوز المذاق","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-06-02","lastDate":"2026-06-02","vat":7.83,"net":52.17},{"name":"تموينات ماريه","totalPaid":60,"totalSales":60,"invoiceCount":2,"firstDate":"2026-04-05","lastDate":"2026-06-01","vat":7.83,"net":52.17},{"name":"تموينات تسوق زائد للتجارة","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-06-01","lastDate":"2026-06-01","vat":7.83,"net":52.17},{"name":"تموينات محمد علي حسن العبدلي","totalPaid":60,"totalSales":60,"invoiceCount":2,"firstDate":"2026-04-15","lastDate":"2026-05-24","vat":7.83,"net":52.17},{"name":"تموينات عبدالله حامد القحطاني","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-05-17","lastDate":"2026-05-17","vat":7.83,"net":52.17},{"name":"تموينات نجمة البشائر","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-05-16","lastDate":"2026-05-16","vat":7.83,"net":52.17},{"name":"تموينات الخير الفضيلة","totalPaid":60,"totalSales":60,"invoiceCount":2,"firstDate":"2026-04-05","lastDate":"2026-05-14","vat":7.83,"net":52.17},{"name":"تموينات ياسر صالح القحطاني","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-05-13","lastDate":"2026-05-13","vat":7.83,"net":52.17},{"name":"تموينات وتين للمواد الغذانية","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-05-12","lastDate":"2026-05-12","vat":7.83,"net":52.17},{"name":"تموينات نبراس الوفاء","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-05-12","lastDate":"2026-05-12","vat":7.83,"net":52.17},{"name":"تموينات جنة","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-05-12","lastDate":"2026-05-12","vat":7.83,"net":52.17},{"name":"شركة الشراع الفضي التجارية","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-05-11","lastDate":"2026-05-11","vat":7.83,"net":52.17},{"name":"تموينات الشمال الحديثة","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-05-06","lastDate":"2026-05-06","vat":7.83,"net":52.17},{"name":"تموينات راف","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-05-05","lastDate":"2026-05-05","vat":7.83,"net":52.17},{"name":"اسواق الرحمة","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-05-03","lastDate":"2026-05-03","vat":7.83,"net":52.17},{"name":"تموينات الحسن","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-05-03","lastDate":"2026-05-03","vat":7.83,"net":52.17},{"name":"تموينات حايل","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-05-02","lastDate":"2026-05-02","vat":7.83,"net":52.17},{"name":"مخابز و تموينات قوت كنان","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-30","lastDate":"2026-04-30","vat":7.83,"net":52.17},{"name":"اسواق ومخابز الربعي","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-29","lastDate":"2026-04-29","vat":7.83,"net":52.17},{"name":"تموينات القمر البدر","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-28","lastDate":"2026-04-28","vat":7.83,"net":52.17},{"name":"تموينات ريم","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-26","lastDate":"2026-04-26","vat":7.83,"net":52.17},{"name":"تموينات الريحان","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-25","lastDate":"2026-04-25","vat":7.83,"net":52.17},{"name":"تموينات الحي","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-25","lastDate":"2026-04-25","vat":7.83,"net":52.17},{"name":"مؤسسة حنان سالم الصيعري","totalPaid":60,"totalSales":120,"invoiceCount":2,"firstDate":"2026-04-25","lastDate":"2026-04-25","vat":7.83,"net":52.17},{"name":"تموينات البدر","totalPaid":60,"totalSales":60,"invoiceCount":2,"firstDate":"2026-04-05","lastDate":"2026-04-25","vat":7.83,"net":52.17},{"name":"تموينات تحريم","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-25","lastDate":"2026-04-25","vat":7.83,"net":52.17},{"name":"تموينات سلتي وان","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-23","lastDate":"2026-04-23","vat":7.83,"net":52.17},{"name":"تموينات بيان","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-21","lastDate":"2026-04-21","vat":7.83,"net":52.17},{"name":"تموينات الفلاع الحديثة","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-21","lastDate":"2026-04-21","vat":7.83,"net":52.17},{"name":"مركز نسرين للتسويق","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-20","lastDate":"2026-04-20","vat":7.83,"net":52.17},{"name":"تموينات الخير العائلية","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-20","lastDate":"2026-04-20","vat":7.83,"net":52.17},{"name":"بقالة البقمي","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-19","lastDate":"2026-04-19","vat":7.83,"net":52.17},{"name":"اسواق اليخت للتسوق","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-19","lastDate":"2026-04-19","vat":7.83,"net":52.17},{"name":"تموينات ماركت البركة","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-16","lastDate":"2026-04-16","vat":7.83,"net":52.17},{"name":"تفارة ماركت","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-15","lastDate":"2026-04-15","vat":7.83,"net":52.17},{"name":"تموينات الفروسية","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-11","lastDate":"2026-04-11","vat":7.83,"net":52.17},{"name":"تموينات عالم الارتقاء","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-09","lastDate":"2026-04-09","vat":7.83,"net":52.17},{"name":"تموينات الاسيوية","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-09","lastDate":"2026-04-09","vat":7.83,"net":52.17},{"name":"تموينات طيب المروة","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-06","lastDate":"2026-04-06","vat":7.83,"net":52.17},{"name":"الطيبه سوبر ماركت","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-04","lastDate":"2026-04-04","vat":7.83,"net":52.17},{"name":"تموينات سامي الربوة","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-04","lastDate":"2026-04-04","vat":7.83,"net":52.17},{"name":"تموينات نصيب الاطلال","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-04","lastDate":"2026-04-04","vat":7.83,"net":52.17},{"name":"اسواق نجد","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-04","lastDate":"2026-04-04","vat":7.83,"net":52.17},{"name":"سوبر ماركت ومخابز اماسي","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-04","lastDate":"2026-04-04","vat":7.83,"net":52.17},{"name":"تموينات شوق عوض هياس الزهراني","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-02","lastDate":"2026-04-02","vat":7.83,"net":52.17},{"name":"تموينات سنابل الخير الاقتصادية","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-01","lastDate":"2026-04-01","vat":7.83,"net":52.17},{"name":"بقالة نهى البوادي","totalPaid":60,"totalSales":60,"invoiceCount":1,"firstDate":"2026-04-01","lastDate":"2026-04-01","vat":7.83,"net":52.17},{"name":"بقالتي مارت","totalPaid":58,"totalSales":58,"invoiceCount":1,"firstDate":"2026-05-07","lastDate":"2026-05-07","vat":7.57,"net":50.43},{"name":"تموينات بشائر","totalPaid":58,"totalSales":58,"invoiceCount":1,"firstDate":"2026-04-12","lastDate":"2026-04-12","vat":7.57,"net":50.43},{"name":"اسواق السلة المتميزة","totalPaid":55,"totalSales":55,"invoiceCount":1,"firstDate":"2026-04-12","lastDate":"2026-04-12","vat":7.17,"net":47.83},{"name":"تموينات النجوم","totalPaid":55,"totalSales":55,"invoiceCount":1,"firstDate":"2026-04-01","lastDate":"2026-04-01","vat":7.17,"net":47.83},{"name":"مركز رحمة للتسويق","totalPaid":50.5,"totalSales":50.5,"invoiceCount":2,"firstDate":"2026-04-26","lastDate":"2026-06-11","vat":6.59,"net":43.91},{"name":"تموينات كنان","totalPaid":50,"totalSales":120,"invoiceCount":1,"firstDate":"2026-04-29","lastDate":"2026-04-29","vat":6.52,"net":43.48},{"name":"تموينات البدر حي الرياض","totalPaid":47,"totalSales":47,"invoiceCount":1,"firstDate":"2026-05-06","lastDate":"2026-05-06","vat":6.13,"net":40.87},{"name":"تموينات صفا","totalPaid":40,"totalSales":40,"invoiceCount":1,"firstDate":"2026-06-11","lastDate":"2026-06-11","vat":5.22,"net":34.78},{"name":"sara supermarket 2","totalPaid":37,"totalSales":37,"invoiceCount":1,"firstDate":"2026-04-06","lastDate":"2026-04-06","vat":4.83,"net":32.17},{"name":"تموينات السليمانية","totalPaid":32.5,"totalSales":32.5,"invoiceCount":1,"firstDate":"2026-06-28","lastDate":"2026-06-28","vat":4.24,"net":28.26},{"name":"اسواق ريم التموين","totalPaid":32.5,"totalSales":32.5,"invoiceCount":1,"firstDate":"2026-06-06","lastDate":"2026-06-06","vat":4.24,"net":28.26},{"name":"تموينات الخير حي الاجواد","totalPaid":30,"totalSales":30,"invoiceCount":1,"firstDate":"2026-06-02","lastDate":"2026-06-02","vat":3.91,"net":26.09},{"name":"اسواق نيو","totalPaid":30,"totalSales":30,"invoiceCount":1,"firstDate":"2026-04-20","lastDate":"2026-04-20","vat":3.91,"net":26.09},{"name":"تموينات البيان","totalPaid":30,"totalSales":30,"invoiceCount":1,"firstDate":"2026-04-14","lastDate":"2026-04-14","vat":3.91,"net":26.09},{"name":"بستي سوبرماركت","totalPaid":30,"totalSales":30,"invoiceCount":1,"firstDate":"2026-04-06","lastDate":"2026-04-06","vat":3.91,"net":26.09},{"name":"بقالة الاحسان","totalPaid":30,"totalSales":30,"invoiceCount":1,"firstDate":"2026-04-01","lastDate":"2026-04-01","vat":3.91,"net":26.09},{"name":"اسواق و مخابز الفرح المطورة","totalPaid":25,"totalSales":30,"invoiceCount":1,"firstDate":"2026-04-02","lastDate":"2026-04-02","vat":3.26,"net":21.74},{"name":"تموينات هناء","totalPaid":16,"totalSales":58,"invoiceCount":1,"firstDate":"2026-05-09","lastDate":"2026-05-09","vat":2.09,"net":13.91}]};
+
+// ===== Q1 RETURNS TAB =====
+function initQ1ReturnsTab() {
+  var data = (typeof Q1_RETURNS_DATA !== 'undefined') ? Q1_RETURNS_DATA : null;
+  if (!data || !data.returns || data.returns.length === 0) {
+    document.getElementById('q1returnsBody').innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text-secondary)">لا توجد مرتجعات Q1 في Q2</td></tr>';
+    return;
+  }
+  var html = '';
+  data.returns.forEach(function(r, i) {
+    html += '<tr><td>' + (i+1) + '</td><td style="font-weight:500">' + r.customer + '</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px">' + r.returnInvoice + '</code></td><td>' + r.returnDate + '</td><td class="amount negative">' + fmt(r.returnAmount) + '</td><td style="color:var(--success);font-weight:600">-' + fmt(r.vat) + '</td><td>' + fmt(r.net) + '</td><td style="font-size:0.72rem;color:var(--text-secondary)">' + r.q1SalesCount + ' فاتورة</td><td class="amount">' + fmt(r.q1SalesTotal) + '<br><span style="font-size:0.68rem">' + r.q1FirstSale + ' → ' + r.q1LastSale + '</span></td></tr>';
+  });
+  document.getElementById('q1returnsBody').innerHTML = html;
+  document.getElementById('q1retCount').textContent = data.count;
+  document.getElementById('q1retTotal').textContent = fmt(data.totalReturns) + ' ر.س';
+  document.getElementById('q1retVAT').textContent = fmt(data.vatDeduction) + ' ر.س';
+  document.getElementById('q1retNet').textContent = fmt(data.netDeduction) + ' ر.س';
+  document.getElementById('q1retFootTotal').textContent = fmt(data.totalReturns);
+  document.getElementById('q1retFootVAT').textContent = '-' + fmt(data.vatDeduction);
+  document.getElementById('q1retFootNet').textContent = fmt(data.netDeduction);
+  var q2Tax = (typeof Q2_TAX_DATA !== 'undefined') ? Q2_TAX_DATA.vatAmount : 0;
+  var net = q2Tax - data.vatDeduction;
+  document.getElementById('q1retTaxDue').textContent = fmt(q2Tax) + ' ر.س';
+  document.getElementById('q1retTaxDeduction').textContent = '-' + fmt(data.vatDeduction) + ' ر.س';
+  document.getElementById('q1retTaxNet').textContent = fmt(Math.max(0, net)) + ' ر.س';
+}
+function exportQ1ReturnsCSV() {
+  var data = (typeof Q1_RETURNS_DATA !== 'undefined') ? Q1_RETURNS_DATA : null;
+  if (!data) return;
+  var csv = '\uFEFFالعميل,فاتورة المرتجع,تاريخ المرتجع,مبلغ المرتجع,الضريبة,الصافي,فواتيرQ1,مبيعاتQ1,أول,آخر\n';
+  data.returns.forEach(function(r) { csv += '"' + r.customer + '","' + r.returnInvoice + '","' + r.returnDate + '",' + r.returnAmount + ',' + r.vat + ',' + r.net + ',' + r.q1SalesCount + ',' + r.q1SalesTotal + ',' + r.q1FirstSale + ',' + r.q1LastSale + '\n'; });
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'q1_returns.csv'; a.click();
+}
 // ===== TAX TAB (CASH BASIS) =====
 function initTaxTab() {
   var typeSelect = document.getElementById('taxTypeFilter');
