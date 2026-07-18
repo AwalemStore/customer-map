@@ -9,9 +9,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '22' }
-      - name: Update
-        env: { REWAA_EMAIL: info@paftah.com, REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}, REWAA_DASH_PHONE: ${{ secrets.REWAA_DASH_PHONE }} }
+        with:
+          node-version: '22'
+      - name: Update all
+        env:
+          REWAA_EMAIL: info@paftah.com
+          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
         run: |
           node scripts/update-report.mjs
           node scripts/fetch-q2-tax.mjs
