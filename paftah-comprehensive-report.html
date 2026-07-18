@@ -4182,11 +4182,11 @@ function initDailyTab() {
   html += '<div class="card-title">ملخص اليوم — ' + today.date + '</div>';
   html += '<div class="kpi-grid">';
   html += '<div class="kpi-card info"><div class="kpi-label">المبيعات</div><div class="kpi-value">' + fmt(today.sales) + ' ر.س</div><div class="kpi-sub">' + today.salesCount + ' فاتورة</div></div>';
-  html += '<div class="kpi-card success"><div class="kpi-label">التحصيل النقدي</div><div class="kpi-value">' + fmt(today.collected) + ' ر.س</div></div>';
+  html += '<div class="kpi-card success"><div class="kpi-label">البيع النقدي</div><div class="kpi-value">' + fmt(today.cashSales) + ' ر.س</div><div class="kpi-sub">كاش محصّل</div></div>';
+  html += '<div class="kpi-card warning"><div class="kpi-label">البيع الآجل</div><div class="kpi-value">' + fmt(today.creditSales) + ' ر.س</div><div class="kpi-sub">على الحساب</div></div>';
   html += '<div class="kpi-card danger"><div class="kpi-label">المرتجعات</div><div class="kpi-value">' + fmt(today.returns) + ' ر.س</div><div class="kpi-sub">' + today.returnsCount + ' فاتورة</div></div>';
-  html += '<div class="kpi-card warning"><div class="kpi-label">عملاء اليوم</div><div class="kpi-value">' + today.customers + '</div></div>';
+  html += '<div class="kpi-card"><div class="kpi-label">عملاء اليوم</div><div class="kpi-value">' + today.customers + '</div></div>';
   html += '<div class="kpi-card"><div class="kpi-label">صافي اليوم</div><div class="kpi-value">' + fmt(today.net) + ' ر.س</div></div>';
-  html += '<div class="kpi-card"><div class="kpi-label">متوسط الفاتورة</div><div class="kpi-value">' + (today.salesCount > 0 ? fmt(today.sales / today.salesCount) : '0') + ' ر.س</div></div>';
   html += '</div></div>';
 
   // Weekday analysis
@@ -4201,8 +4201,8 @@ function initDailyTab() {
   // Daily table
   html += '<div class="card"><div class="card-title">سجل كل الأيام</div>';
   html += '<div class="smart-filter-bar"><input type="text" class="smart-filter-input" id="dailySearch" placeholder="بحث بالتاريخ..." oninput="filterDaily()"></div>';
-  html += '<div class="table-wrapper" style="max-height:500px;overflow-y:auto"><table class="data-table" id="dailyTable"><thead style="position:sticky;top:0"><tr><th>التاريخ</th><th>المبيعات</th><th>الفواتير</th><th>المرتجعات</th><th>التحصيل</th><th>الصافي</th><th>العملاء</th><th>متوسط الفاتورة</th></tr></thead><tbody id="dailyBody"></tbody>';
-  html += '<tfoot><tr style="background:var(--primary-light);font-weight:700"><td colspan="1">الإجمالي</td><td id="dailyFootSales">0</td><td id="dailyFootCount">0</td><td id="dailyFootReturns">0</td><td id="dailyFootCollected">0</td><td id="dailyFootNet">0</td><td id="dailyFootCustomers">0</td><td>—</td></tr></tfoot>';
+  html += '<div class="table-wrapper" style="max-height:500px;overflow-y:auto"><table class="data-table" id="dailyTable"><thead style="position:sticky;top:0"><tr><th>التاريخ</th><th>المبيعات</th><th>الفواتير</th><th>البيع النقدي</th><th>البيع الآجل</th><th>المرتجعات</th><th>الصافي</th><th>العملاء</th><th>متوسط الفاتورة</th></tr></thead><tbody id="dailyBody"></tbody>';
+  html += '<tfoot><tr style="background:var(--primary-light);font-weight:700"><td>الإجمالي</td><td id="dailyFootSales">0</td><td id="dailyFootCount">0</td><td id="dailyFootCash">0</td><td id="dailyFootCredit">0</td><td id="dailyFootReturns">0</td><td id="dailyFootNet">0</td><td id="dailyFootCustomers">0</td><td>—</td></tr></tfoot>';
   html += '</table></div></div>';
 
   document.getElementById('dailyContent').innerHTML = html;
@@ -4230,16 +4230,17 @@ function initDailyTab() {
 
 function renderDailyTable(data) {
   var html = '';
-  var tSales = 0, tCount = 0, tReturns = 0, tCollected = 0, tNet = 0, tCustomers = 0;
+  var tSales = 0, tCount = 0, tReturns = 0, tCash = 0, tCredit = 0, tNet = 0, tCustomers = 0;
   data.forEach(function(d) {
-    tSales += d.sales; tCount += d.salesCount; tReturns += d.returns; tCollected += d.collected; tNet += d.net; tCustomers += d.customers;
-    html += '<tr><td style="font-weight:500">' + d.date + '</td><td class="amount positive">' + fmt(d.sales) + '</td><td>' + d.salesCount + '</td><td class="amount ' + (d.returns > 0 ? 'negative' : '') + '">' + (d.returns > 0 ? '-' : '') + fmt(d.returns) + '</td><td class="amount">' + fmt(d.collected) + '</td><td class="amount" style="font-weight:600">' + fmt(d.net) + '</td><td>' + d.customers + '</td><td>' + (d.salesCount > 0 ? fmt(d.sales / d.salesCount) : '0') + '</td></tr>';
+    tSales += d.sales; tCount += d.salesCount; tReturns += d.returns; tCash += (d.cashSales||0); tCredit += (d.creditSales||0); tNet += d.net; tCustomers += d.customers;
+    html += '<tr><td style="font-weight:500">' + d.date + '</td><td class="amount positive">' + fmt(d.sales) + '</td><td>' + d.salesCount + '</td><td class="amount" style="color:var(--success);font-weight:600">' + fmt(d.cashSales||0) + '</td><td class="amount" style="color:var(--warning)">' + fmt(d.creditSales||0) + '</td><td class="amount ' + (d.returns > 0 ? 'negative' : '') + '">' + (d.returns > 0 ? '-' : '') + fmt(d.returns) + '</td><td class="amount" style="font-weight:600">' + fmt(d.net) + '</td><td>' + d.customers + '</td><td>' + (d.salesCount > 0 ? fmt(d.sales / d.salesCount) : '0') + '</td></tr>';
   });
   document.getElementById('dailyBody').innerHTML = html;
   document.getElementById('dailyFootSales').textContent = fmt(tSales);
   document.getElementById('dailyFootCount').textContent = tCount;
+  document.getElementById('dailyFootCash').textContent = fmt(tCash);
+  document.getElementById('dailyFootCredit').textContent = fmt(tCredit);
   document.getElementById('dailyFootReturns').textContent = fmt(tReturns);
-  document.getElementById('dailyFootCollected').textContent = fmt(tCollected);
   document.getElementById('dailyFootNet').textContent = fmt(tNet);
   document.getElementById('dailyFootCustomers').textContent = tCustomers;
 }
