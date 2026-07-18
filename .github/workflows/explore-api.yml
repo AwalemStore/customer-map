@@ -7,7 +7,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: '22' }
-      - name: Debug payment methods
+      - name: Debug specific customers
         env:
           REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
-        run: node scripts/debug-pm.mjs
+        run: node scripts/debug-specific.mjs
