@@ -1,17 +1,20 @@
-name: Explore API
+name: Aging Run
 on:
   workflow_dispatch:
 permissions:
   contents: write
 jobs:
-  explore:
+  aging:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '22' }
-      - name: Aging
-        env: { REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}, REWAA_EMAIL: info@paftah.com }
+        with:
+          node-version: '22'
+      - name: Aging report
+        env:
+          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
+          REWAA_EMAIL: info@paftah.com
         run: node scripts/fetch-aging.mjs
       - name: Commit
         run: |

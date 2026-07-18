@@ -1616,6 +1616,8 @@ body {
     <button class="tab-btn" onclick="switchTab('tax')">ضرائب Q2</button>
     <button class="tab-btn" onclick="switchTab('q1returns')">مرتجعات Q1</button>
     <button class="tab-btn" onclick="switchTab('vip')">العملاء المميزين</button>
+    <button class="tab-btn" onclick="switchTab('taxes')">الضرائب</button>
+    <button class="tab-btn" onclick="switchTab('daily')">ملخص يومي</button>
     <button class="tab-btn" onclick="switchTab('activity')">سجل النشاطات</button>
     <button class="tab-btn" onclick="switchTab('whatsapp')">واتساب</button>
   </nav>
@@ -2444,6 +2446,16 @@ body {
       </table>
     </div>
   </div>
+</div>
+
+<!-- ==================== TAB: ALL TAXES ==================== -->
+<div id="tab-taxes" class="tab-panel">
+  <div id="taxesContent"></div>
+</div>
+
+<!-- ==================== TAB: DAILY SUMMARY ==================== -->
+<div id="tab-daily" class="tab-panel">
+  <div id="dailyContent"></div>
 </div>
 
 <!-- ==================== TAB 6: ACTIVITY LOG ==================== -->
