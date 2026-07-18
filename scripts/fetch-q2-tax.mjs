@@ -27,11 +27,11 @@ async function fetchAllInvoicesQ2(token) {
   console.log('[2/3] Fetching Q2 invoices (Apr-Jun 2026)...');
   const allInvoices = [];
   let offset = 0;
-  const limit = 200;
+  const limit = 50;
   let hasMore = true;
   
   while (hasMore) {
-    const res = await fetch(`${API_BASE}/enigma/invoices?offset=${offset}&limit=${limit}&query=`, {
+    const res = await fetch(`${API_BASE}/enigma/invoices?query=&limit=${limit}&offset=${offset}`, {
       headers: { accept: 'application/json', authorization: `Bearer ${token}` },
     });
     if (!res.ok) { console.log(`API returned ${res.status}`); break; }
