@@ -34,11 +34,9 @@ while (hasMore) {
     if (d.getFullYear() === 2026 && d.getMonth() <= 6) {
       allInvoices.push({
         id: inv.id,
-        sourceId: inv.sourceId,
         num: inv.invoiceNumber,
         date: (inv.completionDate || inv.date).substring(0, 10),
         customer: (inv.customerName || '').trim(),
-        customerId: inv.customerId,
         type: inv.isReturn || inv.invoiceNumber?.startsWith('R') ? 'return' : 'sale',
         total: parseFloat(inv.total || 0),
         paid: parseFloat(inv.paidAmount || 0),
@@ -52,10 +50,6 @@ while (hasMore) {
   console.log(`  Fetched ${offset}, total: ${allInvoices.length}`);
 }
 
-// Build lookup: invoice ID -> invoice
-const invoiceById = {};
-allInvoices.forEach(i => { invoiceById[i.id] = i; });
-
 // Q1 sales = Jan(0) to Mar(2)
 const q1Sales = allInvoices.filter(i => i.type === 'sale' && i.month >= 0 && i.month <= 2);
 // All returns after Q1 = Apr(3) onwards
@@ -64,57 +58,45 @@ const laterReturns = allInvoices.filter(i => i.type === 'return' && i.month >= 3
 console.log(`\nQ1 Sales (Jan-Mar): ${q1Sales.length}`);
 console.log(`Returns after Q1 (Apr+): ${laterReturns.length}`);
 
-// Build Q1 sales lookup by invoice ID
-const q1SaleIds = new Set(q1Sales.map(s => s.id));
+// Build Q1 sales index by customer
+const q1ByCustomer = {};
+q1Sales.forEach(s => {
+  const key = s.customer;
+  if (!q1ByCustomer[key]) q1ByCustomer[key] = [];
+  q1ByCustomer[key].push(s);
+});
 
-// Match each return to its ORIGINAL sale using sourceId
+// For each return, find the ORIGINAL sale it belongs to
+// Logic: same customer + same date (or within 1 day) + same amount = linked
 const matchedReturns = [];
 
 laterReturns.forEach(r => {
-  // Method 1: Direct link via sourceId
-  let originalSale = null;
-  if (r.sourceId && invoiceById[r.sourceId]) {
-    originalSale = invoiceById[r.sourceId];
+  const customerSales = q1ByCustomer[r.customer] || [];
+  if (customerSales.length === 0) {
+    console.log(`  ✗ ${r.customer.substring(0,30)} | no Q1 sales`);
+    return;
   }
 
-  // Check if the original sale was in Q1
-  if (originalSale && originalSale.month >= 0 && originalSale.month <= 2) {
+  // Find the sale that matches this return
+  // Priority: same date + same amount, then same amount only
+  let matched = customerSales.find(s => s.date === r.date && s.total === r.total);
+  if (!matched) matched = customerSales.find(s => s.total === r.total);
+  if (!matched) matched = customerSales.find(s => Math.abs(s.total - r.total) < 1);
+
+  if (matched) {
     matchedReturns.push({
       returnInvoice: r.num,
       returnDate: r.date,
       returnAmount: r.total,
       customer: r.customer,
-      paymentMethod: r.pm,
-      originalSaleInvoice: originalSale.num,
-      originalSaleDate: originalSale.date,
-      originalSaleAmount: originalSale.total,
+      originalSaleInvoice: matched.num,
+      originalSaleDate: matched.date,
+      originalSaleAmount: matched.total,
     });
-    console.log(`  ✓ MATCH (sourceId): ${r.customer.substring(0,30)} | return ${r.num} → original ${originalSale.num} (${originalSale.date})`);
-  } else if (!originalSale) {
-    // Method 2: Same date + same customer (fallback)
-    const sameDateSale = allInvoices.find(s => 
-      s.type === 'sale' && 
-      s.date === r.date && 
-      s.customer === r.customer &&
-      s.month >= 0 && s.month <= 2
-    );
-    if (sameDateSale) {
-      matchedReturns.push({
-        returnInvoice: r.num,
-        returnDate: r.date,
-        returnAmount: r.total,
-        customer: r.customer,
-        paymentMethod: r.pm,
-        originalSaleInvoice: sameDateSale.num,
-        originalSaleDate: sameDateSale.date,
-        originalSaleAmount: sameDateSale.total,
-      });
-      console.log(`  ✓ MATCH (same date): ${r.customer.substring(0,30)} | return ${r.num} → original ${sameDateSale.num} (${sameDateSale.date})`);
-    } else {
-      console.log(`  ✗ NO Q1 MATCH: ${r.customer.substring(0,30)} | return ${r.num} (${r.date}) ${r.total}`);
-    }
+    console.log(`  ✓ ${r.customer.substring(0,30)} | ${r.num} → ${matched.num} Q1 (${matched.date}) = ${r.total}`);
   } else {
-    console.log(`  ✗ NOT Q1: ${r.customer.substring(0,30)} | return ${r.num} → original was ${originalSale.date} (not Q1)`);
+    // The return customer had Q1 sales, but amounts don't match → the return is for a Q2 sale
+    console.log(`  ✗ ${r.customer.substring(0,30)} | return ${r.total} doesn't match any Q1 sale amount`);
   }
 });
 
@@ -122,7 +104,6 @@ console.log(`\nMatched Q1 returns: ${matchedReturns.length}`);
 console.log(`Total return amount: ${matchedReturns.reduce((s, r) => s + r.returnAmount, 0).toFixed(2)}`);
 console.log(`VAT deduction (15%): ${(matchedReturns.reduce((s, r) => s + r.returnAmount, 0) * 15 / 115).toFixed(2)}`);
 
-// Build data for HTML
 const returnData = {
   count: matchedReturns.length,
   totalReturns: +matchedReturns.reduce((s, r) => s + r.returnAmount, 0).toFixed(2),
@@ -135,20 +116,18 @@ const returnData = {
     returnAmount: +r.returnAmount.toFixed(2),
     vat: +(r.returnAmount * 15 / 115).toFixed(2),
     net: +(r.returnAmount * 100 / 115).toFixed(2),
-    paymentMethod: r.paymentMethod,
     originalSaleInvoice: r.originalSaleInvoice,
     originalSaleDate: r.originalSaleDate,
     originalSaleAmount: +r.originalSaleAmount.toFixed(2),
   })),
 };
 
-// Inject into HTML
 const htmlPath = join(REPO_ROOT, 'paftah-comprehensive-report.html');
 let html = readFileSync(htmlPath, 'utf-8');
 html = html.replace(/\nconst Q1_RETURNS_DATA = .*?;\n/g, '\n');
-const taxFuncIdx = html.indexOf('// ===== Q1 RETURNS');
-if (taxFuncIdx > -1) {
-  html = html.substring(0, taxFuncIdx) + `\nconst Q1_RETURNS_DATA = ${JSON.stringify(returnData)};\n` + html.substring(taxFuncIdx);
+const idx = html.indexOf('// ===== Q1 RETURNS');
+if (idx > -1) {
+  html = html.substring(0, idx) + `\nconst Q1_RETURNS_DATA = ${JSON.stringify(returnData)};\n` + html.substring(idx);
 }
 writeFileSync(htmlPath, html, 'utf-8');
-console.log('\n✓ Updated HTML with Q1 returns data');
+console.log('\n✓ Updated HTML');
