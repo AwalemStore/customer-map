@@ -4177,20 +4177,17 @@ function initDailyTab() {
 
   var html = '';
 
-  // Today's summary
-  var today = data[0];
-  var yesterday = data[1];
+  // Date picker
   html += '<div class="card" style="border-top:4px solid var(--primary)">';
-  html += '<div class="card-title">ملخص اليوم — ' + today.date + '</div>';
-  html += '<div class="kpi-grid">';
-  html += '<div class="kpi-card info"><div class="kpi-label">المبيعات</div><div class="kpi-value">' + fmt(today.sales) + ' ر.س</div><div class="kpi-sub">' + today.salesCount + ' فاتورة</div></div>';
-  html += '<div class="kpi-card success"><div class="kpi-label">البيع النقدي</div><div class="kpi-value">' + fmt(today.cashSales||0) + ' ر.س</div><div class="kpi-sub">فواتير بيع كاش</div></div>';
-  html += '<div class="kpi-card" style="border-top-color:#8B5CF6"><div class="kpi-label">تحصيل دفعات</div><div class="kpi-value">' + fmt(today.cashCollections||0) + ' ر.س</div><div class="kpi-sub">سداد ديون</div></div>';
-  html += '<div class="kpi-card warning"><div class="kpi-label">البيع الآجل</div><div class="kpi-value">' + fmt(today.creditSales) + ' ر.س</div><div class="kpi-sub">على الحساب</div></div>';
-  html += '<div class="kpi-card danger"><div class="kpi-label">المرتجعات</div><div class="kpi-value">' + fmt(today.returns) + ' ر.س</div><div class="kpi-sub">' + today.returnsCount + ' فاتورة</div></div>';
-  html += '<div class="kpi-card"><div class="kpi-label">عملاء اليوم</div><div class="kpi-value">' + today.customers + '</div></div>';
-  html += '<div class="kpi-card"><div class="kpi-label">صافي اليوم</div><div class="kpi-value">' + fmt(today.net) + ' ر.س</div></div>';
-  html += '</div></div>';
+  html += '<div class="card-title">اختر التاريخ</div>';
+  html += '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">';
+  html += '<input type="date" id="dailyDatePicker" value="' + data[0].date + '" min="' + data[data.length-1].date + '" max="' + data[0].date + '" onchange="showDailySummary()" style="padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-family:inherit;font-size:1rem;color:var(--text);background:white">';
+  html += '<button onclick="dailyPrevDay()" style="padding:10px 16px;border:1px solid var(--border);border-radius:10px;background:white;cursor:pointer;font-family:inherit;font-size:0.85rem">← اليوم السابق</button>';
+  html += '<button onclick="dailyNextDay()" style="padding:10px 16px;border:1px solid var(--border);border-radius:10px;background:white;cursor:pointer;font-family:inherit;font-size:0.85rem">اليوم التالي →</button>';
+  html += '<button onclick="document.getElementById(\'dailyDatePicker\').value=\'' + data[0].date + '\';showDailySummary()" style="padding:10px 16px;border:1px solid var(--primary);border-radius:10px;background:var(--primary);color:white;cursor:pointer;font-family:inherit;font-size:0.85rem">اليوم</button>';
+  html += '</div>';
+  html += '<div id="dailySelectedSummary" style="margin-top:20px"></div>';
+  html += '</div>';
 
   // Weekday analysis
   if (weekdays) {
@@ -4212,6 +4209,9 @@ function initDailyTab() {
 
   // Populate table
   renderDailyTable(data);
+
+  // Show initial summary
+  showDailySummary();
 
   // Weekday chart
   if (weekdays) {
@@ -4247,6 +4247,62 @@ function renderDailyTable(data) {
   document.getElementById('dailyFootReturns').textContent = fmt(tReturns);
   document.getElementById('dailyFootNet').textContent = fmt(tNet);
   document.getElementById('dailyFootCustomers').textContent = tCustomers;
+}
+
+function showDailySummary() {
+  var date = document.getElementById('dailyDatePicker').value;
+  var data = DAILY_SUMMARY.find(d => d.date === date);
+  var el = document.getElementById('dailySelectedSummary');
+  if (!data) { el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary)">لا توجد بيانات لهذا التاريخ</div>'; return; }
+  
+  var avgInv = data.salesCount > 0 ? data.sales / data.salesCount : 0;
+  var html = '<div class="kpi-grid">';
+  html += '<div class="kpi-card info"><div class="kpi-label">المبيعات</div><div class="kpi-value">' + fmt(data.sales) + ' ر.س</div><div class="kpi-sub">' + data.salesCount + ' فاتورة</div></div>';
+  html += '<div class="kpi-card success"><div class="kpi-label">البيع النقدي</div><div class="kpi-value">' + fmt(data.cashSales||0) + ' ر.س</div><div class="kpi-sub">فواتير كاش جديدة</div></div>';
+  html += '<div class="kpi-card" style="border-top-color:#8B5CF6"><div class="kpi-label">تحصيل دفعات</div><div class="kpi-value">' + fmt(data.cashCollections||0) + ' ر.س</div><div class="kpi-sub">سداد ديون سابقة</div></div>';
+  html += '<div class="kpi-card warning"><div class="kpi-label">البيع الآجل</div><div class="kpi-value">' + fmt(data.creditSales||0) + ' ر.س</div><div class="kpi-sub">على الحساب</div></div>';
+  html += '<div class="kpi-card danger"><div class="kpi-label">المرتجعات</div><div class="kpi-value">' + fmt(data.returns) + ' ر.س</div><div class="kpi-sub">' + data.returnsCount + ' فاتورة</div></div>';
+  html += '<div class="kpi-card"><div class="kpi-label">العملاء</div><div class="kpi-value">' + data.customers + '</div></div>';
+  html += '<div class="kpi-card"><div class="kpi-label">الصافي</div><div class="kpi-value">' + fmt(data.net) + ' ر.س</div></div>';
+  html += '<div class="kpi-card"><div class="kpi-label">متوسط الفاتورة</div><div class="kpi-value">' + fmt(avgInv) + ' ر.س</div></div>';
+  html += '</div>';
+  
+  // Payment breakdown bar
+  var totalIn = (data.cashSales||0) + (data.cashCollections||0) + (data.creditSales||0);
+  if (totalIn > 0) {
+    html += '<div style="margin-top:16px;padding:14px 18px;background:#FAFAFE;border-radius:12px">';
+    html += '<div style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);margin-bottom:10px">توزيع الدخل</div>';
+    html += '<div style="display:flex;height:32px;border-radius:8px;overflow:hidden">';
+    if (data.cashSales > 0) html += '<div style="width:' + (data.cashSales/totalIn*100) + '%;background:var(--success);display:flex;align-items:center;justify-content:center;color:white;font-size:0.7rem;font-weight:600">' + (data.cashSales/totalIn > 10 ? 'نقدي ' + fmt(data.cashSales) : '') + '</div>';
+    if (data.cashCollections > 0) html += '<div style="width:' + (data.cashCollections/totalIn*100) + '%;background:#8B5CF6;display:flex;align-items:center;justify-content:center;color:white;font-size:0.7rem;font-weight:600">' + (data.cashCollections/totalIn > 10 ? 'تحصيل ' + fmt(data.cashCollections) : '') + '</div>';
+    if (data.creditSales > 0) html += '<div style="width:' + (data.creditSales/totalIn*100) + '%;background:var(--warning);display:flex;align-items:center;justify-content:center;color:white;font-size:0.7rem;font-weight:600">' + (data.creditSales/totalIn > 10 ? 'آجل ' + fmt(data.creditSales) : '') + '</div>';
+    html += '</div>';
+    html += '<div style="display:flex;gap:16px;margin-top:8px;font-size:0.72rem;color:var(--text-secondary)">';
+    html += '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--success);margin-left:4px"></span> بيع نقدي</span>';
+    html += '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#8B5CF6;margin-left:4px"></span> تحصيل دفعات</span>';
+    html += '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--warning);margin-left:4px"></span> بيع آجل</span>';
+    html += '</div>';
+    html += '</div>';
+  }
+  
+  el.innerHTML = html;
+}
+
+function dailyPrevDay() {
+  var picker = document.getElementById('dailyDatePicker');
+  var d = new Date(picker.value);
+  d.setDate(d.getDate() - 1);
+  picker.value = d.toISOString().substring(0, 10);
+  showDailySummary();
+}
+
+function dailyNextDay() {
+  var picker = document.getElementById('dailyDatePicker');
+  var maxDate = DAILY_SUMMARY[0].date;
+  var d = new Date(picker.value);
+  d.setDate(d.getDate() + 1);
+  var newDate = d.toISOString().substring(0, 10);
+  if (newDate <= maxDate) { picker.value = newDate; showDailySummary(); }
 }
 
 function filterDaily() {
