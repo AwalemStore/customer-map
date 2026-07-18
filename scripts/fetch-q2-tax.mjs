@@ -113,7 +113,7 @@ function updateTaxTab(q2Invoices) {
   console.log(`  ✓ VAT (15%): ${q2Data.vatAmount.toFixed(2)}`);
 
   // Inject Q2_DATA into the HTML before the tax functions
-  const q2DataScript = `\n<script>const Q2_TAX_DATA = ${JSON.stringify(q2Data)};</script>\n`;
+  const q2DataScript = `\nconst Q2_TAX_DATA = ${JSON.stringify(q2Data)};\n`;
   
   // Remove old Q2_TAX_DATA if exists
   html = html.replace(/<script>const Q2_TAX_DATA = .*?;<\/script>\n?/g, '');
