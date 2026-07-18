@@ -119,16 +119,17 @@ function updateTaxTab(q2Invoices) {
   console.log(`  ✓ Total collected: ${q2Data.totalCollected.toFixed(2)}`);
   console.log(`  ✓ VAT (15%): ${q2Data.vatAmount.toFixed(2)}`);
 
-  // Inject Q2_DATA into the HTML before the tax functions
-  const q2DataScript = `\nconst Q2_TAX_DATA = ${JSON.stringify(q2Data)};\n`;
+  // Inject Q2_DATA into the HTML
+  const q2DataLine = `\nconst Q2_TAX_DATA = ${JSON.stringify(q2Data)};\n`;
   
-  // Remove old Q2_TAX_DATA if exists
+  // Remove old Q2_TAX_DATA if exists (both with and without script tags)
   html = html.replace(/<script>const Q2_TAX_DATA = .*?;<\/script>\n?/g, '');
+  html = html.replace(/\nconst Q2_TAX_DATA = .*?;\n/g, '\n');
   
   // Insert before the tax functions
   const taxFuncIdx = html.indexOf('// ===== TAX TAB');
   if (taxFuncIdx > -1) {
-    html = html.substring(0, taxFuncIdx) + q2DataScript + html.substring(taxFuncIdx);
+    html = html.substring(0, taxFuncIdx) + q2DataLine + html.substring(taxFuncIdx);
   }
 
   // Replace the tax table render function to use Q2 data
