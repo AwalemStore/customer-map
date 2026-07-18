@@ -225,8 +225,16 @@ let html = readFileSync(htmlPath, 'utf-8');
 html = html.replace(/\nconst WEEKLY_REPORT = .*?;\n/g, '\n');
 html = html.replace(/\nconst MONTHLY_REPORT = .*?;\n/g, '\n');
 html = html.replace(/\nconst FULL_AUDIT = .*?;\n/g, '\n');
-const dataStr = `\nconst WEEKLY_REPORT = ${JSON.stringify(weekly.map(w => ({...w, customers: w.uniqueCustomers}))});\nconst MONTHLY_REPORT = ${JSON.stringify(monthly)};\nconst FULL_AUDIT = ${JSON.stringify(audit)};\n`;
+const dataStr = `\nconst WEEKLY_REPORT = ${JSON.stringify(weekly.map(w => ({weekStart: w.weekStart, weekEnd: w.weekEnd, sales: w.sales, salesCount: w.salesCount, returns: w.returns, returnsCount: w.returnsCount, cashSales: w.cashSales, cashCollections: w.cashCollections, creditSales: w.creditSales, totalCashIn: w.totalCashIn, net: w.net, avgPerDay: w.avgPerDay, avgInvoice: w.avgInvoice, activeDays: w.activeDays, customers: w.uniqueCustomers}))});\nconst MONTHLY_REPORT = ${JSON.stringify(monthly)};\nconst FULL_AUDIT = ${JSON.stringify(audit)};\n`;
 const idx = html.indexOf('// ===== TAXES TAB');
 if (idx > -1) html = html.substring(0, idx) + dataStr + html.substring(idx);
 writeFileSync(htmlPath, html, 'utf-8');
 console.log('\n✓ All reports injected');
+
+// Clean any remaining Set objects
+function cleanForJson(obj) {
+  return JSON.parse(JSON.stringify(obj, (key, value) => {
+    if (value instanceof Set) return [...value];
+    return value;
+  }));
+}
