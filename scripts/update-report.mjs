@@ -291,15 +291,34 @@ function updateHtmlReport(paftahData, invoiceArray, monthlyStats, inventoryValue
   const newDataStr = `const PAFTAH_DATA = ${JSON.stringify(paftahData)}`;
   html = html.substring(0, dataStart) + newDataStr + ';' + html.substring(dataEnd);
 
+  // --- Build per-month expense map from expenses API ---
+  const monthExpenses = {};
+  if (extras?.expenses) {
+    const expData = extras.expenses.data || extras.expenses.resultSet || extras.expenses || [];
+    if (Array.isArray(expData)) {
+      expData.forEach(e => {
+        const amount = parseFloat(e.amount || e.totalAmount || 0);
+        const d = new Date(e.createdAt || e.date);
+        if (d.getFullYear() === 2026) {
+          const m = d.getMonth() + 1;
+          monthExpenses[m] = (monthExpenses[m] || 0) + amount;
+        }
+      });
+    }
+  }
+
   // --- Update PAFTAH_DATA.monthly ---
-  const monthlyArr = monthlyStats.map((m, i) => {
+  const monthlyArr = monthlyStats
+    .filter(m => (m.totalSales || 0) > 0) // skip empty months
+    .map((m, i, arr) => {
     const monthName = AR_MONTHS[m.month - 1];
     const sales = m.totalSales || 0;
     const ops = m.salesCount || 0;
     const profit = m.grossProfit || 0;
     const margin = sales > 0 ? +((profit / sales) * 100).toFixed(1) : 0;
-    const netIncome = profit - (m.totalExpenses || 0);
-    const isLast = i === monthlyStats.length - 1;
+    const expenses = monthExpenses[m.month] || 0;
+    const netIncome = +(profit - expenses).toFixed(2);
+    const isLast = i === arr.length - 1;
     const entry = { month: monthName, sales, ops, profit, netIncome, margin };
     if (isLast && endDateObj.getDate() < 28) entry.note = `(1-${endDateObj.getDate()})`;
     return entry;
@@ -316,7 +335,7 @@ function updateHtmlReport(paftahData, invoiceArray, monthlyStats, inventoryValue
   // --- Replace invoices array ---
   if (invoiceArray.length > 0) {
     const invStart = html.indexOf('const invoices = ');
-    const invEnd = html.indexOf('];', invStart) + 2;
+    const invEnd = html.indexOf('];', invStart) + 2
     const newInvStr = `const invoices = ${JSON.stringify(invoiceArray)}`;
     html = html.substring(0, invStart) + newInvStr + ';' + html.substring(invEnd);
   }
