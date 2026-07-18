@@ -1,5 +1,7 @@
 name: Data Update
 on:
+  schedule:
+    - cron: '0 0 * * *'
   workflow_dispatch:
 permissions:
   contents: write
@@ -21,10 +23,11 @@ jobs:
           node scripts/fetch-q1-returns.mjs
           node scripts/fetch-aging.mjs
           node scripts/customer-analytics.mjs
-          node scripts/fetch-dashboard.mjs || true
+          node scripts/fetch-dashboard.mjs
+          node scripts/fetch-reports.mjs
       - name: Commit
         run: |
           git config user.name "Paftah Bot"
           git config user.email "bot@paftah.com"
           git add paftah-comprehensive-report.html
-          git diff --staged --quiet || (git commit -m "full data update $(date -u +'%Y-%m-%d %H:%M')" && git push)
+          git diff --staged --quiet || (git commit -m "auto: $(date -u +'%Y-%m-%d %H:%M')" && git push)
