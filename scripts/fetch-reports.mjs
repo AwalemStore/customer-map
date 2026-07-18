@@ -1,3 +1,11 @@
+
+function cleanForJson(obj) {
+  return JSON.parse(JSON.stringify(obj, (key, value) => {
+    if (value instanceof Set) return [...value];
+    return value;
+  }));
+}
+
 import { readFileSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -208,12 +216,6 @@ console.log(`\n=== AUDIT ===`);
 console.log(JSON.stringify(audit, null, 2));
 
 
-function cleanForJson(obj) {
-  return JSON.parse(JSON.stringify(obj, (key, value) => {
-    if (value instanceof Set) return [...value];
-    return value;
-  }));
-}
 
 // ===== INJECT INTO HTML =====
 const htmlPath = join(REPO_ROOT, 'paftah-comprehensive-report.html');
@@ -228,9 +230,3 @@ writeFileSync(htmlPath, html, 'utf-8');
 console.log('\n✓ All reports injected');
 
 // Clean any remaining Set objects
-function cleanForJson(obj) {
-  return JSON.parse(JSON.stringify(obj, (key, value) => {
-    if (value instanceof Set) return [...value];
-    return value;
-  }));
-}
