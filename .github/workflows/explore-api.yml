@@ -1,0 +1,14 @@
+name: Explore Rewaa API
+on: workflow_dispatch
+jobs:
+  explore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Explore API endpoints
+        env:
+          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
+        run: node scripts/explore-payments.mjs
