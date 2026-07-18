@@ -1,6 +1,8 @@
 name: Explore API
 on:
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   explore:
     runs-on: ubuntu-latest
