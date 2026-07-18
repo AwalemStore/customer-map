@@ -12,4 +12,4 @@ jobs:
       - name: Debug
         env:
           REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
-        run: node scripts/check-april1.mjs
+        run: node scripts/debug-sales-diff.mjs
