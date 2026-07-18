@@ -120,7 +120,7 @@ const daily = Object.values(dailyMap).map(d => {
     cashSales: +cashSales.toFixed(2),              // بيع نقدي (فواتير بيع جديدة بالكاش)
     cashSalesCount: d.cashSaleInvoices,            // عدد فواتير البيع النقدي
     cashCollections: +cashCollections.toFixed(2),   // تحصيل دفعات (سداد ديون قديمة بالكاش)
-    creditSales: +d.postPayTotal.toFixed(2),        // بيع آجل (من الفواتير مباشرة)
+    creditSales: +(d.sales - d.cashSaleTotal).toFixed(2),  // بيع آجل = المتبقي بعد النقدي
     cardSales: +pm.cardTotal.toFixed(2),            // بطاقة
     rewaaPaySales: +pm.rewaaTotal.toFixed(2),       // رواء باي
     totalCashIn: +pm.cashTotal.toFixed(2),          // إجمالي الكاش الداخل (بيع + تحصيل)
