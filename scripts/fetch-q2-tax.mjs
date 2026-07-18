@@ -76,31 +76,53 @@ function updateTaxTab(q2Invoices) {
   let html = readFileSync(htmlPath, 'utf-8');
 
   // Build Q2 invoice data for the tax tab
-  // Only sales (not returns) with ACTUAL cash/card collection (NOT آجل/CustomerDebit)
-  const q2Sales = q2Invoices.filter(i => i.type === 'sale' && i.actualCollected > 0);
+  // Step 1: Get all Q2 sales and returns
+  const q2Sales = q2Invoices.filter(i => i.type === 'sale');
+  const q2Returns = q2Invoices.filter(i => i.type === 'return');
   
-  // Group by customer - use actualCollected instead of paidAmount
+  // Step 2: Subtract returns per customer
+  const returnsByCustomer = {};
+  q2Returns.forEach(r => {
+    const name = r.customerName || 'غير محدد';
+    returnsByCustomer[name] = (returnsByCustomer[name] || 0) + r.total;
+  });
+  
+  // Step 3: Only include sales where customer ACTUALLY paid (paidAmount > 0)
+  // Then subtract any returns for that customer
+  const q2Paid = q2Sales.filter(i => i.paidAmount > 0);
+  
+  // Group by customer - use paidAmount, subtract returns
   const customerMap = {};
-  q2Sales.forEach(inv => {
+  q2Paid.forEach(inv => {
     const name = inv.customerName || 'غير محدد';
     if (!customerMap[name]) {
-      customerMap[name] = { name, sales: [], totalPaid: 0, totalSales: 0, invoiceCount: 0, dates: [] };
+      customerMap[name] = { name, sales: [], totalPaid: 0, totalSales: 0, invoiceCount: 0, dates: [], returns: 0 };
     }
     customerMap[name].sales.push(inv);
-    customerMap[name].totalPaid += inv.actualCollected;  // ACTUAL cash, not آجل
+    customerMap[name].totalPaid += inv.paidAmount;
     customerMap[name].totalSales += inv.total;
     customerMap[name].invoiceCount++;
     customerMap[name].dates.push(inv.date);
   });
-
-  const customers = Object.values(customerMap).sort((a, b) => b.totalPaid - a.totalPaid);
+  
+  // Subtract returns from each customer's total
+  Object.keys(customerMap).forEach(name => {
+    const ret = returnsByCustomer[name] || 0;
+    customerMap[name].returns = ret;
+    customerMap[name].totalPaid = Math.max(0, customerMap[name].totalPaid - ret);
+  });
+  
+  // Remove customers whose net paid is 0 after returns (like المتحدون: paid 6000 but returned 6000)
+  const customers = Object.values(customerMap)
+    .filter(c => c.totalPaid > 0)
+    .sort((a, b) => b.totalPaid - a.totalPaid);
   
   // Build the Q2 data JSON
   const q2Data = {
     totalCollected: customers.reduce((s, c) => s + c.totalPaid, 0),
     totalSales: customers.reduce((s, c) => s + c.totalSales, 0),
     customerCount: customers.length,
-    invoiceCount: q2Sales.length,
+    invoiceCount: q2Paid.length,
     vatAmount: customers.reduce((s, c) => s + c.totalPaid * 15 / 115, 0),
     netAmount: customers.reduce((s, c) => s + c.totalPaid * 100 / 115, 0),
     customers: customers.map(c => ({
