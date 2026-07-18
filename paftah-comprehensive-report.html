@@ -4185,7 +4185,7 @@ function initDailyTab() {
   html += '<input type="date" id="dailyDatePicker" value="' + data[0].date + '" min="' + data[data.length-1].date + '" max="' + data[0].date + '" onchange="showDailySummary()" style="padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-family:inherit;font-size:1rem;color:var(--text);background:white">';
   html += '<button onclick="dailyPrevDay()" style="padding:10px 16px;border:1px solid var(--border);border-radius:10px;background:white;cursor:pointer;font-family:inherit;font-size:0.85rem">← اليوم السابق</button>';
   html += '<button onclick="dailyNextDay()" style="padding:10px 16px;border:1px solid var(--border);border-radius:10px;background:white;cursor:pointer;font-family:inherit;font-size:0.85rem">اليوم التالي →</button>';
-  html += '<button onclick="document.getElementById(\'dailyDatePicker\').value=\'' + data[0].date + '\';showDailySummary()" style="padding:10px 16px;border:1px solid var(--primary);border-radius:10px;background:var(--primary);color:white;cursor:pointer;font-family:inherit;font-size:0.85rem">اليوم</button>';
+  html += '<button onclick="dailyGoToday()" style="padding:10px 16px;border:1px solid var(--primary);border-radius:10px;background:var(--primary);color:white;cursor:pointer;font-family:inherit;font-size:0.85rem">اليوم</button>';
   html += '</div>';
   html += '<div id="dailySelectedSummary" style="margin-top:20px"></div>';
   html += '</div>';
@@ -4290,6 +4290,11 @@ function showDailySummary() {
 }
 
 function dailyPrevDay() {
+function dailyGoToday() {
+  var picker = document.getElementById("dailyDatePicker");
+  picker.value = DAILY_SUMMARY[0].date;
+  showDailySummary();
+}
   var picker = document.getElementById('dailyDatePicker');
   var d = new Date(picker.value);
   d.setDate(d.getDate() - 1);
