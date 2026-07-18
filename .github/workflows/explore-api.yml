@@ -9,7 +9,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Debug
+      - name: Customer analytics
         env:
           REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
-        run: node scripts/debug-return-fields.mjs
+        run: node scripts/customer-analytics.mjs
