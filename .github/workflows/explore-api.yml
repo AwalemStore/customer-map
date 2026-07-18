@@ -1,12 +1,15 @@
-name: Explore Rewaa API
-on: workflow_dispatch
+name: Explore API
+on:
+  workflow_dispatch:
 jobs:
   explore:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '22' }
+        with:
+          node-version: '22'
       - name: Debug
-        env: { REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }} }
+        env:
+          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
         run: node scripts/debug-return-fields.mjs
