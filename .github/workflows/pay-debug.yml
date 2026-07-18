@@ -9,7 +9,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Debug payments
+      - name: Debug
         env:
           REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
-        run: node scripts/debug-pay.mjs
+        run: node scripts/debug-customer-pay.mjs
