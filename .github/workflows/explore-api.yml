@@ -7,7 +7,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: '22' }
-      - name: Verify Q2 invoices
-        env:
-          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
-        run: node scripts/verify-q2.mjs
+      - name: Debug
+        env: { REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }} }
+        run: node scripts/debug-return-fields.mjs
