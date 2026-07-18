@@ -236,7 +236,7 @@ function fmt(n) {
   return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function updateHtmlReport(paftahData, invoiceArray, monthlyStats, inventoryValue) {
+function updateHtmlReport(paftahData, invoiceArray, monthlyStats, inventoryValue, extrasData) {
   const htmlPath = join(REPO_ROOT, 'paftah-comprehensive-report.html');
   let html = readFileSync(htmlPath, 'utf-8');
 
@@ -292,6 +292,7 @@ function updateHtmlReport(paftahData, invoiceArray, monthlyStats, inventoryValue
   html = html.substring(0, dataStart) + newDataStr + ';' + html.substring(dataEnd);
 
   // --- Build per-month expense map from expenses API ---
+  const extras = extrasData || {};
   const monthExpenses = {};
   if (extras?.expenses) {
     const expData = extras.expenses.data || extras.expenses.resultSet || extras.expenses || [];
@@ -422,7 +423,7 @@ async function main() {
   saveRawData({ monthlyStats, dailyCharts, paymentMethods, apiCustomers, invoices, extras });
 
   const inventoryValue = extras?.inventory?.inventoryValue ? parseFloat(extras.inventory.inventoryValue) : null;
-  updateHtmlReport(paftahData, invoiceArray, monthlyStats, inventoryValue);
+  updateHtmlReport(paftahData, invoiceArray, monthlyStats, inventoryValue, extras);
 
   const totalSales = monthlyStats.reduce((s, m) => s + (m.totalSales || 0), 0);
   const totalDebt = apiCustomers.reduce((s, c) => s + (c.debitAmount || 0), 0);
