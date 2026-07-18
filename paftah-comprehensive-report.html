@@ -2209,30 +2209,30 @@ body {
   <div class="card" style="border-top:4px solid var(--success)">
     <div class="card-title"><span class="icon" data-ico="money"></span> ضرائب الأساس النقدي - Q2 (أبريل - يونيو 2026)</div>
     <div class="exec-summary-text" style="border-right-color:var(--success);margin-bottom:16px">
-      تم تغيير طريقة المحاسبة الضريبية من <strong>أساس الاستحقاق</strong> إلى <strong>الأساس النقدي</strong>.<br>
-      الضريبة مستحقة فقط على المبالغ <strong>المحصّلة فعلياً</strong> خلال الفترة (1 أبريل - 30 يونيو 2026).<br>
-      العملاء الذين تم التحصيل منهم في الربع الأول (يناير-مارس) تم سداد ضرائبهم ولا تستحق عليهم ضريبة جديدة.
+      ⚠️ <strong>ضرائب Q1 (يناير-مارس) مدفوعة بالكامل على أساس الاستحقاق — لا تستحق عليك ضريبة عليها مرة أخرى.</strong><br><br>
+      هذه الصفحة للضرائب المستحقة على <strong>الأساس النقدي</strong> فقط — أي المبالغ المحصّلة فعلياً خلال <strong>1 أبريل - 30 يونيو 2026</strong>.<br>
+      علّم ✓ على العملاء الذين <strong>حصّلت منهم في Q2 فقط</strong>، واستبعد أي عميل حصّلت منه في Q1.
     </div>
     <div class="kpi-grid">
       <div class="kpi-card success">
-        <div class="kpi-label">إجمالي المحصّل (كل العملاء)</div>
-        <div class="kpi-value" id="taxTotalCollected">0</div>
-        <div class="kpi-sub">من إجمالي 619 عميل</div>
+        <div class="kpi-label">المحصّل من عملاء Q2 (محدّد)</div>
+        <div class="kpi-value" id="taxTotalCollected">0 ر.س</div>
+        <div class="kpi-sub">علّم العملاء بالـ ✓</div>
       </div>
       <div class="kpi-card info">
-        <div class="kpi-label">عملاء سددوا</div>
+        <div class="kpi-label">عملاء محدّدون لـ Q2</div>
         <div class="kpi-value" id="taxPayingCount">0</div>
-        <div class="kpi-sub">لديهم مدفوعات > 0</div>
+        <div class="kpi-sub">من إجمالي 349 عميل سدّد</div>
       </div>
       <div class="kpi-card warning">
         <div class="kpi-label">ضريبة القيمة المضافة (15%)</div>
-        <div class="kpi-value" id="taxVATAmount">0</div>
-        <div class="kpi-sub">على المبالغ المحصّلة</div>
+        <div class="kpi-value" id="taxVATAmount">0 ر.س</div>
+        <div class="kpi-sub">فقط على المحدّدين</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">المبلغ الصافي بعد الضريبة</div>
-        <div class="kpi-value" id="taxNetAmount">0</div>
-        <div class="kpi-sub">المبلغ بدون الضريبة</div>
+        <div class="kpi-label">المبلغ الصافي</div>
+        <div class="kpi-value" id="taxNetAmount">0 ر.س</div>
+        <div class="kpi-sub">بدون الضريبة</div>
       </div>
     </div>
   </div>
@@ -3965,16 +3965,16 @@ function renderTaxTable() {
 
   document.getElementById('taxTableBody').innerHTML = html || '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text-secondary)">لا توجد نتائج</td></tr>';
 
-  document.getElementById('taxTotalPaid').textContent = fmt(totalPaid);
-  document.getElementById('taxTotalVAT').textContent = fmt(totalVAT);
-  document.getElementById('taxTotalNet').textContent = fmt(totalNet);
+  document.getElementById('taxTotalPaid').textContent = '—';
+  document.getElementById('taxTotalVAT').textContent = '—';
+  document.getElementById('taxTotalNet').textContent = '—';
 
-  document.getElementById('taxFilterCount').innerHTML = 'عرض <strong>' + customers.length + '</strong> عميل محصّل منهم';
+  document.getElementById('taxFilterCount').innerHTML = 'علّم <strong>✓</strong> على عملاء Q2 (أبريل-يونيو) فقط لحساب الضريبة المستحقة | معروض: <strong>' + customers.length + '</strong> عميل سدّد (كل الفترات)';
 
-  document.getElementById('taxTotalCollected').textContent = fmt(totalPaid) + ' ر.س';
-  document.getElementById('taxPayingCount').textContent = customers.length;
-  document.getElementById('taxVATAmount').textContent = fmt(totalVAT) + ' ر.س';
-  document.getElementById('taxNetAmount').textContent = fmt(totalNet) + ' ر.س';
+  document.getElementById('taxTotalCollected').textContent = '0 ر.س';
+  document.getElementById('taxPayingCount').textContent = '0';
+  document.getElementById('taxVATAmount').textContent = '0 ر.س';
+  document.getElementById('taxNetAmount').textContent = '0 ر.س';
 }
 
 function recalcTaxTotals() {
