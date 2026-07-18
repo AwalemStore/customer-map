@@ -1995,22 +1995,18 @@ body {
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" data-ico="payment"></span> آخر مدفوعات العملاء</div>
-    <div class="table-wrapper">
-      <table class="data-table">
-        <thead><tr><th>#</th><th>رقم العملية</th><th>العميل</th><th>المبلغ (ر.س)</th><th>التاريخ</th></tr></thead>
-        <tbody>
-          <tr><td>1</td><td>Pay-175</td><td>تموينات نخبة البشائر</td><td class="amount">58</td><td>May 16</td></tr>
-          <tr><td>2</td><td>Pay-174</td><td>تموينات العروس 2</td><td class="amount">88</td><td>May 14</td></tr>
-          <tr><td>3</td><td>Pay-173</td><td>تموينات التسامح</td><td class="amount">100</td><td>May 14</td></tr>
-          <tr><td>4</td><td>Pay-172</td><td>مؤسسة الوطنية باك للتجاره بلاستيك ونظافة</td><td class="amount">1,500</td><td>May 13</td></tr>
-          <tr><td>5</td><td>Pay-171</td><td>تموينات ضياء</td><td class="amount">118</td><td>May 13</td></tr>
-          <tr><td>6</td><td>Pay-170</td><td>تموينات ومخابز ساعة الانطلاق</td><td class="amount">150</td><td>May 13</td></tr>
-          <tr><td>7</td><td>Pay-169</td><td>تموينات ياسر صالح القحطاني</td><td class="amount">100</td><td>May 13</td></tr>
-          <tr><td>8</td><td>Pay-168</td><td>بقالة سلة تالا</td><td class="amount">50</td><td>May 13</td></tr>
-          <tr><td>9</td><td>Pay-167</td><td>تموينات الخلود</td><td class="amount">116</td><td>May 12</td></tr>
-          <tr><td>10</td><td>Pay-166</td><td>تموينات سامي</td><td class="amount">58</td><td>May 12</td></tr>
-        </tbody>
+    <div class="card-title"><span class="icon" data-ico="payment"></span> إجمالي مدفوعات العملاء (من رواء)</div>
+    <div class="kpi-grid" style="margin-bottom:16px">
+      <div class="kpi-card success"><div class="kpi-label">إجمالي المدفوعات</div><div class="kpi-value" id="totalPaidValue">0</div></div>
+      <div class="kpi-card info"><div class="kpi-label">عملاء سددوا</div><div class="kpi-value" id="payingCustomersValue">0</div></div>
+      <div class="kpi-card warning"><div class="kpi-label">متوسط الدفعة</div><div class="kpi-value" id="avgPaymentValue">0</div></div>
+    </div>
+    <div class="table-wrapper" style="max-height:400px;overflow-y:auto">
+      <table class="data-table" id="customerPaymentsTable">
+        <thead style="position:sticky;top:0">
+          <tr><th>#</th><th>العميل</th><th>النوع</th><th>الحي</th><th>الهاتف</th><th>إجمالي المدفوع (ر.س)</th><th>المديونية المتبقية</th></tr>
+        </thead>
+        <tbody id="customerPaymentsBody"></tbody>
       </table>
     </div>
   </div>
@@ -3534,6 +3530,27 @@ function toggleCollapsible(header) {
   body.classList.toggle('open');
 }
 
+// ===== CUSTOMER PAYMENTS =====
+function buildCustomerPayments() {
+  var payers = PAFTAH_DATA.customers.filter(c => c.p > 0).sort((a, b) => b.p - a.p);
+  var total = payers.reduce((s, c) => s + c.p, 0);
+  var avg = payers.length > 0 ? total / payers.length : 0;
+  
+  if (document.getElementById('totalPaidValue')) {
+    document.getElementById('totalPaidValue').textContent = fmt(total) + ' ر.س';
+    document.getElementById('payingCustomersValue').textContent = payers.length;
+    document.getElementById('avgPaymentValue').textContent = fmt(avg) + ' ر.س';
+  }
+  
+  var html = '';
+  payers.forEach(function(c, i) {
+    var remaining = c.db > 0 ? '<span style="color:var(--danger);font-weight:600">' + fmt(c.db) + '</span>' : '<span style="color:var(--success)">مسدد بالكامل</span>';
+    html += '<tr><td>' + (i+1) + '</td><td style="font-weight:500">' + c.n + '</td><td><span class="tag tag-purple">' + c.t + '</span></td><td>' + c.d + '</td><td>' + (c.ph || '-') + '</td><td class="amount positive" style="font-weight:700">' + fmt(c.p) + '</td><td>' + remaining + '</td></tr>';
+  });
+  var body = document.getElementById('customerPaymentsBody');
+  if (body) body.innerHTML = html;
+}
+
 // ===== RISK CLASSIFICATION =====
 function buildRiskGrid() {
   var risks = { green: { count: 0, debt: 0, label: 'ممتاز', color: '#10B981' }, yellow: { count: 0, debt: 0, label: 'متوسط', color: '#F59E0B' }, red: { count: 0, debt: 0, label: 'خطر', color: '#EF4444' }, black: { count: 0, debt: 0, label: 'متوقف', color: '#6B7280' } };
@@ -4052,6 +4069,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMonthlyCharts();
   buildRiskGrid();
   buildAgingReport();
+  buildCustomerPayments();
   buildGeoMap();
   animateCounters();
   renderWaterfall();
