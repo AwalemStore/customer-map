@@ -9,7 +9,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Customer analytics
+      - name: Analytics
         env:
           REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
-        run: node scripts/customer-analytics.mjs
+        run: |
+          node scripts/business-insights.mjs
+          node scripts/customer-analytics.mjs
+      - name: Commit
+        run: |
+          git config user.name "Paftah Bot"
+          git config user.email "bot@paftah.com"
+          git add paftah-comprehensive-report.html
+          git diff --staged --quiet || (git commit -m "analytics update" && git push)
