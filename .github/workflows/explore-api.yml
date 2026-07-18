@@ -9,17 +9,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Analytics
-        env:
-          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
-        run: |
-          node scripts/business-insights.mjs
-          node scripts/customer-analytics.mjs
+        with: { node-version: '22' }
+      - name: Aging
+        env: { REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}, REWAA_EMAIL: info@paftah.com }
+        run: node scripts/fetch-aging.mjs
       - name: Commit
         run: |
           git config user.name "Paftah Bot"
           git config user.email "bot@paftah.com"
           git add paftah-comprehensive-report.html
-          git diff --staged --quiet || (git commit -m "analytics update" && git push)
+          git diff --staged --quiet || (git commit -m "aging update" && git push)
