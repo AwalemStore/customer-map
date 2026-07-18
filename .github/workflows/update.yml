@@ -1,5 +1,4 @@
----
-name: Update Paftah Report
+name: Update Report
 on:
   schedule:
     - cron: '0 0 * * *'
