@@ -43,8 +43,7 @@ while (hasMore) {
         month: d.getMonth(), // 0-11
       });
     }
-    if (d.getFullYear() === 2026 && d.getMonth() < 0) { hasMore = false; break; }
-  }
+    if (d.getFullYear() === 2026 && d.getMonth() < 0) { hasMore = false; break; }}
   offset += 50;
   if (data.data.length < 50) hasMore = false;
   console.log(`  Fetched ${offset}, total: ${allInvoices.length}`);
@@ -52,11 +51,11 @@ while (hasMore) {
 
 // Q1 sales = Jan(0) to Mar(2)
 const q1Sales = allInvoices.filter(i => i.type === 'sale' && i.month >= 0 && i.month <= 2);
-// Q2 returns = Apr(3) to Jun(5)
-const q2Returns = allInvoices.filter(i => i.type === 'return' && i.month >= 3 && i.month <= 5);
+// Returns after Q1 = Apr(3) onwards (Q2 + Q3 + ...)
+const laterReturns = allInvoices.filter(i => i.type === 'return' && i.month >= 3);
 
 console.log(`\nQ1 Sales (Jan-Mar): ${q1Sales.length}`);
-console.log(`Q2 Returns (Apr-Jun): ${q2Returns.length}`);
+console.log(`Returns after Q1 (Apr+): ${laterReturns.length}`);
 
 // Match Q2 returns to Q1 sales by customer
 // Group Q1 sales by customer
@@ -67,9 +66,9 @@ q1Sales.forEach(s => {
   q1ByCustomer[name].push(s);
 });
 
-// For each Q2 return, check if the customer had Q1 sales
+// For each return after Q1, check if the customer had Q1 sales
 const matchedReturns = [];
-q2Returns.forEach(r => {
+laterReturns.forEach(r => {
   const q1CustomerSales = q1ByCustomer[r.customer] || [];
   if (q1CustomerSales.length > 0) {
     matchedReturns.push({
@@ -87,7 +86,7 @@ q2Returns.forEach(r => {
   }
 });
 
-console.log(`\nMatched Q2 returns with Q1 sales: ${matchedReturns.length}`);
+console.log(`\nMatched returns (Q1 sales returned in Q2+): ${matchedReturns.length}`);
 console.log(`Total return amount: ${matchedReturns.reduce((s, r) => s + r.returnAmount, 0).toFixed(2)}`);
 console.log(`VAT deduction (15%): ${(matchedReturns.reduce((s, r) => s + r.returnAmount, 0) * 15 / 115).toFixed(2)}`);
 
