@@ -42,9 +42,9 @@ async function fetchAllInvoicesQ2(token) {
       const d = new Date(inv.completionDate || inv.date || inv.createdAt);
       // Q2 = April (3) to June (5) 2026 (0-indexed months)
       if (d.getFullYear() === 2026 && d.getMonth() >= 3 && d.getMonth() <= 5) {
-        // Parse payment method - exclude CustomerDebit (آجل) since it's NOT actual cash collected
+        // Parse payment method - "Post Pay" = آجل (NOT actual cash collected)
         const pm = inv.paymentMethod || '';
-        const isCustomerDebit = pm === 'CustomerDebit' || pm.includes('Debit') || pm === 'آجل';
+        const isPostPay = pm === 'Post Pay' || pm === 'CustomerDebit' || pm === 'آجل';
         
         allInvoices.push({
           date: (inv.completionDate || inv.date || inv.createdAt).substring(0, 10),
@@ -55,9 +55,9 @@ async function fetchAllInvoicesQ2(token) {
           total: parseFloat(inv.total || 0),
           paidAmount: parseFloat(inv.paidAmount || 0),
           paymentMethod: pm,
-          // Actual cash collected = paidAmount ONLY if payment method is Cash/Card/SoftPos (NOT CustomerDebit)
-          actualCollected: isCustomerDebit ? 0 : parseFloat(inv.paidAmount || 0),
-          isCustomerDebit: isCustomerDebit,
+          // Actual cash collected = paidAmount ONLY if NOT Post Pay (آجل)
+          actualCollected: isPostPay ? 0 : Math.max(0, parseFloat(inv.paidAmount || 0)),
+          isPostPay: isPostPay,
         });
       }
       // Stop if we've gone past Q2 (invoices are sorted DESC by date)
