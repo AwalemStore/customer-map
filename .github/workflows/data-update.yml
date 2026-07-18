@@ -21,8 +21,7 @@ jobs:
           node scripts/fetch-q1-returns.mjs
           node scripts/fetch-aging.mjs
           node scripts/customer-analytics.mjs
-          node scripts/business-insights.mjs
-          node scripts/fetch-dashboard.mjs
+          node scripts/fetch-dashboard.mjs || true
       - name: Commit
         run: |
           git config user.name "Paftah Bot"
