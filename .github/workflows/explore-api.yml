@@ -6,9 +6,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Explore API endpoints
+        with: { node-version: '22' }
+      - name: Debug payment methods
         env:
           REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
-        run: node scripts/explore-payments.mjs
+        run: node scripts/debug-pm.mjs
