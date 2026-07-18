@@ -168,20 +168,8 @@ const monthly = Object.values(monthMap).sort((a, b) => a.monthNum - b.monthNum).
   };
 });
 
-// Add profit from PAFTAH_DATA
-const html0 = readFileSync(join(REPO_ROOT, 'paftah-comprehensive-report.html'), 'utf-8');
-const mm0 = html0.match(/PAFTAH_DATA\.monthly = (\[[\s\S]*?\]);/);
-if (mm0) {
-  const stats = eval(mm0[1]);
-  stats.filter(s => !s.isTotal).forEach(s => {
-    const m = monthly.find(x => x.month === s.month);
-    if (m) {
-      m.profit = s.profit;
-      m.margin = s.margin;
-      m.netIncome = s.netIncome;
-    }
-  });
-}
+// Profit data will be filled from monthly stats API in update-report.mjs
+// For now, use what we have
 
 console.log(`\n=== MONTHLY (${monthly.length} months) ===`);
 monthly.forEach(m => {
@@ -218,6 +206,14 @@ const audit = {
 
 console.log(`\n=== AUDIT ===`);
 console.log(JSON.stringify(audit, null, 2));
+
+
+function cleanForJson(obj) {
+  return JSON.parse(JSON.stringify(obj, (key, value) => {
+    if (value instanceof Set) return [...value];
+    return value;
+  }));
+}
 
 // ===== INJECT INTO HTML =====
 const htmlPath = join(REPO_ROOT, 'paftah-comprehensive-report.html');
