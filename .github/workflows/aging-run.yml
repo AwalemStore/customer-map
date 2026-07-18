@@ -1,24 +1,28 @@
-name: Aging Run
+name: Data Update
 on:
   workflow_dispatch:
 permissions:
   contents: write
 jobs:
-  aging:
+  update:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Aging report
-        env:
-          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
-          REWAA_EMAIL: info@paftah.com
-        run: node scripts/fetch-aging.mjs
+        with: { node-version: '22' }
+      - name: Update
+        env: { REWAA_EMAIL: info@paftah.com, REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}, REWAA_DASH_PHONE: ${{ secrets.REWAA_DASH_PHONE }} }
+        run: |
+          node scripts/update-report.mjs
+          node scripts/fetch-q2-tax.mjs
+          node scripts/fetch-q1-returns.mjs
+          node scripts/fetch-aging.mjs
+          node scripts/customer-analytics.mjs
+          node scripts/business-insights.mjs
+          node scripts/fetch-dashboard.mjs
       - name: Commit
         run: |
           git config user.name "Paftah Bot"
           git config user.email "bot@paftah.com"
           git add paftah-comprehensive-report.html
-          git diff --staged --quiet || (git commit -m "aging update" && git push)
+          git diff --staged --quiet || (git commit -m "full data update $(date -u +'%Y-%m-%d %H:%M')" && git push)
