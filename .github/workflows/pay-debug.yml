@@ -1,4 +1,4 @@
-name: Debug Pay
+name: Pay Debug
 on:
   workflow_dispatch:
 jobs:
@@ -7,7 +7,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '22' }
-      - name: Debug
-        env: { REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }} }
+        with:
+          node-version: '22'
+      - name: Debug payments
+        env:
+          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
         run: node scripts/debug-pay.mjs
