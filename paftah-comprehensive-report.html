@@ -3557,48 +3557,96 @@ function buildRiskGrid() {
 
 // ===== AGING REPORT =====
 function buildAgingReport() {
-  var buckets = [
-    { label: '0-30 يوم', min: 0, max: 500, count: 0, debt: 0, color: '#10B981' },
-    { label: '30-60 يوم', min: 500, max: 2000, count: 0, debt: 0, color: '#F59E0B' },
-    { label: '60-90 يوم', min: 2000, max: 5000, count: 0, debt: 0, color: '#F97316' },
-    { label: 'أكثر من 90 يوم', min: 5000, max: Infinity, count: 0, debt: 0, color: '#EF4444' }
-  ];
-  var totalDebt = 0;
-  PAFTAH_DATA.customers.forEach(function(c) {
-    if (c.db <= 0) return;
-    totalDebt += c.db;
-    for (var i = 0; i < buckets.length; i++) {
-      if (c.db >= buckets[i].min && c.db < buckets[i].max) {
-        buckets[i].count++;
-        buckets[i].debt += c.db;
-        break;
-      }
-    }
-  });
+  var data = (typeof AGING_DATA !== 'undefined') ? AGING_DATA : null;
   var tbody = document.getElementById('agingBody');
+  
+  if (!data || !data.summary) {
+    // Fallback to old method
+    var buckets = [
+      { label: '0-500 ر.س', count: 0, debt: 0, color: '#10B981' },
+      { label: '500-2000 ر.س', count: 0, debt: 0, color: '#F59E0B' },
+      { label: '2000-5000 ر.س', count: 0, debt: 0, color: '#EF4444' },
+      { label: '+5000 ر.س', count: 0, debt: 0, color: '#DC2626' }
+    ];
+    PAFTAH_DATA.customers.forEach(function(c) {
+      if (c.db <= 0) return;
+      if (c.db < 500) { buckets[0].count++; buckets[0].debt += c.db; }
+      else if (c.db < 2000) { buckets[1].count++; buckets[1].debt += c.db; }
+      else if (c.db < 5000) { buckets[2].count++; buckets[2].debt += c.db; }
+      else { buckets[3].count++; buckets[3].debt += c.db; }
+    });
+    var html = '';
+    buckets.forEach(function(b) {
+      html += '<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + b.color + '"></span> ' + b.label + '</td><td>' + b.count + '</td><td class="amount">' + fmt(b.debt) + '</td><td>—</td></tr>';
+    });
+    tbody.innerHTML = html;
+    return;
+  }
+
+  // Use AGING_DATA - detailed aging based on days since last purchase
   var html = '';
-  buckets.forEach(function(b) {
-    var pct = totalDebt > 0 ? (b.debt / totalDebt * 100).toFixed(1) : 0;
-    html += '<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + b.color + ';margin-left:6px;vertical-align:middle"></span> ' + b.label + '</td>' +
-      '<td>' + b.count + '</td><td class="amount">' + fmt(b.debt) + '</td><td>' + pct + '%</td></tr>';
+  data.summary.forEach(function(b) {
+    var pct = data.totalDebt > 0 ? (b.totalDebt / data.totalDebt * 100).toFixed(1) : 0;
+    html += '<tr style="background:' + b.color + '15">' +
+      '<td><span style="display:inline-flex;align-items:center;gap:8px"><span style="width:12px;height:12px;border-radius:50%;background:' + b.color + ';display:inline-block"></span><strong>' + b.label + '</strong></span></td>' +
+      '<td style="font-weight:700;font-size:1.1rem;color:' + b.color + '">' + b.count + '</td>' +
+      '<td class="amount" style="font-weight:700">' + fmt(b.totalDebt) + '</td>' +
+      '<td>' + pct + '%</td>' +
+      '<td style="color:var(--text-secondary)">' + fmt(b.avgDebt) + '</td>' +
+      '</tr>';
   });
+  html += '<tr style="background:var(--primary-light);font-weight:700"><td>الإجمالي</td><td>' + data.totalCustomers + '</td><td class="amount">' + fmt(data.totalDebt) + '</td><td>100%</td><td>—</td></tr>';
   tbody.innerHTML = html;
-  // Pie chart
-  new Chart(document.getElementById('agingChart'), {
-    type: 'pie',
-    data: {
-      labels: buckets.map(function(b) { return b.label; }),
-      datasets: [{
-        data: buckets.map(function(b) { return b.debt; }),
-        backgroundColor: buckets.map(function(b) { return b.color; }),
-        borderWidth: 3, borderColor: '#fff'
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', rtl: true, labels: { padding: 12, usePointStyle: true, font: { size: 11 } } }, tooltip: { rtl: true, callbacks: { label: function(c) { return c.label + ': ' + fmt(c.raw) + ' ر.س'; } } } }
-    }
+
+  // Add detailed customer table if data exists
+  var detailExists = document.getElementById('agingDetailBody');
+  if (!detailExists) {
+    var detailTable = '<div style="margin-top:20px"><h4 style="margin-bottom:10px;color:var(--primary-dark)">تفاصيل العملاء حسب التقادم</h4>' +
+      '<div class="table-wrapper" style="max-height:400px;overflow-y:auto"><table class="data-table"><thead style="position:sticky;top:0"><tr>' +
+      '<th>العميل</th><th>الحي</th><th>المديونية</th><th>المدفوع</th><th>آخر شراء</th><th>الأيام</th><th>عدد الطلبات</th><th>المخاطرة</th><th>التقادم</th>' +
+      '</tr></thead><tbody id="agingDetailBody"></tbody></table></div></div>';
+    tbody.parentElement.innerHTML += detailTable;
+  }
+  
+  var detailHtml = '';
+  data.customers.slice(0, 200).forEach(function(c) {
+    detailHtml += '<tr style="border-right:3px solid ' + c.bucketColor + '">' +
+      '<td style="font-weight:500">' + c.name + '</td>' +
+      '<td style="font-size:0.78rem">' + c.district + '</td>' +
+      '<td class="amount negative">' + fmt(c.debt) + '</td>' +
+      '<td class="amount ' + (c.paid > 0 ? 'positive' : '') + '">' + fmt(c.paid) + '</td>' +
+      '<td style="font-size:0.78rem">' + (c.lastSale || '-') + '</td>' +
+      '<td><span style="padding:2px 8px;border-radius:100px;background:' + c.bucketColor + '20;color:' + c.bucketColor + ';font-weight:700;font-size:0.72rem">' + c.daysSinceLast + ' يوم</span></td>' +
+      '<td>' + c.purchaseCount + '</td>' +
+      '<td><span style="padding:2px 8px;border-radius:100px;background:' + c.riskColor + '20;color:' + c.riskColor + ';font-weight:600;font-size:0.72rem">' + c.riskLabel + '</span></td>' +
+      '<td style="font-size:0.72rem;color:' + c.bucketColor + '">' + c.bucketLabel + '</td>' +
+      '</tr>';
   });
+  var detailBody = document.getElementById('agingDetailBody');
+  if (detailBody) detailBody.innerHTML = detailHtml;
+
+  // Chart
+  var chartCanvas = document.getElementById('agingChart');
+  if (chartCanvas) {
+    new Chart(chartCanvas, {
+      type: 'doughnut',
+      data: {
+        labels: data.summary.map(b => b.label + ' (' + b.count + ')'),
+        datasets: [{
+          data: data.summary.map(b => b.totalDebt),
+          backgroundColor: data.summary.map(b => b.color),
+          borderWidth: 3, borderColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', rtl: true, labels: { padding: 10, usePointStyle: true, font: { size: 11 } } },
+          tooltip: { rtl: true, callbacks: { label: function(c) { return c.label + ': ' + fmt(c.raw) + ' ر.س'; } } }
+        }
+      }
+    });
+  }
 }
 
 // ===== GEOGRAPHIC MAP =====
