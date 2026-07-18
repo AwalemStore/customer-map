@@ -81,8 +81,10 @@ allInv.forEach(inv => {
   if (!dailyMap[inv.date]) dailyMap[inv.date] = {
     date: inv.date, sales: 0, salesCount: 0, returns: 0, returnsCount: 0,
     customers: new Set(),
-    cashSaleInvoices: 0,  // count of SALE invoices with pm=Cash (new cash sales)
-    cashSaleTotal: 0,     // total of SALE invoices with pm=Cash
+    cashSaleInvoices: 0,
+    cashSaleTotal: 0,
+    postPayInvoices: 0,
+    postPayTotal: 0,
   };
   const d = dailyMap[inv.date];
   if (inv.type === 'sale') {
@@ -92,6 +94,9 @@ allInv.forEach(inv => {
     if (inv.pm === 'Cash') {
       d.cashSaleInvoices++;
       d.cashSaleTotal += inv.total;
+    } else if (inv.pm === 'Post Pay') {
+      d.postPayInvoices++;
+      d.postPayTotal += inv.total;
     }
   } else {
     d.returns += inv.total; d.returnsCount++;
@@ -115,7 +120,7 @@ const daily = Object.values(dailyMap).map(d => {
     cashSales: +cashSales.toFixed(2),              // بيع نقدي (فواتير بيع جديدة بالكاش)
     cashSalesCount: d.cashSaleInvoices,            // عدد فواتير البيع النقدي
     cashCollections: +cashCollections.toFixed(2),   // تحصيل دفعات (سداد ديون قديمة بالكاش)
-    creditSales: +pm.debitTotal.toFixed(2),         // بيع آجل
+    creditSales: +d.postPayTotal.toFixed(2),        // بيع آجل (من الفواتير مباشرة)
     cardSales: +pm.cardTotal.toFixed(2),            // بطاقة
     rewaaPaySales: +pm.rewaaTotal.toFixed(2),       // رواء باي
     totalCashIn: +pm.cashTotal.toFixed(2),          // إجمالي الكاش الداخل (بيع + تحصيل)
