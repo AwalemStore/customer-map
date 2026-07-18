@@ -24,6 +24,12 @@ jobs:
           REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
         run: node scripts/update-report.mjs
 
+      - name: Fetch Q2 tax data
+        env:
+          REWAA_EMAIL: info@paftah.com
+          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
+        run: node scripts/fetch-q2-tax.mjs
+
       - name: Check for changes
         id: git-check
         run: |
@@ -36,5 +42,5 @@ jobs:
           git config user.email "bot@paftah.com"
           git add paftah-comprehensive-report.html
           TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
-          git commit -m "auto: update report - ${TIMESTAMP}"
+          git commit -m "auto: update report + Q2 tax - ${TIMESTAMP}"
           git push
