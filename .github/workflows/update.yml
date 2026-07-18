@@ -28,6 +28,11 @@ jobs:
           REWAA_EMAIL: info@paftah.com
           REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
         run: node scripts/fetch-q1-returns.mjs
+      - name: Business insights
+        env:
+          REWAA_EMAIL: info@paftah.com
+          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
+        run: node scripts/business-insights.mjs
       - name: Commit
         run: |
           git config user.name "Paftah Bot"
