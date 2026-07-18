@@ -1,4 +1,4 @@
-name: Debug Run
+name: Dbg
 on:
   workflow_dispatch:
 jobs:
