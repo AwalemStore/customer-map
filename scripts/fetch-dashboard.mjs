@@ -1,3 +1,10 @@
+function cleanForJson(obj) {
+  return JSON.parse(JSON.stringify(obj, (key, value) => {
+    if (value instanceof Set) return [...value];
+    return value;
+  }));
+}
+
 import { readFileSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -7,6 +14,7 @@ const REPO_ROOT = join(__dirname, '..');
 const COGNITO_ENDPOINT = 'https://cognito-idp.ap-south-1.amazonaws.com/';
 const CLIENT_ID = '69s79l64n4bb9g2foper08r8uq';
 const API_BASE = 'https://platform.rewaatech.com/api';
+const TZ = 'Asia/Riyadh';
 
 const authRes = await fetch(COGNITO_ENDPOINT, {
   method: 'POST',
@@ -14,8 +22,49 @@ const authRes = await fetch(COGNITO_ENDPOINT, {
   body: JSON.stringify({ AuthFlow: 'USER_PASSWORD_AUTH', ClientId: CLIENT_ID, AuthParameters: { USERNAME: 'info@paftah.com', PASSWORD: process.env.REWAA_PASSWORD } }),
 });
 const token = (await authRes.json()).AuthenticationResult.IdToken;
+console.log('✓ Authenticated');
 
-// === 1. Fetch invoices ===
+function monthRange(m) {
+  const start = new Date(Date.UTC(2026, m-1, 1)); start.setUTCHours(start.getUTCHours() - 3);
+  const end = new Date(Date.UTC(2026, m, 1)); end.setUTCHours(end.getUTCHours() - 3); end.setUTCMilliseconds(-1);
+  return { start: start.toISOString(), end: end.toISOString() };
+}
+
+// === 1. Fetch daily charts (OFFICIAL Rewaa numbers) ===
+console.log('[1] Fetching daily charts...');
+const allDaily = [];
+for (let m = 1; m <= 7; m++) {
+  const { start, end } = monthRange(m);
+  const res = await fetch(`${API_BASE}/reporting-bridge/dashboard/charts/days?startDate=${start}&endDate=${end}&timezone=${TZ}&startTime=00:00:00&endTime=23:59:59`, { headers: { accept: 'application/json', authorization: `Bearer ${token}` } });
+  if (res.ok) {
+    const data = await res.json();
+    if (Array.isArray(data)) allDaily.push(...data);
+  }
+  console.log(`  Month ${m}: ${allDaily.length} total days`);
+}
+console.log(`Total daily entries: ${allDaily.length}`);
+
+// === 2. Fetch payment methods per day ===
+console.log('[2] Fetching payment methods...');
+const dates = allDaily.map(d => d.date.substring(0, 10));
+const dailyPayments = {};
+for (const date of dates) {
+  const d = new Date(date + 'T00:00:00');
+  const start = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); start.setUTCHours(start.getUTCHours() - 3);
+  const end = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59)); end.setUTCHours(end.getUTCHours() - 3);
+  try {
+    const res = await fetch(`${API_BASE}/reporting-bridge/dashboard/payment-methods-report?startDate=${start.toISOString()}&endDate=${end.toISOString()}&timezone=${TZ}&startTime=00:00:00&endTime=23:59:59`, { headers: { accept: 'application/json', authorization: `Bearer ${token}` } });
+    if (res.ok) {
+      const data = await res.json();
+      const m = data.paymentMethodsValues || [];
+      dailyPayments[date] = { cash: m.find(x => x.type === 'Cash')?.total || 0 };
+    }
+  } catch(e) {}
+}
+console.log(`Payment data: ${Object.keys(dailyPayments).length} days`);
+
+// === 3. Fetch invoices for customer counts + cash sales breakdown ===
+console.log('[3] Fetching invoices for customer data...');
 let offset = 0;
 const allInv = [];
 let hasMore = true;
@@ -28,12 +77,12 @@ while (hasMore) {
     const d = new Date(inv.completionDate || inv.date);
     if (d.getFullYear() === 2026 && d.getMonth() <= 8) {
       allInv.push({
-        num: inv.invoiceNumber, date: (inv.completionDate || inv.date).substring(0,10),
-        customer: (inv.customerName || '').trim(),
+        date: (inv.completionDate || inv.date).substring(0,10),
         type: inv.isReturn || inv.invoiceNumber?.startsWith('R') ? 'return' : 'sale',
         total: parseFloat(inv.total || 0),
         pm: inv.paymentMethod || '',
-        month: d.getMonth() + 1, weekday: d.getDay(),
+        customer: (inv.customerName || '').trim(),
+        weekday: d.getDay(),
       });
     }
   }
@@ -42,145 +91,168 @@ while (hasMore) {
 }
 console.log(`Invoices: ${allInv.length}`);
 
-const AR_MONTHS = ['','يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر'];
-
-// === 2. Get unique dates ===
-const dates = [...new Set(allInv.map(i => i.date))].sort();
-console.log(`Dates: ${dates.length}`);
-
-// === 3. Fetch payment methods report per day ===
-const dailyPayments = {};
-let dayCount = 0;
-for (const date of dates) {
-  const d = new Date(date + 'T00:00:00');
-  const startUTC = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  startUTC.setUTCHours(startUTC.getUTCHours() - 3);
-  const endUTC = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59));
-  endUTC.setUTCHours(endUTC.getUTCHours() - 3);
-  try {
-    const res = await fetch(`${API_BASE}/reporting-bridge/dashboard/payment-methods-report?startDate=${startUTC.toISOString()}&endDate=${endUTC.toISOString()}&timezone=Asia/Riyadh&startTime=00:00:00&endTime=23:59:59`, { headers: { accept: 'application/json', authorization: `Bearer ${token}` } });
-    if (res.ok) {
-      const data = await res.json();
-      const methods = data.paymentMethodsValues || [];
-      dailyPayments[date] = {
-        cashTotal: methods.find(m => m.type === 'Cash')?.total || 0,       // إجمالي الكاش (بيع + تحصيل)
-        debitTotal: methods.find(m => m.type === 'CustomerDebit')?.total || 0, // بيع آجل
-        cardTotal: methods.find(m => m.type === 'Card')?.total || 0,
-        rewaaTotal: methods.find(m => m.type === 'SoftPos')?.total || 0,
-      };
-    }
-  } catch(e) {}
-  dayCount++;
-  if (dayCount % 20 === 0) console.log(`  Payments: ${dayCount}/${dates.length}`);
-}
-console.log(`Payment data: ${Object.keys(dailyPayments).length} days`);
-
-// === 4. Build daily summary ===
-const dailyMap = {};
-allInv.forEach(inv => {
-  if (!dailyMap[inv.date]) dailyMap[inv.date] = {
-    date: inv.date, sales: 0, salesCount: 0, returns: 0, returnsCount: 0,
-    customers: new Set(),
-    cashSaleInvoices: 0,
-    cashSaleTotal: 0,
-    postPayInvoices: 0,
-    postPayTotal: 0,
-  };
-  const d = dailyMap[inv.date];
-  if (inv.type === 'sale') {
-    d.sales += inv.total; d.salesCount++;
-    if (inv.customer) d.customers.add(inv.customer);
-    // Count cash sale invoices specifically
-    if (inv.pm === 'Cash') {
-      d.cashSaleInvoices++;
-      d.cashSaleTotal += inv.total;
-    } else if (inv.pm === 'Post Pay') {
-      d.postPayInvoices++;
-      d.postPayTotal += inv.total;
-    }
-  } else {
-    d.returns += inv.total; d.returnsCount++;
-  }
-});
-
-const daily = Object.values(dailyMap).map(d => {
-  const pm = dailyPayments[d.date] || { cashTotal: 0, debitTotal: 0, cardTotal: 0, rewaaTotal: 0 };
+// === 4. Build daily summary from charts API ===
+const daily = allDaily.map(d => {
+  const date = d.date.substring(0, 10);
+  const sales = d.sales || 0;
+  const returns = d.returns || 0;
+  const salesCount = d.salesCount || 0;
   
-  // SEPARATE: cash sales vs cash collections
-  const cashSales = d.cashSaleTotal;           // new sales paid in cash (from invoice data)
-  const cashCollections = Math.max(0, pm.cashTotal - cashSales); // remaining cash = debt collection
+  // Customer count from invoices
+  const dayInv = allInv.filter(i => i.date === date);
+  const customers = new Set(dayInv.filter(i => i.type === 'sale' && i.customer).map(i => i.customer)).size;
+  
+  // Cash sales from invoices
+  const cashInvTotal = dayInv.filter(i => i.type === 'sale' && i.pm === 'Cash').reduce((s,i) => s + i.total, 0);
+  
+  // Collections = payment report cash - invoice cash
+  const reportCash = dailyPayments[date]?.cash || 0;
+  const cashCollections = Math.max(0, reportCash - cashInvTotal);
+  const creditSales = sales - cashInvTotal;
   
   return {
-    date: d.date,
-    sales: +d.sales.toFixed(2),
-    salesCount: d.salesCount,
-    returns: +d.returns.toFixed(2),
-    returnsCount: d.returnsCount,
-    net: +(d.sales - d.returns).toFixed(2),
-    cashSales: +cashSales.toFixed(2),              // بيع نقدي (فواتير بيع جديدة بالكاش)
-    cashSalesCount: d.cashSaleInvoices,            // عدد فواتير البيع النقدي
-    cashCollections: +cashCollections.toFixed(2),   // تحصيل دفعات (سداد ديون قديمة بالكاش)
-    creditSales: +(d.sales - d.cashSaleTotal).toFixed(2),  // بيع آجل = المتبقي بعد النقدي
-    cardSales: +pm.cardTotal.toFixed(2),            // بطاقة
-    rewaaPaySales: +pm.rewaaTotal.toFixed(2),       // رواء باي
-    totalCashIn: +pm.cashTotal.toFixed(2),          // إجمالي الكاش الداخل (بيع + تحصيل)
-    customers: d.customers.size,
+    date,
+    sales: +sales.toFixed(2),
+    salesCount,
+    returns: +returns.toFixed(2),
+    returnsCount: dayInv.filter(i => i.type === 'return').length,
+    net: +(sales - returns).toFixed(2),
+    cashSales: +cashInvTotal.toFixed(2),
+    cashCollections: +cashCollections.toFixed(2),
+    creditSales: +creditSales.toFixed(2),
+    totalCashIn: +reportCash.toFixed(2),
+    customers,
   };
 }).sort((a,b) => b.date.localeCompare(a.date));
 
-console.log(`\n=== LAST 5 DAYS ===`);
+console.log(`\n=== LAST 5 DAYS (from charts API) ===`);
 daily.slice(0, 5).forEach(d => {
-  console.log(`${d.date}: sales=${d.sales} (${d.salesCount}) | بيع نقدي=${d.cashSales} (${d.cashSalesCount}) | تحصيل=${d.cashCollections} | آجل=${d.creditSales} | إجمالي كاش=${d.totalCashIn} | مرتجع=${d.returns} | عملاء=${d.customers}`);
+  console.log(`${d.date}: sales=${d.sales} (${d.salesCount}) | نقدي=${d.cashSales} | تحصيل=${d.cashCollections} | آجل=${d.creditSales} | مرتجع=${d.returns} | عملاء=${d.customers}`);
 });
 
 // === 5. Quarterly tax ===
+const AR_MONTHS = ['','يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر'];
 const quarters = { Q1: [1,2,3], Q2: [4,5,6], Q3: [7,8,9] };
 const quarterTax = {};
 for (const [q, months] of Object.entries(quarters)) {
-  const qSales = allInv.filter(i => i.type === 'sale' && months.includes(i.month));
-  const qReturns = allInv.filter(i => i.type === 'return' && months.includes(i.month));
-  let qCash = 0, qCollections = 0, qCredit = 0;
-  daily.forEach(d => {
-    const m = parseInt(d.date.split('-')[1]);
-    if (months.includes(m)) { qCash += d.cashSales; qCollections += d.cashCollections; qCredit += d.creditSales; }
-  });
+  const qDaily = daily.filter(d => months.includes(parseInt(d.date.split('-')[1])));
+  const qSales = qDaily.reduce((s,d) => s + d.sales, 0);
+  const qReturns = qDaily.reduce((s,d) => s + d.returns, 0);
+  const qCash = qDaily.reduce((s,d) => s + d.cashSales, 0);
+  const qColl = qDaily.reduce((s,d) => s + d.cashCollections, 0);
+  
+  const qReturnInv = allInv.filter(i => i.type === 'return' && months.includes(parseInt(i.date.split('-')[1])));
+  
   quarterTax[q] = {
     period: months.map(m => AR_MONTHS[m]).join(' - '), months,
-    salesCount: qSales.length, returnsCount: qReturns.length,
-    totalSales: +qSales.reduce((s,i) => s + i.total, 0).toFixed(2),
-    totalReturns: +qReturns.reduce((s,i) => s + i.total, 0).toFixed(2),
+    salesCount: qDaily.reduce((s,d) => s + d.salesCount, 0),
+    returnsCount: qReturnInv.length,
+    totalSales: +qSales.toFixed(2),
+    totalReturns: +qReturns.toFixed(2),
     cashSales: +qCash.toFixed(2),
-    cashCollections: +qCollections.toFixed(2),
-    totalCashIn: +(qCash + qCollections).toFixed(2),
-    creditSales: +qCredit.toFixed(2),
-    vatOnCashIn: +((qCash + qCollections) * 15 / 115).toFixed(2),
-    returnsList: qReturns.map(r => ({ inv: r.num, date: r.date, amount: +r.total.toFixed(2), customer: r.customer, vat: +(r.total * 15/115).toFixed(2) })).sort((a,b) => b.amount - a.amount),
+    cashCollections: +qColl.toFixed(2),
+    totalCashIn: +(qCash + qColl).toFixed(2),
+    creditSales: +(qSales - qCash).toFixed(2),
+    vatOnCashIn: +((qCash + qColl) * 15 / 115).toFixed(2),
+    returnsList: qReturnInv.map(r => ({ inv: '', date: r.date, amount: +r.total.toFixed(2), customer: r.customer, vat: +(r.total * 15/115).toFixed(2) })).sort((a,b) => b.amount - a.amount),
   };
 }
 
 // === 6. Weekday stats ===
 const weekdays = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 const weekdayStats = weekdays.map((name, i) => {
-  const dayInv = allInv.filter(s => s.type === 'sale' && s.weekday === i);
-  return { day: name, count: dayInv.length, total: +dayInv.reduce((s,i) => s + i.total, 0).toFixed(2), avg: dayInv.length > 0 ? +(dayInv.reduce((s,i) => s + i.total, 0) / dayInv.length).toFixed(2) : 0 };
+  const dayData = daily.filter(d => new Date(d.date + 'T00:00:00').getDay() === i);
+  return { day: name, count: dayData.reduce((s,d) => s + d.salesCount, 0), total: +dayData.reduce((s,d) => s + d.sales, 0).toFixed(2), avg: dayData.length > 0 ? +(dayData.reduce((s,d) => s + d.sales, 0) / dayData.length).toFixed(2) : 0 };
 });
 
-// Inject
+// === 7. Audit ===
+const audit = {
+  period: '1 يناير - 18 يوليو 2026',
+  totalDays: daily.length,
+  totalSales: +daily.reduce((s,d) => s + d.sales, 0).toFixed(2),
+  totalReturns: +daily.reduce((s,d) => s + d.returns, 0).toFixed(2),
+  netSales: +daily.reduce((s,d) => s + d.net, 0).toFixed(2),
+  totalCashSales: +daily.reduce((s,d) => s + d.cashSales, 0).toFixed(2),
+  totalCashCollections: +daily.reduce((s,d) => s + d.cashCollections, 0).toFixed(2),
+  totalCashIn: +daily.reduce((s,d) => s + d.totalCashIn, 0).toFixed(2),
+  totalCreditSales: +daily.reduce((s,d) => s + d.creditSales, 0).toFixed(2),
+  totalSalesCount: daily.reduce((s,d) => s + d.salesCount, 0),
+  avgDailySales: +(daily.reduce((s,d) => s + d.sales, 0) / daily.length).toFixed(2),
+  avgInvoice: +(daily.reduce((s,d) => s + d.sales, 0) / daily.reduce((s,d) => s + d.salesCount, 0)).toFixed(2),
+};
+console.log(`\n=== AUDIT ===`);
+console.log(JSON.stringify(audit, null, 2));
+
+// === 8. Weekly report ===
+const weekMap = {};
+daily.forEach(d => {
+  const dt = new Date(d.date + 'T00:00:00');
+  const daysSinceSaturday = (dt.getDay() + 1) % 7;
+  const saturday = new Date(dt);
+  saturday.setDate(dt.getDate() - daysSinceSaturday);
+  const weekKey = saturday.toISOString().substring(0, 10);
+  if (!weekMap[weekKey]) weekMap[weekKey] = { weekStart: weekKey, days: [], sales: 0, salesCount: 0, returns: 0, cashSales: 0, cashCollections: 0, creditSales: 0, totalCashIn: 0, customers: 0 };
+  const w = weekMap[weekKey];
+  w.days.push(d.date);
+  w.sales += d.sales; w.salesCount += d.salesCount; w.returns += d.returns;
+  w.cashSales += d.cashSales; w.cashCollections += d.cashCollections;
+  w.creditSales += d.creditSales; w.totalCashIn += d.totalCashIn;
+  w.customers += d.customers;
+});
+const weekly = Object.values(weekMap).map(w => ({
+  weekStart: w.weekStart, weekEnd: w.days.sort().pop(),
+  activeDays: w.days.length,
+  sales: +w.sales.toFixed(2), salesCount: w.salesCount,
+  returns: +w.returns.toFixed(2),
+  net: +(w.sales - w.returns).toFixed(2),
+  cashSales: +w.cashSales.toFixed(2), cashCollections: +w.cashCollections.toFixed(2),
+  creditSales: +w.creditSales.toFixed(2), totalCashIn: +w.totalCashIn.toFixed(2),
+  avgPerDay: w.days.length > 0 ? +(w.sales / w.days.length).toFixed(2) : 0,
+  avgInvoice: w.salesCount > 0 ? +(w.sales / w.salesCount).toFixed(2) : 0,
+  customers: w.customers,
+})).sort((a,b) => b.weekStart.localeCompare(a.weekStart));
+
+// === 9. Monthly report ===
+const monthly = [];
+for (let m = 1; m <= 7; m++) {
+  const mDaily = daily.filter(d => parseInt(d.date.split('-')[1]) === m);
+  if (mDaily.length === 0) continue;
+  const bestDay = mDaily.reduce((a, b) => a.sales > b.sales ? a : b);
+  monthly.push({
+    month: AR_MONTHS[m], monthNum: m,
+    sales: +mDaily.reduce((s,d) => s + d.sales, 0).toFixed(2),
+    salesCount: mDaily.reduce((s,d) => s + d.salesCount, 0),
+    returns: +mDaily.reduce((s,d) => s + d.returns, 0).toFixed(2),
+    net: +mDaily.reduce((s,d) => s + d.net, 0).toFixed(2),
+    cashSales: +mDaily.reduce((s,d) => s + d.cashSales, 0).toFixed(2),
+    cashCollections: +mDaily.reduce((s,d) => s + d.cashCollections, 0).toFixed(2),
+    creditSales: +mDaily.reduce((s,d) => s + d.creditSales, 0).toFixed(2),
+    totalCashIn: +mDaily.reduce((s,d) => s + d.totalCashIn, 0).toFixed(2),
+    activeDays: mDaily.length,
+    avgPerDay: +(mDaily.reduce((s,d) => s + d.sales, 0) / mDaily.length).toFixed(2),
+    avgInvoice: mDaily.reduce((s,d) => s + d.salesCount, 0) > 0 ? +(mDaily.reduce((s,d) => s + d.sales, 0) / mDaily.reduce((s,d) => s + d.salesCount, 0)).toFixed(2) : 0,
+    bestDay: { date: bestDay.date, sales: bestDay.sales },
+  });
+}
+
+// === INJECT ===
 const htmlPath = join(REPO_ROOT, 'paftah-comprehensive-report.html');
 let html = readFileSync(htmlPath, 'utf-8');
 html = html.replace(/\nconst QUARTER_TAXES = .*?;\n/g, '\n');
 html = html.replace(/\nconst DAILY_SUMMARY = .*?;\n/g, '\n');
 html = html.replace(/\nconst WEEKDAY_STATS = .*?;\n/g, '\n');
-const dataStr = `\nconst QUARTER_TAXES = ${JSON.stringify(quarterTax)};\nconst DAILY_SUMMARY = ${JSON.stringify(daily)};\nconst WEEKDAY_STATS = ${JSON.stringify(weekdayStats)};\n`;
+html = html.replace(/\nconst WEEKLY_REPORT = .*?;\n/g, '\n');
+html = html.replace(/\nconst MONTHLY_REPORT = .*?;\n/g, '\n');
+html = html.replace(/\nconst FULL_AUDIT = .*?;\n/g, '\n');
+
+const dataStr = '\nconst QUARTER_TAXES = ' + JSON.stringify(quarterTax) + ';\n' +
+  'const DAILY_SUMMARY = ' + JSON.stringify(daily) + ';\n' +
+  'const WEEKDAY_STATS = ' + JSON.stringify(weekdayStats) + ';\n' +
+  'const WEEKLY_REPORT = ' + JSON.stringify(weekly) + ';\n' +
+  'const MONTHLY_REPORT = ' + JSON.stringify(monthly) + ';\n' +
+  'const FULL_AUDIT = ' + JSON.stringify(audit) + ';\n';
+
 const idx = html.indexOf('// ===== TAXES TAB');
 if (idx > -1) html = html.substring(0, idx) + dataStr + html.substring(idx);
 writeFileSync(htmlPath, html, 'utf-8');
-console.log('\n✓ Dashboard with separated cash sales vs collections');
-
-// DEBUG: daily charts API
-const start = new Date(Date.UTC(2026, 6, 1)); start.setUTCHours(start.getUTCHours() - 3);
-const end = new Date(Date.UTC(2026, 7, 1)); end.setUTCHours(end.getUTCHours() - 3);
-const dcRes = await fetch(`${API_BASE}/reporting-bridge/dashboard/charts/days?startDate=${start.toISOString()}&endDate=${end.toISOString()}&timezone=Asia/Riyadh&startTime=00:00:00&endTime=23:59:59`, { headers: { accept: "application/json", authorization: `Bearer ${token}` } });
-const dcData = await dcRes.json();
-console.log("DAILY CHARTS:", JSON.stringify(dcData).substring(0, 2000));
-
+console.log('\n✓ All data injected from official Rewaa charts API');
