@@ -15,7 +15,6 @@ const authRes = await fetch(COGNITO_ENDPOINT, {
 });
 const token = (await authRes.json()).AuthenticationResult.IdToken;
 
-// Fetch everything
 let offset = 0;
 const allInv = [];
 let hasMore = true;
@@ -32,8 +31,7 @@ while (hasMore) {
         customer: (inv.customerName || '').trim(),
         type: inv.isReturn || inv.invoiceNumber?.startsWith('R') ? 'return' : 'sale',
         total: parseFloat(inv.total || 0), paid: parseFloat(inv.paidAmount || 0),
-        pm: inv.paymentMethod || '', month: d.getMonth() + 1,
-        day: d.getDate(), weekday: d.getDay(),
+        pm: inv.paymentMethod || '', month: d.getMonth() + 1, weekday: d.getDay(),
       });
     }
   }
@@ -42,21 +40,95 @@ while (hasMore) {
 }
 console.log(`Invoices: ${allInv.length}`);
 
-const sales = allInv.filter(i => i.type === 'sale');
-const returns = allInv.filter(i => i.type === 'return');
 const AR_MONTHS = ['','يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر'];
 
-// === 1. QUARTERLY TAX ===
+// === DAILY SUMMARY WITH PAYMENT BREAKDOWN ===
+const dailyMap = {};
+allInv.forEach(inv => {
+  if (!dailyMap[inv.date]) dailyMap[inv.date] = {
+    date: inv.date, sales: 0, salesCount: 0, returns: 0, returnsCount: 0,
+    customers: new Set(),
+    cashSales: 0,        // بيع نقدي (sale + Cash)
+    cashSalesCount: 0,
+    postPaySales: 0,     // بيع آجل (sale + Post Pay)
+    cardSales: 0,        // بيع بطاقة
+    rewaaPaySales: 0,    // رواء باي
+    collectionDebit: 0,  // تحصيل مدفوعات (Debit = customer paying debt)
+    collectionDebitCount: 0,
+    collectionCash: 0,   // تحصيل نقدي من المدفوعات
+    collectionOther: 0,  // تحصيل آخر
+    totalCollection: 0,  // إجمالي التحصيل من المدفوعات
+  };
+  const d = dailyMap[inv.date];
+  
+  if (inv.type === 'sale') {
+    d.sales += inv.total;
+    d.salesCount++;
+    if (inv.customer) d.customers.add(inv.customer);
+    
+    // Separate by payment method
+    if (inv.pm === 'Cash') {
+      d.cashSales += inv.total;
+      d.cashSalesCount++;
+    } else if (inv.pm === 'Post Pay') {
+      d.postPaySales += inv.total;
+    } else if (inv.pm === 'Credit Card') {
+      d.cardSales += inv.total;
+    } else if (inv.pm === 'Rewaa Pay') {
+      d.rewaaPaySales += inv.total;
+    }
+    
+    // If payment method is Debit = customer paying off their debt
+    if (inv.pm === 'Debit') {
+      d.collectionDebit += inv.paid;
+      d.collectionDebitCount++;
+      d.totalCollection += inv.paid;
+    }
+    // Also count cash payments as collection if there's a paidAmount on a Post Pay invoice
+    // (customer paid cash later for a previous آجل sale)
+    if (inv.pm === 'Cash' && inv.paid > 0 && inv.paid !== inv.total) {
+      // Partial cash payment - part is collection
+      d.collectionCash += inv.paid;
+      d.totalCollection += inv.paid;
+    }
+  } else {
+    d.returns += inv.total;
+    d.returnsCount++;
+  }
+});
+
+const daily = Object.values(dailyMap).map(d => ({
+  date: d.date,
+  sales: +d.sales.toFixed(2),
+  salesCount: d.salesCount,
+  cashSales: +d.cashSales.toFixed(2),
+  cashSalesCount: d.cashSalesCount,
+  postPaySales: +d.postPaySales.toFixed(2),
+  cardSales: +d.cardSales.toFixed(2),
+  rewaaPaySales: +d.rewaaPaySales.toFixed(2),
+  returns: +d.returns.toFixed(2),
+  returnsCount: d.returnsCount,
+  net: +(d.sales - d.returns).toFixed(2),
+  collectionDebit: +d.collectionDebit.toFixed(2),
+  collectionDebitCount: d.collectionDebitCount,
+  collectionCash: +d.collectionCash.toFixed(2),
+  totalCollection: +d.totalCollection.toFixed(2),
+  customers: d.customers.size,
+})).sort((a,b) => b.date.localeCompare(a.date));
+
+console.log(`\n=== LAST 5 DAYS ===`);
+daily.slice(0, 5).forEach(d => {
+  console.log(`${d.date}: sales=${d.sales} (${d.salesCount}) | cashSales=${d.cashSales} (${d.cashSalesCount}) | postPay=${d.postPaySales} | collection=${d.totalCollection} (debit=${d.collectionDebit}) | returns=${d.returns} | customers=${d.customers}`);
+});
+
+// === QUARTERLY TAX ===
 const quarters = { Q1: [1,2,3], Q2: [4,5,6], Q3: [7,8,9] };
 const quarterTax = {};
 for (const [q, months] of Object.entries(quarters)) {
-  const qSales = sales.filter(i => months.includes(i.month));
-  const qReturns = returns.filter(i => months.includes(i.month));
+  const qSales = allInv.filter(i => i.type === 'sale' && months.includes(i.month));
+  const qReturns = allInv.filter(i => i.type === 'return' && months.includes(i.month));
   const collected = qSales.reduce((s,i) => s + i.paid, 0);
-  const totalSales = qSales.reduce((s,i) => s + i.total, 0);
-  const totalReturns = qReturns.reduce((s,i) => s + i.total, 0);
   
-  // Paying customers grouped
   const payCust = {};
   qSales.filter(i => i.paid > 0).forEach(i => {
     if (!payCust[i.customer]) payCust[i.customer] = { paid: 0, count: 0, dates: [] };
@@ -66,54 +138,35 @@ for (const [q, months] of Object.entries(quarters)) {
   });
   
   quarterTax[q] = {
-    period: months.map(m => AR_MONTHS[m]).join(' - '),
-    months,
+    period: months.map(m => AR_MONTHS[m]).join(' - '), months,
     salesCount: qSales.length, returnsCount: qReturns.length,
-    totalSales: +totalSales.toFixed(2), totalReturns: +totalReturns.toFixed(2),
+    totalSales: +qSales.reduce((s,i) => s + i.total, 0).toFixed(2),
+    totalReturns: +qReturns.reduce((s,i) => s + i.total, 0).toFixed(2),
     collected: +collected.toFixed(2),
     vatOnCollected: +(collected * 15 / 115).toFixed(2),
     netAfterVat: +(collected * 100 / 115).toFixed(2),
     returnsList: qReturns.map(r => ({ inv: r.num, date: r.date, amount: +r.total.toFixed(2), customer: r.customer, vat: +(r.total * 15/115).toFixed(2) })).sort((a,b) => b.amount - a.amount),
-    payingCustomers: Object.entries(payCust).map(([name, info]) => ({
-      name, paid: +info.paid.toFixed(2), vat: +(info.paid * 15/115).toFixed(2),
-      net: +(info.paid * 100/115).toFixed(2), count: info.count,
-      firstDate: info.dates.sort()[0], lastDate: info.dates.sort().pop(),
-    })).sort((a,b) => b.paid - a.paid),
+    payingCustomers: Object.entries(payCust).map(([name, info]) => ({ name, paid: +info.paid.toFixed(2), vat: +(info.paid * 15/115).toFixed(2), net: +(info.paid * 100/115).toFixed(2), count: info.count, firstDate: info.dates.sort()[0], lastDate: info.dates.sort().pop() })).sort((a,b) => b.paid - a.paid),
     payingCount: Object.keys(payCust).length,
   };
 }
 
-// === 2. DAILY SUMMARY ===
-const dailyMap = {};
-allInv.forEach(inv => {
-  if (!dailyMap[inv.date]) dailyMap[inv.date] = { date: inv.date, sales: 0, salesCount: 0, returns: 0, returnsCount: 0, collected: 0, customers: new Set() };
-  const d = dailyMap[inv.date];
-  if (inv.type === 'sale') { d.sales += inv.total; d.salesCount++; if (inv.paid > 0) d.collected += inv.paid; if (inv.customer) d.customers.add(inv.customer); }
-  else { d.returns += inv.total; d.returnsCount++; }
-});
-const daily = Object.values(dailyMap).map(d => ({
-  date: d.date, sales: +d.sales.toFixed(2), salesCount: d.salesCount,
-  returns: +d.returns.toFixed(2), returnsCount: d.returnsCount,
-  net: +(d.sales - d.returns).toFixed(2), collected: +d.collected.toFixed(2),
-  customers: d.customers.size,
-})).sort((a,b) => b.date.localeCompare(a.date));
-
-// === 3. HEATMAP: best days/weekdays ===
+// === WEEKDAY STATS ===
+const sales = allInv.filter(i => i.type === 'sale');
 const weekdays = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 const weekdayStats = weekdays.map((name, i) => {
   const dayInv = sales.filter(s => s.weekday === i);
   return { day: name, count: dayInv.length, total: +dayInv.reduce((s,i) => s + i.total, 0).toFixed(2), avg: dayInv.length > 0 ? +(dayInv.reduce((s,i) => s + i.total, 0) / dayInv.length).toFixed(2) : 0 };
 });
 
-const dashboard = { quarterTax, daily, weekdayStats };
-
 // Inject
 const htmlPath = join(REPO_ROOT, 'paftah-comprehensive-report.html');
 let html = readFileSync(htmlPath, 'utf-8');
 html = html.replace(/\nconst QUARTER_TAXES = .*?;\n/g, '\n');
 html = html.replace(/\nconst DAILY_SUMMARY = .*?;\n/g, '\n');
-const dataStr = `\nconst QUARTER_TAXES = ${JSON.stringify(dashboard.quarterTax)};\nconst DAILY_SUMMARY = ${JSON.stringify(dashboard.daily)};\nconst WEEKDAY_STATS = ${JSON.stringify(dashboard.weekdayStats)};\n`;
-const idx = html.indexOf('// ===== VIP CUSTOMERS');
+html = html.replace(/\nconst WEEKDAY_STATS = .*?;\n/g, '\n');
+const dataStr = `\nconst QUARTER_TAXES = ${JSON.stringify(quarterTax)};\nconst DAILY_SUMMARY = ${JSON.stringify(daily)};\nconst WEEKDAY_STATS = ${JSON.stringify(weekdayStats)};\n`;
+const idx = html.indexOf('// ===== TAXES TAB');
 if (idx > -1) html = html.substring(0, idx) + dataStr + html.substring(idx);
 writeFileSync(htmlPath, html, 'utf-8');
-console.log('✓ Dashboard data injected');
+console.log('\n✓ Dashboard updated with payment breakdown');
