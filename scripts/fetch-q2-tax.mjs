@@ -42,6 +42,10 @@ async function fetchAllInvoicesQ2(token) {
       const d = new Date(inv.completionDate || inv.date || inv.createdAt);
       // Q2 = April (3) to June (5) 2026 (0-indexed months)
       if (d.getFullYear() === 2026 && d.getMonth() >= 3 && d.getMonth() <= 5) {
+        // Parse payment method - exclude CustomerDebit (آجل) since it's NOT actual cash collected
+        const pm = inv.paymentMethod || '';
+        const isCustomerDebit = pm === 'CustomerDebit' || pm.includes('Debit') || pm === 'آجل';
+        
         allInvoices.push({
           date: (inv.completionDate || inv.date || inv.createdAt).substring(0, 10),
           invoiceNumber: inv.invoiceNumber,
@@ -50,7 +54,10 @@ async function fetchAllInvoicesQ2(token) {
           type: inv.isReturn || inv.invoiceNumber?.startsWith('R') ? 'return' : 'sale',
           total: parseFloat(inv.total || 0),
           paidAmount: parseFloat(inv.paidAmount || 0),
-          paymentMethod: inv.paymentMethod || '',
+          paymentMethod: pm,
+          // Actual cash collected = paidAmount ONLY if payment method is Cash/Card/SoftPos (NOT CustomerDebit)
+          actualCollected: isCustomerDebit ? 0 : parseFloat(inv.paidAmount || 0),
+          isCustomerDebit: isCustomerDebit,
         });
       }
       // Stop if we've gone past Q2 (invoices are sorted DESC by date)
@@ -69,10 +76,10 @@ function updateTaxTab(q2Invoices) {
   let html = readFileSync(htmlPath, 'utf-8');
 
   // Build Q2 invoice data for the tax tab
-  // Only sales (not returns) with payment
-  const q2Sales = q2Invoices.filter(i => i.type === 'sale' && i.paidAmount > 0);
+  // Only sales (not returns) with ACTUAL cash/card collection (NOT آجل/CustomerDebit)
+  const q2Sales = q2Invoices.filter(i => i.type === 'sale' && i.actualCollected > 0);
   
-  // Group by customer
+  // Group by customer - use actualCollected instead of paidAmount
   const customerMap = {};
   q2Sales.forEach(inv => {
     const name = inv.customerName || 'غير محدد';
@@ -80,7 +87,7 @@ function updateTaxTab(q2Invoices) {
       customerMap[name] = { name, sales: [], totalPaid: 0, totalSales: 0, invoiceCount: 0, dates: [] };
     }
     customerMap[name].sales.push(inv);
-    customerMap[name].totalPaid += inv.paidAmount;
+    customerMap[name].totalPaid += inv.actualCollected;  // ACTUAL cash, not آجل
     customerMap[name].totalSales += inv.total;
     customerMap[name].invoiceCount++;
     customerMap[name].dates.push(inv.date);
