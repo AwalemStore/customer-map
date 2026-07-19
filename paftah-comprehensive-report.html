@@ -1891,79 +1891,68 @@ body {
 <!-- ==================== TAB 4: EXPENSES ==================== -->
 <div id="tab-expenses" class="tab-panel">
 
-  <div class="kpi-grid">
-    <div class="kpi-card danger">
-      <div class="kpi-label">صافي الدخل</div>
-      <div class="kpi-value" style="color:var(--danger)">45,917.61 ر.س</div>
-      <div class="kpi-sub">الشهر الماضي: </div>
+  <div class="kpi-grid" id="expKpiGrid"></div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon" data-ico="filter"></span> بحث وفلترة السندات</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+      <input type="text" id="expSearch" placeholder="🔍 بحث بالوصف أو الرقم..." oninput="renderExpenses()" style="flex:1;min-width:200px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px">
+      <select id="expCategoryFilter" onchange="renderExpenses()" style="padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px">
+        <option value="">كل الفئات</option>
+      </select>
+      <select id="expMonthFilter" onchange="renderExpenses()" style="padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px">
+        <option value="">كل الشهور</option>
+      </select>
+      <select id="expSortBy" onchange="renderExpenses()" style="padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px">
+        <option value="number">ترتيب حسب الرقم</option>
+        <option value="date">ترتيب حسب التاريخ</option>
+        <option value="amount-desc">المبلغ (الأكبر أولاً)</option>
+        <option value="amount-asc">المبلغ (الأصغر أولاً)</option>
+      </select>
+      <button onclick="exportExpensesCSV()" style="padding:9px 16px;background:var(--primary);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px">📄 تصدير CSV</button>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-label">عدد المصروفات</div>
-      <div class="kpi-value">164</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">إجمالي الربح</div>
-      <div class="kpi-value">45,917.61 ر.س</div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;font-size:13px;color:var(--text-light)">
+      <span>إجمالي السندات: <strong id="expShownCount">0</strong></span>
+      <span>إجمالي المبلغ: <strong id="expShownTotal">0 ر.س</strong></span>
     </div>
   </div>
 
   <div class="grid-2">
     <div class="card">
-      <div class="card-title"><span class="icon" data-ico="bar"></span> توزيع المصروفات حسب الفئة</div>
+      <div class="card-title"><span class="icon" data-ico="bar"></span> المصروفات حسب الفئة</div>
       <div class="chart-container"><canvas id="expenseCategoryChart"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="icon" data-ico="clipboard"></span> ملخص فئات المصروفات</div>
-      <div class="chart-container"><canvas id="expenseBarChart"></canvas></div>
+      <div class="card-title"><span class="icon" data-ico="bar"></span> المصروفات الشهرية</div>
+      <div class="chart-container"><canvas id="expenseMonthlyChart"></canvas></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" data-ico="receipt"></span> آخر 10 مصروفات</div>
+    <div class="card-title"><span class="icon" data-ico="clipboard"></span> ملخص الفئات</div>
     <div class="table-wrapper">
-      <table class="data-table">
-        <thead>
-          <tr><th>#</th><th>الرقم</th><th>الوصف</th><th>الفئة</th><th>المبلغ (ر.س)</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>1</td><td>Exp-164</td><td>ضريبة القيمة المضافة المستحقة</td><td><span class="tag tag-red">ضريبة القيمة المضافة المستحقة</span></td><td class="amount negative">13,903.03</td></tr>
-          <tr><td>2</td><td>Exp-163</td><td>ناجز اعمال</td><td><span class="tag tag-yellow">الرسوم الحكومية</span></td><td class="amount negative">1,725.00</td></tr>
-          <tr><td>3</td><td>Exp-162</td><td>طلب الارسالية</td><td><span class="tag tag-yellow">الرسوم الحكومية</span></td><td class="amount negative">402.50</td></tr>
-          <tr><td>4</td><td>Exp-161</td><td>البيان الجمركي</td><td><span class="tag tag-yellow">الرسوم الحكومية</span></td><td class="amount negative">60.90</td></tr>
-          <tr><td>5</td><td>Exp-160</td><td>برنامج مالك</td><td><span class="tag tag-blue">مصاريف اخرى</span></td><td class="amount negative">15.00</td></tr>
-          <tr><td>6</td><td>Exp-159</td><td>ايجار مستودع</td><td><span class="tag tag-purple">ايجار المستودع</span></td><td class="amount negative">900.00</td></tr>
-          <tr><td>7</td><td>Exp-158</td><td>راتب مالك</td><td><span class="tag tag-green">الرواتب والرسوم الإدارية</span></td><td class="amount negative">1,750.00</td></tr>
-          <tr><td>8</td><td>Exp-157</td><td>رواتب محمد شمير</td><td><span class="tag tag-green">الرواتب والرسوم الإدارية</span></td><td class="amount negative">1,500.00</td></tr>
-          <tr><td>9</td><td>Exp-156</td><td>انترنت</td><td><span class="tag tag-purple">انترنت الموظفين</span></td><td class="amount negative">150.00</td></tr>
-          <tr><td>10</td><td>Exp-155</td><td>جوال المؤسسة</td><td><span class="tag tag-purple">جوال الموؤسسة</span></td><td class="amount negative">138.00</td></tr>
-        </tbody>
-        <tfoot>
-          <tr style="background:var(--primary-light);font-weight:700">
-            <td colspan="4">إجمالي آخر 10 مصروفات</td>
-            <td>20,544.43 ر.س</td>
-          </tr>
-        </tfoot>
+      <table class="data-table" id="expCategoryTable">
+        <thead><tr><th>الفئة</th><th>عدد السندات</th><th>المبلغ (ر.س)</th><th>النسبة</th></tr></thead>
+        <tbody id="expCategoryBody"></tbody>
       </table>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" data-ico="money"></span> تحليل هيكل التكاليف</div>
-    <div class="grid-2" style="gap:16px">
-      <div>
-        <h4 style="margin-bottom:12px;color:var(--primary-dark)">أكبر بنود المصروفات</h4>
-        <div class="summary-box purple"><div><div class="sb-label">ضريبة القيمة المضافة المستحقة</div><div class="sb-value" style="color:var(--danger)">13,903.03 ر.س</div></div></div>
-        <div class="summary-box purple"><div><div class="sb-label">راتب مالك</div><div class="sb-value">1,750.00 ر.س</div></div></div>
-        <div class="summary-box purple"><div><div class="sb-label">رواتب محمد شمير</div><div class="sb-value">1,500.00 ر.س</div></div></div>
-        <div class="summary-box purple"><div><div class="sb-label">ناجز اعمال</div><div class="sb-value">1,725.00 ر.س</div></div></div>
-      </div>
-      <div>
-        <h4 style="margin-bottom:12px;color:var(--primary-dark)">التكاليف الثابتة التقديرية</h4>
-        <div class="summary-box purple"><div><div class="sb-label">إيجار المستودع</div><div class="sb-value">900.00 ر.س/شهر</div></div></div>
-        <div class="summary-box purple"><div><div class="sb-label">راتب مالك</div><div class="sb-value">1,750.00 ر.س/شهر</div></div></div>
-        <div class="summary-box purple"><div><div class="sb-label">رواتب محمد شمير</div><div class="sb-value">1,500.00 ر.س/شهر</div></div></div>
-        <div class="summary-box purple"><div><div class="sb-label">انترنت + جوال</div><div class="sb-value">288.00 ر.س/شهر</div></div></div>
-      </div>
+    <div class="card-title"><span class="icon" data-ico="receipt"></span> كل سندات الصرف (مرتبة من الأول للأخير)</div>
+    <div class="table-wrapper">
+      <table class="data-table" id="expAllTable">
+        <thead>
+          <tr><th>م</th><th>رقم السند</th><th>التاريخ</th><th>الوصف</th><th>الفئة</th><th>الضريبة</th><th>المبلغ (ر.س)</th></tr>
+        </thead>
+        <tbody id="expAllBody"></tbody>
+        <tfoot>
+          <tr style="background:var(--primary-light);font-weight:700">
+            <td colspan="6" style="text-align:left">الإجمالي</td>
+            <td id="expAllTotal">0 ر.س</td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
   </div>
 
@@ -4029,6 +4018,191 @@ function animateCounters() {
   document.querySelectorAll('.kpi-value').forEach(function(el) { observer.observe(el); });
 }
 
+// ===== EXPENSES TAB =====
+const AR_MONTHS_SHORT = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+function categoryAr(name) {
+  const map = {
+    'Salaries And Administrative Fees': 'الرواتب والرسوم الإدارية',
+    'Shipping And Custom Fees': 'الشحن والجمارك',
+    'Government Fees': 'الرسوم الحكومية',
+    'Hospitality and Cleanliness': 'الضيافة والنظافة',
+    'Social Insurance Expense': 'التأمينات الاجتماعية',
+    'Zakat': 'الزكاة',
+  };
+  return map[name] || name;
+}
+
+function initExpensesTab() {
+  if (typeof EXPENSES_DATA === 'undefined' || !EXPENSES_DATA.expenses) return;
+  const exp = EXPENSES_DATA.expenses;
+
+  // KPI cards
+  const kpiHtml = `
+    <div class="kpi-card danger">
+      <div class="kpi-label">إجمالي المصروفات</div>
+      <div class="kpi-value" style="color:var(--danger)">${EXPENSES_DATA.totalAmount.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})} ر.س</div>
+      <div class="kpi-sub">من ${exp[0].date} إلى ${exp[exp.length-1].date}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">عدد السندات</div>
+      <div class="kpi-value">${EXPENSES_DATA.total}</div>
+      <div class="kpi-sub">${EXPENSES_DATA.categories.length} فئة</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">إجمالي الضريبة</div>
+      <div class="kpi-value">${EXPENSES_DATA.totalTax.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})} ر.س</div>
+      <div class="kpi-sub">ضريبة القيمة المضافة</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">متوسط السند</div>
+      <div class="kpi-value">${(EXPENSES_DATA.totalAmount / EXPENSES_DATA.total).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})} ر.س</div>
+      <div class="kpi-sub">لكل سند</div>
+    </div>
+  `;
+  document.getElementById('expKpiGrid').innerHTML = kpiHtml;
+
+  // Populate category filter
+  const catFilter = document.getElementById('expCategoryFilter');
+  const cats = [...new Set(exp.map(e => e.category))].sort();
+  cats.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = categoryAr(c);
+    catFilter.appendChild(opt);
+  });
+
+  // Populate month filter
+  const monthFilter = document.getElementById('expMonthFilter');
+  const months = [...new Set(exp.map(e => e.date.substring(0,7)))].sort();
+  months.forEach(m => {
+    const [y, mo] = m.split('-');
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = AR_MONTHS_SHORT[parseInt(mo)-1] + ' ' + y;
+    monthFilter.appendChild(opt);
+  });
+
+  // Category summary table
+  const catBody = document.getElementById('expCategoryBody');
+  const sortedCats = [...EXPENSES_DATA.categories].sort((a,b) => b.total - a.total);
+  catBody.innerHTML = sortedCats.map(c => {
+    const pct = (c.total / EXPENSES_DATA.totalAmount * 100).toFixed(1);
+    const color = pct > 15 ? 'tag-red' : pct > 5 ? 'tag-yellow' : 'tag-blue';
+    return `<tr>
+      <td><span class="tag ${color}">${categoryAr(c.name)}</span></td>
+      <td>${c.count}</td>
+      <td class="amount negative">${c.total.toLocaleString('en-US', {minimumFractionDigits:2})}</td>
+      <td>${pct}%</td>
+    </tr>`;
+  }).join('');
+
+  renderExpenses();
+  renderExpenseCharts();
+}
+
+function renderExpenses() {
+  if (typeof EXPENSES_DATA === 'undefined') return;
+  let exp = [...EXPENSES_DATA.expenses];
+
+  // Apply filters
+  const search = document.getElementById('expSearch')?.value?.toLowerCase() || '';
+  const cat = document.getElementById('expCategoryFilter')?.value || '';
+  const month = document.getElementById('expMonthFilter')?.value || '';
+  const sortBy = document.getElementById('expSortBy')?.value || 'number';
+
+  if (search) exp = exp.filter(e => e.description.toLowerCase().includes(search) || e.number.toLowerCase().includes(search));
+  if (cat) exp = exp.filter(e => e.category === cat);
+  if (month) exp = exp.filter(e => e.date.startsWith(month));
+
+  // Sort
+  exp.sort((a, b) => {
+    if (sortBy === 'number') return parseInt(a.number.replace(/\D/g,'')) - parseInt(b.number.replace(/\D/g,''));
+    if (sortBy === 'date') return a.date.localeCompare(b.date);
+    if (sortBy === 'amount-desc') return b.amount - a.amount;
+    if (sortBy === 'amount-asc') return a.amount - b.amount;
+    return 0;
+  });
+
+  // Render table
+  const body = document.getElementById('expAllBody');
+  const total = exp.reduce((s,e) => s + e.amount, 0);
+
+  body.innerHTML = exp.map((e, i) => {
+    const color = e.amount > 5000 ? 'tag-red' : e.amount > 1000 ? 'tag-yellow' : 'tag-blue';
+    return `<tr>
+      <td>${i+1}</td>
+      <td style="font-weight:600">${e.number}</td>
+      <td>${e.date}</td>
+      <td>${e.description.trim()}</td>
+      <td><span class="tag ${color}">${categoryAr(e.category)}</span></td>
+      <td>${e.taxAmount > 0 ? e.taxAmount.toLocaleString('en-US', {minimumFractionDigits:2}) : '-'}</td>
+      <td class="amount negative">${e.amount.toLocaleString('en-US', {minimumFractionDigits:2})}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('expShownCount').textContent = exp.length;
+  document.getElementById('expShownTotal').textContent = total.toLocaleString('en-US', {minimumFractionDigits:2}) + ' ر.س';
+  document.getElementById('expAllTotal').textContent = total.toLocaleString('en-US', {minimumFractionDigits:2}) + ' ر.س';
+}
+
+function renderExpenseCharts() {
+  if (typeof EXPENSES_DATA === 'undefined') return;
+  const cats = [...EXPENSES_DATA.categories].sort((a,b) => b.total - a.total).slice(0, 10);
+
+  // Category chart (pie)
+  const ctx1 = document.getElementById('expenseCategoryChart');
+  if (ctx1) {
+    new Chart(ctx1, {
+      type: 'doughnut',
+      data: {
+        labels: cats.map(c => categoryAr(c.name)),
+        datasets: [{
+          data: cats.map(c => c.total),
+          backgroundColor: ['#EF4444','#F59E0B','#3B82F6','#8B5CF6','#10B981','#EC4899','#6366F1','#14B8A6','#F97316','#64748B']
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'right', labels: { font: { size: 11 } } } } }
+    });
+  }
+
+  // Monthly chart (bar)
+  const monthly = EXPENSES_DATA.monthly.filter(m => m.month >= '2026-01');
+  const ctx2 = document.getElementById('expenseMonthlyChart');
+  if (ctx2) {
+    new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: monthly.map(m => {
+          const [y, mo] = m.month.split('-');
+          return AR_MONTHS_SHORT[parseInt(mo)-1] + ' ' + y;
+        }),
+        datasets: [{
+          label: 'المصروفات (ر.س)',
+          data: monthly.map(m => m.total),
+          backgroundColor: '#EF4444'
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+  }
+}
+
+function exportExpensesCSV() {
+  if (typeof EXPENSES_DATA === 'undefined') return;
+  let csv = '\uFEFFرقم السند,التاريخ,الوصف,الفئة,الضريبة,المبلغ\n';
+  const exp = [...EXPENSES_DATA.expenses].sort((a,b) => parseInt(a.number.replace(/\D/g,'')) - parseInt(b.number.replace(/\D/g,'')));
+  exp.forEach(e => {
+    csv += `${e.number},${e.date},"${e.description.trim()}",${categoryAr(e.category)},${e.taxAmount},${e.amount}\n`;
+  });
+  csv += `\nالإجمالي,,, ,${EXPENSES_DATA.totalTax},${EXPENSES_DATA.totalAmount}\n`;
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'سندات_المصروفات_بفته.csv';
+  link.click();
+}
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
   const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
@@ -4083,6 +4257,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTreemap();
   renderFunnel();
   renderSmartAlerts();
+  initExpensesTab();
 
   var btt = document.querySelector('.back-to-top');
   window.addEventListener('scroll', function() {
