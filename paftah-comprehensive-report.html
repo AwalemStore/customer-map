@@ -4039,20 +4039,22 @@ function smartCategory(exp) {
   const origCat = (exp.category || '');
   const text = desc + ' ' + origCat.toLowerCase();
 
-  // Person-based (check first - highest priority)
+  // Fuel/petrol FIRST (before person) - always goes to بنزين
+  if (text.includes('بنزين') || text.includes('شحن سيارة') || text.includes('وقود')) return 'بنزين';
+
+  // Person-based (after fuel so شمير's petrol stays in بنزين)
   if (text.includes('شمير')) return 'محمد شمير';
   if ((text.includes('مالك')) && !desc.includes('برنامج')) return 'المالك';
+
+  // Vehicle costs
+  if (text.includes('ايجار سيارة') || text.includes('ايجار السيارة')) return 'إيجار سيارة';
+  if (text.includes('صيانة السيارة') || text.includes('صيانة سيارة')) return 'صيانة سيارة';
 
   // Salary (generic, not for specific person)
   if (text.includes('رواتب') || text.includes('راتب') || origCat === 'Salaries And Administrative Fees') return 'الرواتب والبدلات';
 
   // Housing allowance
   if (text.includes('بدل سكن') || text.includes('سكن')) return 'سكن العمال';
-
-  // Vehicle costs
-  if (text.includes('ايجار سيارة') || text.includes('ايجار السيارة')) return 'إيجار سيارة';
-  if (text.includes('صيانة السيارة') || text.includes('صيانة سيارة')) return 'صيانة سيارة';
-  if (text.includes('بنزين') || text.includes('شحن سيارة')) return 'بنزين';
 
   // Rent
   if (text.includes('مستودع')) return 'إيجار مستودع';
