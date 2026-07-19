@@ -75,7 +75,8 @@ while (hasMore) {
   if (!data.data || data.data.length === 0) break;
   for (const inv of data.data) {
     const d = new Date(inv.completionDate || inv.date);
-    if (d.getFullYear() === 2026 && d.getMonth() <= 8) {
+    // Include all invoices from 2025-12-31 onwards (Rewaa counts Dec 31 in current period)
+    if (d.getFullYear() >= 2025) {
       allInv.push({
         date: (inv.completionDate || inv.date).substring(0,10),
         num: inv.invoiceNumber || '',
