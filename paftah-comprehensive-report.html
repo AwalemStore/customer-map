@@ -4033,6 +4033,79 @@ function categoryAr(name) {
   return map[name] || name;
 }
 
+// Smart category: combines description + original Rewaa category
+function smartCategory(exp) {
+  const desc = (exp.description || '').toLowerCase();
+  const origCat = (exp.category || '');
+  const text = desc + ' ' + origCat.toLowerCase();
+
+  // Person-based (check first - highest priority)
+  if (text.includes('شمير')) return 'محمد شمير';
+  if ((text.includes('مالك')) && !desc.includes('برنامج')) return 'المالك';
+
+  // Salary (generic, not for specific person)
+  if (text.includes('رواتب') || text.includes('راتب') || origCat === 'Salaries And Administrative Fees') return 'الرواتب والبدلات';
+
+  // Housing allowance
+  if (text.includes('بدل سكن') || text.includes('سكن')) return 'سكن العمال';
+
+  // Vehicle costs
+  if (text.includes('ايجار سيارة') || text.includes('ايجار السيارة')) return 'إيجار سيارة';
+  if (text.includes('صيانة السيارة') || text.includes('صيانة سيارة')) return 'صيانة سيارة';
+  if (text.includes('بنزين') || text.includes('شحن سيارة')) return 'بنزين';
+
+  // Rent
+  if (text.includes('مستودع')) return 'إيجار مستودع';
+
+  // Travel
+  if (text.includes('رحلة عمل')) return 'رحلات العمل';
+
+  // Shipping & customs
+  if (text.includes('شحن') || text.includes('جمارك') || text.includes('جمركي') || text.includes('تخليص') ||
+      text.includes('موان') || text.includes('ملاحة') || text.includes('ارسالي') || text.includes('ارسالية') ||
+      text.includes('تنزيل') || text.includes('تحميل') || text.includes('تفتيش') || text.includes('غرامة') ||
+      origCat === 'Shipping And Custom Fees') return 'الشحن والجمارك';
+
+  // Government fees
+  if (text.includes('تأشيرة') || text.includes('استقدام') || text.includes('كرت العمل') ||
+      text.includes('غرفة تجارية') || text.includes('هيئة') || text.includes('السجل التجاري') ||
+      text.includes('ناجز') || text.includes('تأمينات') || text.includes('سابر') || text.includes('اقامة') ||
+      text.includes('اقامة') || text.includes('رقابة') || text.includes('شهادة فحص') || text.includes('مواصفات') ||
+      text.includes('قوى') || text.includes('بيان جمركي') || text.includes('رسوم جمركية') ||
+      text.includes('زكاة') || text.includes('الزكاة') || text.includes('العمل') && text.includes('مدد') ||
+      origCat === 'Government Fees' || origCat === 'Zakat' || origCat === 'Social Insurance Expense') return 'الرسوم الحكومية والزكاة';
+
+  // Testing
+  if (text.includes('اختبار الفحص') || text.includes('فحص')) return 'اختبار الفحص';
+
+  // Communications
+  if (text.includes('جوال') || text.includes('الاتصالات') || text.includes('انترنت')) return 'الاتصالات والإنترنت';
+
+  // Software
+  if (text.includes('برنامج') || text.includes('اشتراك') || text.includes('رواء')) return 'البرامج والاشتراكات';
+
+  // VAT
+  if (text.includes('ضريبة القيمة') || text.includes('القيمة المضافة')) return 'ضريبة القيمة المضافة';
+
+  // Hospitality
+  if (text.includes('غداء') || text.includes('ضيافة') || origCat === 'Hospitality and Cleanliness') return 'الضيافة';
+
+  // Marketing
+  if (text.includes('دعاية') || text.includes('كروت') || text.includes('اعلان')) return 'الدعاية والتسويق';
+
+  // Design
+  if (text.includes('تصميم') || text.includes('شعار')) return 'تصميم';
+
+  // Agent/lawyer
+  if (text.includes('معقب')) return 'المعقب';
+  if (text.includes('محامي')) return 'المحامي';
+
+  // License
+  if (text.includes('رخصة قيادة')) return 'رخصة القيادة';
+
+  return 'أخرى';
+}
+
 function initExpensesTab() {
   if (typeof EXPENSES_DATA === 'undefined' || !EXPENSES_DATA.expenses) return;
   const exp = EXPENSES_DATA.expenses;
@@ -4064,11 +4137,11 @@ function initExpensesTab() {
 
   // Populate category filter
   const catFilter = document.getElementById('expCategoryFilter');
-  const cats = [...new Set(exp.map(e => e.category))].sort();
-  cats.forEach(c => {
+  const smartCats = [...new Set(exp.map(e => smartCategory(e)))].sort();
+  smartCats.forEach(c => {
     const opt = document.createElement('option');
     opt.value = c;
-    opt.textContent = categoryAr(c);
+    opt.textContent = c;
     catFilter.appendChild(opt);
   });
 
@@ -4083,22 +4156,31 @@ function initExpensesTab() {
     monthFilter.appendChild(opt);
   });
 
+  // Build smart category summary
+  const smartCatMap = {};
+  exp.forEach(e => {
+    const sc = smartCategory(e);
+    if (!smartCatMap[sc]) smartCatMap[sc] = { count: 0, total: 0 };
+    smartCatMap[sc].count++;
+    smartCatMap[sc].total += e.amount;
+  });
+
   // Category summary table
   const catBody = document.getElementById('expCategoryBody');
-  const sortedCats = [...EXPENSES_DATA.categories].sort((a,b) => b.total - a.total);
-  catBody.innerHTML = sortedCats.map(c => {
-    const pct = (c.total / EXPENSES_DATA.totalAmount * 100).toFixed(1);
+  const sortedCats = Object.entries(smartCatMap).sort((a,b) => b[1].total - a[1].total);
+  catBody.innerHTML = sortedCats.map(([name, info]) => {
+    const pct = (info.total / EXPENSES_DATA.totalAmount * 100).toFixed(1);
     const color = pct > 15 ? 'tag-red' : pct > 5 ? 'tag-yellow' : 'tag-blue';
     return `<tr>
-      <td><span class="tag ${color}">${categoryAr(c.name)}</span></td>
-      <td>${c.count}</td>
-      <td class="amount negative">${c.total.toLocaleString('en-US', {minimumFractionDigits:2})}</td>
+      <td><span class="tag ${color}">${name}</span></td>
+      <td>${info.count}</td>
+      <td class="amount negative">${info.total.toLocaleString('en-US', {minimumFractionDigits:2})}</td>
       <td>${pct}%</td>
     </tr>`;
   }).join('');
 
   renderExpenses();
-  renderExpenseCharts();
+  renderExpenseCharts(smartCatMap);
 }
 
 function renderExpenses() {
@@ -4112,7 +4194,7 @@ function renderExpenses() {
   const sortBy = document.getElementById('expSortBy')?.value || 'number';
 
   if (search) exp = exp.filter(e => e.description.toLowerCase().includes(search) || e.number.toLowerCase().includes(search));
-  if (cat) exp = exp.filter(e => e.category === cat);
+  if (cat) exp = exp.filter(e => smartCategory(e) === cat);
   if (month) exp = exp.filter(e => e.date.startsWith(month));
 
   // Sort
@@ -4129,13 +4211,14 @@ function renderExpenses() {
   const total = exp.reduce((s,e) => s + e.amount, 0);
 
   body.innerHTML = exp.map((e, i) => {
+    const sc = smartCategory(e);
     const color = e.amount > 5000 ? 'tag-red' : e.amount > 1000 ? 'tag-yellow' : 'tag-blue';
     return `<tr>
       <td>${i+1}</td>
       <td style="font-weight:600">${e.number}</td>
       <td>${e.date}</td>
       <td>${e.description.trim()}</td>
-      <td><span class="tag ${color}">${categoryAr(e.category)}</span></td>
+      <td><span class="tag ${color}">${sc}</span></td>
       <td>${e.taxAmount > 0 ? e.taxAmount.toLocaleString('en-US', {minimumFractionDigits:2}) : '-'}</td>
       <td class="amount negative">${e.amount.toLocaleString('en-US', {minimumFractionDigits:2})}</td>
     </tr>`;
@@ -4146,9 +4229,9 @@ function renderExpenses() {
   document.getElementById('expAllTotal').textContent = total.toLocaleString('en-US', {minimumFractionDigits:2}) + ' ر.س';
 }
 
-function renderExpenseCharts() {
+function renderExpenseCharts(smartCatMap) {
   if (typeof EXPENSES_DATA === 'undefined') return;
-  const cats = [...EXPENSES_DATA.categories].sort((a,b) => b.total - a.total).slice(0, 10);
+  const cats = Object.entries(smartCatMap || {}).map(([name, info]) => ({name, total: info.total})).sort((a,b) => b.total - a.total).slice(0, 10);
 
   // Category chart (pie)
   const ctx1 = document.getElementById('expenseCategoryChart');
@@ -4156,7 +4239,7 @@ function renderExpenseCharts() {
     new Chart(ctx1, {
       type: 'doughnut',
       data: {
-        labels: cats.map(c => categoryAr(c.name)),
+        labels: cats.map(c => c.name),
         datasets: [{
           data: cats.map(c => c.total),
           backgroundColor: ['#EF4444','#F59E0B','#3B82F6','#8B5CF6','#10B981','#EC4899','#6366F1','#14B8A6','#F97316','#64748B']
@@ -4190,12 +4273,12 @@ function renderExpenseCharts() {
 
 function exportExpensesCSV() {
   if (typeof EXPENSES_DATA === 'undefined') return;
-  let csv = '\uFEFFرقم السند,التاريخ,الوصف,الفئة,الضريبة,المبلغ\n';
+  let csv = '\uFEFFرقم السند,التاريخ,الوصف,الفئة الذكية,الفئة الأصلية,الضريبة,المبلغ\n';
   const exp = [...EXPENSES_DATA.expenses].sort((a,b) => parseInt(a.number.replace(/\D/g,'')) - parseInt(b.number.replace(/\D/g,'')));
   exp.forEach(e => {
-    csv += `${e.number},${e.date},"${e.description.trim()}",${categoryAr(e.category)},${e.taxAmount},${e.amount}\n`;
+    csv += `${e.number},${e.date},"${e.description.trim()}",${smartCategory(e)},${e.category},${e.taxAmount},${e.amount}\n`;
   });
-  csv += `\nالإجمالي,,, ,${EXPENSES_DATA.totalTax},${EXPENSES_DATA.totalAmount}\n`;
+  csv += `\nالإجمالي,,,,${EXPENSES_DATA.totalTax},${EXPENSES_DATA.totalAmount}\n`;
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
