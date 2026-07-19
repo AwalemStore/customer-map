@@ -331,10 +331,14 @@ if (paftahMatch) {
   const totalProfit = total.grossProfit || total.profit || months.reduce((s,m) => s + (m.grossProfit||0), 0);
   const totalCustomers = paftah.customers.length;
   
-  // Expenses 2026
+  // Expenses 2026 - parse from HTML
   let exp2026 = 0;
-  if (typeof EXPENSES_DATA !== 'undefined') {
-    EXPENSES_DATA.expenses.forEach(e => { if (e.date?.startsWith('2026')) exp2026 += e.amount; });
+  const expMatch = html.match(/const EXPENSES_DATA = (\{"total".*?\});\s*const/s);
+  if (expMatch) {
+    try {
+      const expData = JSON.parse(expMatch[1]);
+      expData.expenses.forEach(e => { if (e.date?.startsWith('2026')) exp2026 += e.amount; });
+    } catch(e) { console.log('⚠ Could not parse EXPENSES_DATA'); }
   }
   const netIncome = totalProfit - exp2026;
   
