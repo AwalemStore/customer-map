@@ -10,4 +10,4 @@ jobs:
         with: { node-version: '22' }
       - name: Debug
         env: { REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }} }
-        run: node scripts/debug-daily-api.mjs
+        run: node scripts/debug-exp.mjs
