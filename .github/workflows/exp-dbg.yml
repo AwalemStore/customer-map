@@ -1,4 +1,4 @@
-name: Dbg
+name: Exp Dbg
 on:
   workflow_dispatch:
 jobs:
