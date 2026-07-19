@@ -1,5 +1,8 @@
 name: Test API
 on:
+  push:
+    paths:
+      - 'scripts/test-api.mjs'
   workflow_dispatch:
 jobs:
   test:
@@ -7,6 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 20 }
-      - env: { REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }} }
+        with:
+          node-version: '20'
+      - name: Test
+        env:
+          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
         run: node scripts/test-api.mjs
