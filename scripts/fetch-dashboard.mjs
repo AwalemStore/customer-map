@@ -256,3 +256,30 @@ const idx = html.indexOf('// ===== TAXES TAB');
 if (idx > -1) html = html.substring(0, idx) + dataStr + html.substring(idx);
 writeFileSync(htmlPath, html, 'utf-8');
 console.log('\n✓ All data injected from official Rewaa charts API');
+
+// === CLEAN INVOICES ARRAY ===
+// Replace the duplicated invoices with clean unique ones
+const cleanInvoices = [];
+const seenNums = new Set();
+allInv.forEach(inv => {
+  if (!seenNums.has(inv.num || inv.date + inv.customer)) {
+    seenNums.add(inv.num || inv.date + inv.customer);
+    cleanInvoices.push({
+      date: inv.date,
+      num: inv.num || '',
+      type: inv.type,
+      amount: +inv.total.toFixed(2),
+    });
+  }
+});
+cleanInvoices.sort((a, b) => b.date.localeCompare(a.date));
+console.log(`Clean invoices: ${cleanInvoices.length} (was ${allInv.length})`);
+
+// Replace invoices in HTML
+const invStart = html.indexOf('const invoices = ');
+const invEnd = html.indexOf('];', invStart) + 2;
+if (invStart > -1 && invEnd > invStart) {
+  const newInv = 'const invoices = ' + JSON.stringify(cleanInvoices);
+  html = html.substring(0, invStart) + newInv + ';' + html.substring(invEnd);
+  console.log('✓ Replaced invoices array with clean data');
+}
