@@ -42,18 +42,18 @@ while (total === null || offset < total) {
     console.log(`  Total expenses: ${total}`);
   }
   
-  const expenses = data.data || data.resultSet || data.expenses || [];
+  const expenses = data.resultSet || data.data || data.expenses || [];
   if (expenses.length === 0 && !data.data) { console.log('Response keys:', Object.keys(data)); console.log('Sample:', JSON.stringify(data).substring(0, 500)); break; }
   if (expenses.length === 0) break;
   
   for (const e of expenses) {
     allExpenses.push({
       id: e.id,
-      number: e.number || e.reference || '',
-      date: ((e.createdAt || e.date || e.expenseDate || e.updatedAt || '2020-01-01') + '').substring(0, 10),
-      description: e.description || e.note || e.name || '',
-      category: e.category?.name || e.categoryName || e.category || '',
-      amount: parseFloat(e.amount || e.totalAmount || 0),
+      number: e.expenseNumber || e.number || e.reference || '',
+      date: ((e.paymentDateTime || e.createdAt || e.date || '2020-01-01') + '').substring(0, 10),
+      description: e.name || e.description || e.note || '',
+      category: (e.category?.name || e.categoryName || (typeof e.category === 'string' ? e.category : '') || 'غير مصنف').trim(),
+      amount: parseFloat(e.totalAmount || e.amount || 0),
       taxAmount: parseFloat(e.taxAmount || 0),
       total: parseFloat(e.amount || 0) + parseFloat(e.taxAmount || 0),
       vendor: e.vendor?.name || e.payee || e.supplier || '',
