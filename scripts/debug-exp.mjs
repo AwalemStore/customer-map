@@ -8,11 +8,18 @@ const authRes = await fetch(COGNITO_ENDPOINT, {
 });
 const token = (await authRes.json()).AuthenticationResult.IdToken;
 
-const res = await fetch(`${API_BASE}/expense-service/expenses?offset=0&limit=5&search=&sortOn=createdAt&sortBy=DESC&amount=&taxAmount=&createdAtFrom=2024-01-01&createdAtTo=2026-12-31`, { headers: { accept: 'application/json', authorization: `Bearer ${token}` } });
+const res = await fetch(`${API_BASE}/expense-service/expenses?offset=0&limit=3&search=&sortOn=createdAt&sortBy=DESC`, { headers: { accept: 'application/json', authorization: `Bearer ${token}` } });
 const data = await res.json();
 console.log('Response keys:', Object.keys(data));
-console.log('Total:', data.total || data.meta?.total);
-console.log('Data count:', data.data?.length || data.resultSet?.length);
-console.log('\nFirst expense FULL:');
-const first = data.data?.[0] || data.resultSet?.[0];
-console.log(JSON.stringify(first, null, 2));
+console.log('Total:', data.total || data.meta?.total || data.count);
+console.log('Data count:', data.data?.length);
+
+// Show first 3 expenses FULL
+if (data.data) {
+  data.data.forEach((e, i) => {
+    console.log(`\n=== EXPENSE ${i+1} ===`);
+    console.log(JSON.stringify(e, null, 2));
+  });
+} else {
+  console.log('\nFull response:', JSON.stringify(data).substring(0, 2000));
+}
