@@ -317,4 +317,56 @@ html = html.replace(
   `data-count="${saleCount}" data-int="1">0</div>$1<div class="sub">يناير - يوليو 2026`
 );
 console.log(`✓ Synced "عمليات البيع" counter: ${oldCounter?.[1] || '?'} → ${saleCount} (sales) | ${returnCount} returns`);
+
+// === SYNC ALL HEADER VALUES FROM PAFTAH_DATA ===
+// Extract monthly total from PAFTAH_DATA in HTML
+const paftahMatch = html.match(/const PAFTAH_DATA = (\{"districts.*?\});\s*const/s);
+if (paftahMatch) {
+  const paftah = JSON.parse(paftahMatch[1]);
+  const months = paftah.monthly.filter(m => !m.isTotal);
+  const total = paftah.monthly.find(m => m.isTotal) || {};
+  
+  // Calculate true values
+  const totalSales = total.sales || months.reduce((s,m) => s + (m.sales||0), 0);
+  const totalProfit = total.grossProfit || total.profit || months.reduce((s,m) => s + (m.grossProfit||0), 0);
+  const totalCustomers = paftah.customers.length;
+  
+  // Expenses 2026
+  let exp2026 = 0;
+  if (typeof EXPENSES_DATA !== 'undefined') {
+    EXPENSES_DATA.expenses.forEach(e => { if (e.date?.startsWith('2026')) exp2026 += e.amount; });
+  }
+  const netIncome = totalProfit - exp2026;
+  
+  console.log(`\n=== SYNCING HEADER VALUES ===`);
+  console.log(`  المبيعات: ${totalSales.toFixed(2)} | الربح: ${totalProfit.toFixed(2)} | العملاء: ${totalCustomers}`);
+  console.log(`  مصروفات 2026: ${exp2026.toFixed(2)} | صافي الدخل: ${netIncome.toFixed(2)}`);
+  
+  // 1. Fix "المبيعات (شامل الضريبة)"
+  html = html.replace(
+    /(المبيعات \(شامل الضريبة\)<\/div>\s*<div class="value[^"]*" data-count=")[0-9.]+(")/,
+    `$1${totalSales.toFixed(2)}$2`
+  );
+  
+  // 2. Fix "إجمالي الربح"
+  html = html.replace(
+    /(إجمالي الربح<\/div>\s*<div class="value[^"]*" data-count=")[0-9.]+(")/,
+    `$1${totalProfit.toFixed(2)}$2`
+  );
+  
+  // 3. Fix "صافي الدخل"
+  html = html.replace(
+    /(صافي الدخل<\/div>\s*<div class="value[^"]*" data-count=")[0-9.]+(")/,
+    `$1${netIncome.toFixed(2)}$2`
+  );
+  
+  // 4. Fix "إجمالي العملاء"
+  html = html.replace(
+    /(إجمالي العملاء<\/div>\s*<div class="value[^"]*" data-count=")\d+(")/,
+    `$1${totalCustomers}$2`
+  );
+  
+  console.log('✓ Synced header: المبيعات, الربح, صافي الدخل, العملاء');
+}
+
 writeFileSync(htmlPath, html, 'utf-8');
