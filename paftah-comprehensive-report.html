@@ -1895,26 +1895,30 @@ body {
 
   <div class="card">
     <div class="card-title"><span class="icon" data-ico="filter"></span> بحث وفلترة السندات</div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
-      <input type="text" id="expSearch" placeholder="🔍 بحث بالوصف أو الرقم..." oninput="renderExpenses()" style="flex:1;min-width:200px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px">
-      <select id="expCategoryFilter" onchange="renderExpenses()" style="padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px">
+    <div class="smart-filter-bar">
+      <span class="sfb-label">🔍 فلترة ذكية</span>
+      <input type="text" class="smart-filter-input" id="expSearch" placeholder="بحث برقم السند، اسم المصروف، الفئة..." oninput="renderExpenses()">
+      <select class="sfb-select" id="expCategoryFilter" onchange="renderExpenses()">
         <option value="">كل الفئات</option>
       </select>
-      <select id="expMonthFilter" onchange="renderExpenses()" style="padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px">
+      <div class="sfb-range-group">
+        <input type="number" class="sfb-range-input" id="expMinAmount" placeholder="من (ر.س)" oninput="renderExpenses()">
+        <span class="sfb-range-sep">—</span>
+        <input type="number" class="sfb-range-input" id="expMaxAmount" placeholder="إلى (ر.س)" oninput="renderExpenses()">
+      </div>
+      <select class="sfb-select" id="expMonthFilter" onchange="renderExpenses()">
         <option value="">كل الشهور</option>
       </select>
-      <select id="expSortBy" onchange="renderExpenses()" style="padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px">
-        <option value="number">ترتيب حسب الرقم</option>
-        <option value="date">ترتيب حسب التاريخ</option>
-        <option value="amount-desc">المبلغ (الأكبر أولاً)</option>
-        <option value="amount-asc">المبلغ (الأصغر أولاً)</option>
+      <select class="sfb-select" id="expSortBy" onchange="renderExpenses()">
+        <option value="number">ترتيب: الرقم</option>
+        <option value="date">ترتيب: التاريخ</option>
+        <option value="amount-desc">المبلغ (الأكبر)</option>
+        <option value="amount-asc">المبلغ (الأصغر)</option>
       </select>
-      <button onclick="exportExpensesCSV()" style="padding:9px 16px;background:var(--primary);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px">📄 تصدير CSV</button>
+      <button class="sfb-clear" onclick="clearExpenseFilters()">مسح الفلاتر</button>
+      <button onclick="exportExpensesCSV()" style="padding:8px 14px;background:var(--primary);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">📄 CSV</button>
     </div>
-    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;font-size:13px;color:var(--text-light)">
-      <span>إجمالي السندات: <strong id="expShownCount">0</strong></span>
-      <span>إجمالي المبلغ: <strong id="expShownTotal">0 ر.س</strong></span>
-    </div>
+    <div class="sfb-result-count" id="expFilterCount"></div>
   </div>
 
   <div class="grid-2">
@@ -4190,19 +4194,24 @@ function renderExpenses() {
   let exp = [...EXPENSES_DATA.expenses];
 
   // Apply filters
-  const search = document.getElementById('expSearch')?.value?.toLowerCase() || '';
+  const search = (document.getElementById('expSearch')?.value || '').toLowerCase();
   const cat = document.getElementById('expCategoryFilter')?.value || '';
   const month = document.getElementById('expMonthFilter')?.value || '';
   const sortBy = document.getElementById('expSortBy')?.value || 'number';
+  const minAmt = parseFloat(document.getElementById('expMinAmount')?.value) || 0;
+  const maxAmt = parseFloat(document.getElementById('expMaxAmount')?.value) || Infinity;
 
   if (search) exp = exp.filter(e => 
     e.description.toLowerCase().includes(search) || 
     e.number.toLowerCase().includes(search) ||
     smartCategory(e).toLowerCase().includes(search) ||
-    (e.category || '').toLowerCase().includes(search)
+    (e.category || '').toLowerCase().includes(search) ||
+    String(e.amount).includes(search)
   );
   if (cat) exp = exp.filter(e => smartCategory(e) === cat);
   if (month) exp = exp.filter(e => e.date.startsWith(month));
+  if (minAmt > 0) exp = exp.filter(e => e.amount >= minAmt);
+  if (maxAmt < Infinity) exp = exp.filter(e => e.amount <= maxAmt);
 
   // Sort
   exp.sort((a, b) => {
@@ -4231,9 +4240,29 @@ function renderExpenses() {
     </tr>`;
   }).join('');
 
-  document.getElementById('expShownCount').textContent = exp.length;
-  document.getElementById('expShownTotal').textContent = total.toLocaleString('en-US', {minimumFractionDigits:2}) + ' ر.س';
-  document.getElementById('expAllTotal').textContent = total.toLocaleString('en-US', {minimumFractionDigits:2}) + ' ر.س';
+  // Update result count (same style as invoices)
+  const countEl = document.getElementById('expFilterCount');
+  if (countEl) {
+    if (exp.length === EXPENSES_DATA.expenses.length) {
+      countEl.textContent = `عرض كل السندات: ${exp.length} سند | الإجمالي: ${total.toLocaleString('en-US', {minimumFractionDigits:2})} ر.س`;
+      countEl.style.color = '';
+    } else {
+      countEl.textContent = `عرض ${exp.length} من أصل ${EXPENSES_DATA.expenses.length} سند | المجموع: ${total.toLocaleString('en-US', {minimumFractionDigits:2})} ر.س`;
+      countEl.style.color = 'var(--primary)';
+    }
+  }
+  const totalEl = document.getElementById('expAllTotal');
+  if (totalEl) totalEl.textContent = total.toLocaleString('en-US', {minimumFractionDigits:2}) + ' ر.س';
+}
+
+function clearExpenseFilters() {
+  document.getElementById('expSearch').value = '';
+  document.getElementById('expCategoryFilter').value = '';
+  document.getElementById('expMonthFilter').value = '';
+  document.getElementById('expMinAmount').value = '';
+  document.getElementById('expMaxAmount').value = '';
+  document.getElementById('expSortBy').value = 'number';
+  renderExpenses();
 }
 
 function renderExpenseCharts(smartCatMap) {
