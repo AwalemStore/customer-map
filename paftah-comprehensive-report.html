@@ -1608,11 +1608,15 @@ body {
 <div class="tabs-container">
   <nav class="tabs-nav no-print">
     <button class="tab-btn active" onclick="switchTab('overview')">نظرة عامة</button>
+    <button class="tab-btn" onclick="switchTab('executive')">📊 لوحة المعلومات</button>
+    <button class="tab-btn" onclick="switchTab('pnl')">💰 الأرباح والخسائر</button>
     <button class="tab-btn" onclick="switchTab('monthly')">التحليل الشهري</button>
     <button class="tab-btn" onclick="switchTab('customers')">العملاء</button>
     <button class="tab-btn" onclick="switchTab('sales')">المبيعات والفواتير</button>
     <button class="tab-btn" onclick="switchTab('products')">المنتجات والمخزون</button>
     <button class="tab-btn" onclick="switchTab('expenses')">المصروفات</button>
+    <button class="tab-btn" onclick="switchTab('weekly')">📅 أسبوعي</button>
+    <button class="tab-btn" onclick="switchTab('reports')">📋 تقارير</button>
     <button class="tab-btn" onclick="switchTab('tax')">ضرائب Q2</button>
     <button class="tab-btn" onclick="switchTab('q1returns')">مرتجعات Q1</button>
     <button class="tab-btn" onclick="switchTab('vip')">العملاء المميزين</button>
@@ -1886,6 +1890,26 @@ body {
     </div>
   </div>
 
+ </div>
+ 
+<!-- ==================== TAB: EXECUTIVE DASHBOARD ==================== -->
+<div id="tab-executive" class="tab-panel">
+  <div id="execDashboard"></div>
+</div>
+
+<!-- ==================== TAB: P&L (PROFIT & LOSS) ==================== -->
+<div id="tab-pnl" class="tab-panel">
+  <div id="pnlContent"></div>
+</div>
+
+<!-- ==================== TAB: WEEKLY REPORT ==================== -->
+<div id="tab-weekly" class="tab-panel">
+  <div id="weeklyContent"></div>
+</div>
+
+<!-- ==================== TAB: REPORTS (Monthly + Audit) ==================== -->
+<div id="tab-reports" class="tab-panel">
+  <div id="reportsContent"></div>
 </div>
 
 <!-- ==================== TAB 4: EXPENSES ==================== -->
@@ -4327,6 +4351,425 @@ function exportExpensesCSV() {
   link.click();
 }
 
+// ===== EXECUTIVE DASHBOARD =====
+function initExecutiveDashboard() {
+  const el = document.getElementById('execDashboard');
+  if (!el || typeof PAFTAH_DATA === 'undefined') return;
+  
+  const m = PAFTAH_DATA.monthly;
+  const total = m.find(x => x.isTotal) || m[m.length-1];
+  const months = m.filter(x => !x.isTotal);
+  const lastMonth = months[months.length - 1] || {};
+  const prevMonth = months[months.length - 2] || {};
+  
+  // Expenses 2026
+  let exp2026 = 0;
+  if (typeof EXPENSES_DATA !== 'undefined') {
+    EXPENSES_DATA.expenses.forEach(e => { if (e.date?.startsWith('2026')) exp2026 += e.amount; });
+  }
+  const netIncome = total.profit - exp2026;
+  
+  // Growth
+  const salesGrowth = prevMonth.sales ? ((lastMonth.sales - prevMonth.sales) / prevMonth.sales * 100) : 0;
+  
+  // Customers debt
+  const totalDebt = PAFTAH_DATA.customers.reduce((s,c) => s + (c.db || 0), 0);
+  const totalPaid = PAFTAH_DATA.customers.reduce((s,c) => s + (c.p || 0), 0);
+  const collectionRate = (total.sales || 1) > 0 ? (totalPaid / total.sales * 100) : 0;
+  
+  el.innerHTML = `
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">📈 مبيعات اليوم</div>
+        <div class="kpi-value" style="color:var(--primary)">${(DAILY_SUMMARY?.slice(-1)[0]?.sales || 0).toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0})} ر.س</div>
+        <div class="kpi-sub">${DAILY_SUMMARY?.slice(-1)[0]?.date || '-'}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">📅 مبيعات الشهر</div>
+        <div class="kpi-value" style="color:var(--primary)">${(lastMonth.sales || 0).toLocaleString('en-US', {minimumFractionDigits:0})} ر.س</div>
+        <div class="kpi-sub">${salesGrowth >= 0 ? '▲' : '▼'} ${Math.abs(salesGrowth).toFixed(1)}% vs السابق</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">💰 صافي الدخل</div>
+        <div class="kpi-value" style="color:${netIncome >= 0 ? 'var(--success)' : 'var(--danger)'}">${netIncome.toLocaleString('en-US', {minimumFractionDigits:0})} ر.س</div>
+        <div class="kpi-sub">بعد ${exp2026.toLocaleString('en-US', {minimumFractionDigits:0})} ر.س مصروفات</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">💵 نسبة التحصيل</div>
+        <div class="kpi-value" style="color:${collectionRate > 50 ? 'var(--success)' : 'var(--danger)'}">${collectionRate.toFixed(1)}%</div>
+        <div class="kpi-sub">${totalPaid.toLocaleString('en-US', {minimumFractionDigits:0})} / ${total.sales.toLocaleString('en-US', {minimumFractionDigits:0})} ر.س</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><span class="icon" data-ico="chartUp"></span> المبيعات الشهرية</div>
+        <div class="chart-container"><canvas id="execMonthlyChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon" data-ico="wallet"></span> التدفق النقدي</div>
+        <div class="chart-container"><canvas id="execCashChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon" data-ico="warning"></span> أكبر 10 عملاء مديونية</div>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead><tr><th>#</th><th>العميل</th><th>المديونية</th><th>المدفوع</th><th>نسبة السداد</th></tr></thead>
+          <tbody>
+            ${[...PAFTAH_DATA.customers].sort((a,b) => (b.db||0) - (a.db||0)).slice(0,10).map((c,i) => {
+              const rate = c.db > 0 ? ((c.p / (c.p + c.db)) * 100).toFixed(0) : 0;
+              return `<tr>
+                <td>${i+1}</td>
+                <td style="font-weight:600">${c.n}</td>
+                <td class="amount negative">${(c.db||0).toLocaleString('en-US')}</td>
+                <td>${(c.p||0).toLocaleString('en-US')}</td>
+                <td><span class="tag ${rate > 50 ? 'tag-green' : rate > 20 ? 'tag-yellow' : 'tag-red'}">${rate}%</span></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><span class="icon" data-ico="bar"></span> توزيع المصروفات</div>
+        <div class="chart-container"><canvas id="execExpChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon" data-ico="fire"></span> أفضل 5 أيام مبيعات</div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>التاريخ</th><th>المبيعات</th><th>عدد الفواتير</th></tr></thead>
+            <tbody>
+              ${(DAILY_SUMMARY || []).sort((a,b) => (b.sales||0) - (a.sales||0)).slice(0,5).map(d => 
+                `<tr><td>${d.date}</td><td class="amount" style="color:var(--success);font-weight:600">${(d.sales||0).toLocaleString('en-US')}</td><td>${d.salesCount || 0}</td></tr>`
+              ).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Charts
+  const ctx1 = document.getElementById('execMonthlyChart');
+  if (ctx1) {
+    new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: months.map(m => AR_MONTHS_SHORT[m.month-1]),
+        datasets: [{ label: 'المبيعات', data: months.map(m => m.sales), backgroundColor: '#3B82F6' }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+  }
+
+  const ctx2 = document.getElementById('execCashChart');
+  if (ctx2) {
+    new Chart(ctx2, {
+      type: 'line',
+      data: {
+        labels: months.map(m => AR_MONTHS_SHORT[m.month-1]),
+        datasets: [
+          { label: 'المبيعات', data: months.map(m => m.sales), borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,0.1)' },
+          { label: 'التحصيل', data: months.map(m => m.totalPaid || 0), borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.1)' }
+        ]
+      },
+      options: { responsive: true }
+    });
+  }
+
+  const ctx3 = document.getElementById('execExpChart');
+  if (ctx3 && typeof EXPENSES_DATA !== 'undefined') {
+    const cats = Object.entries(EXPENSES_DATA.categories.sort((a,b) => b.total - a.total).slice(0,6).map(c => ({name: c.name, total: c.total})));
+    new Chart(ctx3, {
+      type: 'doughnut',
+      data: {
+        labels: EXPENSES_DATA.categories.slice(0,6).map(c => c.name),
+        datasets: [{ data: EXPENSES_DATA.categories.slice(0,6).map(c => c.total), backgroundColor: ['#EF4444','#F59E0B','#3B82F6','#8B5CF6','#10B981','#EC4899'] }]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'right', labels: { font: { size: 10 } } } } }
+    });
+  }
+}
+
+// ===== PROFIT & LOSS (P&L) =====
+function initPnL() {
+  const el = document.getElementById('pnlContent');
+  if (!el || typeof PAFTAH_DATA === 'undefined') return;
+  
+  const m = PAFTAH_DATA.monthly;
+  const total = m.find(x => x.isTotal) || m[m.length-1];
+  const months = m.filter(x => !x.isTotal);
+  
+  // Expenses by month 2026
+  const expByMonth = {};
+  if (typeof EXPENSES_DATA !== 'undefined') {
+    EXPENSES_DATA.expenses.forEach(e => {
+      if (e.date?.startsWith('2026')) {
+        const mk = e.date.substring(0,7);
+        expByMonth[mk] = (expByMonth[mk] || 0) + e.amount;
+      }
+    });
+  }
+  
+  const totalExp = months.reduce((s,m) => s + (expByMonth['2026-' + String(m.month).padStart(2,'0')] || 0), 0);
+  const cogs = total.sales - total.profit;
+  const netIncome = total.profit - totalExp;
+  
+  // Build monthly P&L table
+  const rows = months.map(mo => {
+    const exp = expByMonth['2026-' + String(mo.month).padStart(2,'0')] || 0;
+    const cogsM = mo.sales - mo.profit;
+    const netM = mo.profit - exp;
+    return { month: AR_MONTHS_SHORT[mo.month-1], sales: mo.sales, cogs: cogsM, profit: mo.profit, exp, net: netM };
+  });
+  
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title"><span class="icon" data-ico="money"></span> قائمة الأرباح والخسائر - 2026</div>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr><th>البند</th>${rows.map(r => '<th>' + r.month + '</th>').join('')}<th style="background:var(--primary-light)">الإجمالي</th></tr>
+          </thead>
+          <tbody>
+            <tr style="font-weight:600">
+              <td>📈 الإيرادات (مبيعات)</td>
+              ${rows.map(r => '<td class="amount">' + r.sales.toLocaleString('en-US', {minimumFractionDigits:0}) + '</td>').join('')}
+              <td class="amount" style="color:var(--success);font-weight:700">${total.sales.toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+            </tr>
+            <tr>
+              <td>(-) تكلفة البضاعة</td>
+              ${rows.map(r => '<td class="amount negative">' + r.cogs.toLocaleString('en-US', {minimumFractionDigits:0}) + '</td>').join('')}
+              <td class="amount negative" style="font-weight:700">${cogs.toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+            </tr>
+            <tr style="background:var(--primary-light);font-weight:600">
+              <td>✓ إجمالي الربح</td>
+              ${rows.map(r => '<td class="amount">' + r.profit.toLocaleString('en-US', {minimumFractionDigits:0}) + '</td>').join('')}
+              <td class="amount" style="color:var(--primary);font-weight:700">${total.profit.toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+            </tr>
+            <tr>
+              <td>(-) المصروفات</td>
+              ${rows.map(r => '<td class="amount negative">' + r.exp.toLocaleString('en-US', {minimumFractionDigits:0}) + '</td>').join('')}
+              <td class="amount negative" style="font-weight:700">${totalExp.toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+            </tr>
+            <tr style="background:var(--success-light, #d1fae5);font-weight:700">
+              <td>💰 صافي الدخل</td>
+              ${rows.map(r => '<td class="amount" style="color:' + (r.net >= 0 ? 'var(--success)' : 'var(--danger)') + '">' + r.net.toLocaleString('en-US', {minimumFractionDigits:0}) + '</td>').join('')}
+              <td class="amount" style="color:${netIncome >= 0 ? 'var(--success)' : 'var(--danger)'};font-size:1.1em">${netIncome.toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+            </tr>
+            <tr style="color:var(--text-light);font-size:0.9em">
+              <td>هامش الربح الإجمالي</td>
+              ${rows.map(r => '<td>' + (r.sales > 0 ? (r.profit/r.sales*100).toFixed(1) : 0) + '%</td>').join('')}
+              <td style="font-weight:700">${(total.profit/total.sales*100).toFixed(1)}%</td>
+            </tr>
+            <tr style="color:var(--text-light);font-size:0.9em">
+              <td>هامش صافي الدخل</td>
+              ${rows.map(r => '<td>' + (r.sales > 0 ? (r.net/r.sales*100).toFixed(1) : 0) + '%</td>').join('')}
+              <td style="font-weight:700">${(netIncome/total.sales*100).toFixed(1)}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><span class="icon" data-ico="chartUp"></span> الإيرادات vs المصروفات</div>
+        <div class="chart-container"><canvas id="pnlChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon" data-ico="fire"></span> صافي الدخل الشهري</div>
+        <div class="chart-container"><canvas id="pnlNetChart"></canvas></div>
+      </div>
+    </div>
+  `;
+  
+  const ctx = document.getElementById('pnlChart');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: rows.map(r => r.month),
+        datasets: [
+          { label: 'المبيعات', data: rows.map(r => r.sales), backgroundColor: '#3B82F6' },
+          { label: 'المصروفات', data: rows.map(r => r.exp), backgroundColor: '#EF4444' },
+          { label: 'صافي الدخل', data: rows.map(r => r.net), backgroundColor: '#10B981' }
+        ]
+      },
+      options: { responsive: true }
+    });
+  }
+  
+  const ctx2 = document.getElementById('pnlNetChart');
+  if (ctx2) {
+    new Chart(ctx2, {
+      type: 'line',
+      data: {
+        labels: rows.map(r => r.month),
+        datasets: [{ label: 'صافي الدخل', data: rows.map(r => r.net), borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.2)', fill: true }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+  }
+}
+
+// ===== WEEKLY REPORT =====
+function initWeeklyReport() {
+  const el = document.getElementById('weeklyContent');
+  if (!el) return;
+  
+  if (typeof WEEKLY_REPORT === 'undefined' || !WEEKLY_REPORT.length) {
+    el.innerHTML = '<div class="card"><p>لا توجد بيانات أسبوعية متاحة</p></div>';
+    return;
+  }
+  
+  const weeks = [...WEEKLY_REPORT].sort((a,b) => a.weekStart.localeCompare(b.weekStart));
+  const total = weeks.reduce((s,w) => s + (w.sales || 0), 0);
+  const totalCash = weeks.reduce((s,w) => s + (w.totalCashIn || 0), 0);
+  const totalCredit = weeks.reduce((s,w) => s + (w.creditSales || 0), 0);
+  
+  el.innerHTML = `
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">📅 عدد الأسابيع</div>
+        <div class="kpi-value">${weeks.length}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">📈 إجمالي المبيعات</div>
+        <div class="kpi-value" style="color:var(--primary)">${total.toLocaleString('en-US', {minimumFractionDigits:0})} ر.س</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">💵 النقدي المحصل</div>
+        <div class="kpi-value" style="color:var(--success)">${totalCash.toLocaleString('en-US', {minimumFractionDigits:0})} ر.س</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">📋 الآجل</div>
+        <div class="kpi-value" style="color:var(--warning,#F59E0B)">${totalCredit.toLocaleString('en-US', {minimumFractionDigits:0})} ر.س</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon" data-ico="calendar"></span> التقارير الأسبوعية</div>
+      <div class="chart-container"><canvas id="weeklyChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon" data-ico="clipboard"></span> تفصيل الأسابيع</div>
+      <input type="text" id="weekSearch" placeholder="🔍 بحث بتاريخ الأسبوع..." oninput="filterWeeks()" style="width:100%;padding:10px 14px;border:2px solid var(--primary);border-radius:8px;margin-bottom:12px;font-size:14px">
+      <div class="table-wrapper">
+        <table class="data-table" id="weekTable">
+          <thead>
+            <tr><th>الأسبوع</th><th>المبيعات</th><th>عدد الفواتير</th><th>النقدي</th><th>الآجل</th><th>متوسط الفاتورة</th><th>العملاء</th></tr>
+          </thead>
+          <tbody>
+            ${weeks.map(w => `<tr>
+              <td style="font-weight:600">${w.weekStart}<br><small style="color:var(--text-light)">إلى ${w.weekEnd}</small></td>
+              <td class="amount" style="color:var(--success);font-weight:600">${(w.sales||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+              <td>${w.salesCount || 0}</td>
+              <td>${(w.totalCashIn||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+              <td>${(w.creditSales||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+              <td>${(w.avgInvoice||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+              <td>${w.uniqueCustomers || 0}</td>
+            </tr>`).join('')}
+          </tbody>
+          <tfoot>
+            <tr style="background:var(--primary-light);font-weight:700">
+              <td>الإجمالي</td>
+              <td>${total.toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+              <td>${weeks.reduce((s,w) => s + (w.salesCount||0), 0)}</td>
+              <td>${totalCash.toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+              <td>${totalCredit.toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+              <td>-</td>
+              <td>-</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  `;
+  
+  const ctx = document.getElementById('weeklyChart');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: weeks.map(w => w.weekStart.substring(5)),
+        datasets: [
+          { label: 'المبيعات', data: weeks.map(w => w.sales), backgroundColor: '#3B82F6' },
+          { label: 'النقدي', data: weeks.map(w => w.totalCashIn), backgroundColor: '#10B981' }
+        ]
+      },
+      options: { responsive: true }
+    });
+  }
+}
+
+function filterWeeks() {
+  const q = (document.getElementById('weekSearch')?.value || '').toLowerCase();
+  document.querySelectorAll('#weekTable tbody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+// ===== REPORTS (Monthly + Audit) =====
+function initReports() {
+  const el = document.getElementById('reportsContent');
+  if (!el) return;
+  
+  let monthlyHtml = '<p>لا توجد بيانات</p>';
+  if (typeof MONTHLY_REPORT !== 'undefined' && MONTHLY_REPORT.length) {
+    monthlyHtml = `
+      <div class="card">
+        <div class="card-title"><span class="icon" data-ico="clipboard"></span> التقارير الشهرية المفصلة</div>
+        <input type="text" id="monthSearch" placeholder="🔍 بحث بالشهر..." oninput="filterMonthly()" style="width:100%;padding:10px 14px;border:2px solid var(--primary);border-radius:8px;margin-bottom:12px;font-size:14px">
+        <div class="table-wrapper">
+          <table class="data-table" id="monthTable">
+            <thead>
+              <tr><th>الشهر</th><th>المبيعات</th><th>الفواتير</th><th>النقدي</th><th>التحصيل</th><th>الآجل</th><th>المرتجعات</th><th>أفضل يوم</th></tr>
+            </thead>
+            <tbody>
+              ${MONTHLY_REPORT.map(m => `<tr>
+                <td style="font-weight:600">${m.month}</td>
+                <td class="amount" style="color:var(--success);font-weight:600">${(m.sales||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+                <td>${m.salesCount || 0}</td>
+                <td>${(m.cashSales||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+                <td>${(m.cashCollections||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+                <td>${(m.creditSales||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+                <td class="amount negative">${(m.returns||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+                <td><small>${m.bestDay || '-'}</small></td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }
+  
+  let auditHtml = '';
+  if (typeof FULL_AUDIT !== 'undefined' && FULL_AUDIT) {
+    auditHtml = `
+      <div class="card">
+        <div class="card-title"><span class="icon" data-ico="shield"></span> التدقيق الكامل (Audit)</div>
+        <div style="padding:16px;background:var(--primary-light,#eef2ff);border-radius:8px;font-family:monospace;white-space:pre-wrap;font-size:13px;line-height:1.8">${JSON.stringify(FULL_AUDIT, null, 2)}</div>
+      </div>
+    `;
+  }
+  
+  el.innerHTML = monthlyHtml + auditHtml;
+}
+
+function filterMonthly() {
+  const q = (document.getElementById('monthSearch')?.value || '').toLowerCase();
+  document.querySelectorAll('#monthTable tbody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
   const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
@@ -4382,6 +4825,10 @@ document.addEventListener('DOMContentLoaded', () => {
   renderFunnel();
   renderSmartAlerts();
   initExpensesTab();
+  initExecutiveDashboard();
+  initPnL();
+  initWeeklyReport();
+  initReports();
 
   var btt = document.querySelector('.back-to-top');
   window.addEventListener('scroll', function() {
@@ -5660,12 +6107,20 @@ function downloadWaCSV() {
   function renderWaterfall() {
     var m = PAFTAH_DATA.monthly;
     var total = m.find(function(x){return x.isTotal;}) || m[m.length-1];
+    // Get actual expenses from EXPENSES_DATA (2026 only)
+    var expenses2026 = 0;
+    if (typeof EXPENSES_DATA !== 'undefined') {
+      EXPENSES_DATA.expenses.forEach(function(e) {
+        if (e.date && e.date.startsWith('2026')) expenses2026 += e.amount;
+      });
+    }
+    var netIncome = total.profit - expenses2026;
     var steps = [
       {label:'إجمالي المبيعات', value: total.sales, type:'positive'},
       {label:'(-) تكلفة البضاعة', value: total.sales - total.profit, type:'negative'},
       {label:'إجمالي الربح', value: total.profit, type:'total'},
-      {label:'(-) المصروفات', value: total.profit - total.netIncome, type:'negative'},
-      {label:'صافي الدخل', value: total.netIncome, type: total.netIncome >= 0 ? 'positive' : 'negative'}
+      {label:'(-) المصروفات (' + (expenses2026/1000).toFixed(0) + 'K)', value: expenses2026, type:'negative'},
+      {label:'صافي الدخل', value: netIncome, type: netIncome >= 0 ? 'positive' : 'negative'}
     ];
     var maxAbs = Math.max.apply(null, steps.map(function(s){return Math.abs(s.value);}));
     var html = '';
