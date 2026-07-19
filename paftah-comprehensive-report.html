@@ -1943,7 +1943,10 @@ body {
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" data-ico="receipt"></span> كل سندات الصرف (مرتبة من الأول للأخير)</div>
+    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <span><span class="icon" data-ico="receipt"></span> كل سندات الصرف (مرتبة من الأول للأخير)</span>
+      <input type="text" id="expTableSearch" placeholder="🔍 بحث برقم السند أو اسم المصروف..." oninput="renderExpenses()" style="padding:8px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;min-width:280px">
+    </div>
     <div class="table-wrapper">
       <table class="data-table" id="expAllTable">
         <thead>
@@ -4194,19 +4197,20 @@ function renderExpenses() {
   let exp = [...EXPENSES_DATA.expenses];
 
   // Apply filters
-  const search = (document.getElementById('expSearch')?.value || '').toLowerCase();
+  const search = (document.getElementById('expSearch')?.value || '') + ' ' + (document.getElementById('expTableSearch')?.value || '');
+  const searchLower = search.toLowerCase().trim();
   const cat = document.getElementById('expCategoryFilter')?.value || '';
   const month = document.getElementById('expMonthFilter')?.value || '';
   const sortBy = document.getElementById('expSortBy')?.value || 'number';
   const minAmt = parseFloat(document.getElementById('expMinAmount')?.value) || 0;
   const maxAmt = parseFloat(document.getElementById('expMaxAmount')?.value) || Infinity;
 
-  if (search) exp = exp.filter(e => 
-    e.description.toLowerCase().includes(search) || 
-    e.number.toLowerCase().includes(search) ||
-    smartCategory(e).toLowerCase().includes(search) ||
-    (e.category || '').toLowerCase().includes(search) ||
-    String(e.amount).includes(search)
+  if (searchLower) exp = exp.filter(e => 
+    e.description.toLowerCase().includes(searchLower) || 
+    e.number.toLowerCase().includes(searchLower) ||
+    smartCategory(e).toLowerCase().includes(searchLower) ||
+    (e.category || '').toLowerCase().includes(searchLower) ||
+    String(e.amount).includes(searchLower)
   );
   if (cat) exp = exp.filter(e => smartCategory(e) === cat);
   if (month) exp = exp.filter(e => e.date.startsWith(month));
@@ -4257,6 +4261,7 @@ function renderExpenses() {
 
 function clearExpenseFilters() {
   document.getElementById('expSearch').value = '';
+  document.getElementById('expTableSearch').value = '';
   document.getElementById('expCategoryFilter').value = '';
   document.getElementById('expMonthFilter').value = '';
   document.getElementById('expMinAmount').value = '';
