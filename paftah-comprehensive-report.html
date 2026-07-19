@@ -4385,8 +4385,8 @@ function initExecutiveDashboard() {
     <div class="kpi-grid">
       <div class="kpi-card">
         <div class="kpi-label">📈 مبيعات اليوم</div>
-        <div class="kpi-value" style="color:var(--primary)">${(DAILY_SUMMARY?.slice(-1)[0]?.sales || 0).toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0})} ر.س</div>
-        <div class="kpi-sub">${DAILY_SUMMARY?.slice(-1)[0]?.date || '-'}</div>
+        <div class="kpi-value" style="color:var(--primary)">${(DAILY_SUMMARY?.[0]?.sales || 0).toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0})} ر.س</div>
+        <div class="kpi-sub">${DAILY_SUMMARY?.[0]?.date || '-'} | ${DAILY_SUMMARY?.[0]?.salesCount || 0} فاتورة</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">📅 مبيعات الشهر</div>
