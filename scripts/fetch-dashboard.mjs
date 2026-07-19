@@ -319,17 +319,14 @@ html = html.replace(
 console.log(`✓ Synced "عمليات البيع" counter: ${oldCounter?.[1] || '?'} → ${saleCount} (sales) | ${returnCount} returns`);
 
 // === SYNC ALL HEADER VALUES FROM PAFTAH_DATA ===
-// Extract monthly total from PAFTAH_DATA in HTML
-const paftahMatch = html.match(/const PAFTAH_DATA = (\{"districts.*?\});\s*const/s);
-if (paftahMatch) {
-  const paftah = JSON.parse(paftahMatch[1]);
-  const months = paftah.monthly.filter(m => !m.isTotal);
-  const total = paftah.monthly.find(m => m.isTotal) || {};
-  
-  // Calculate true values
-  const totalSales = total.sales || months.reduce((s,m) => s + (m.sales||0), 0);
-  const totalProfit = total.grossProfit || total.profit || months.reduce((s,m) => s + (m.grossProfit||0), 0);
-  const totalCustomers = paftah.customers.length;
+// PAFTAH_DATA.monthly total: {"month":"الإجمالي","sales":218665,"ops":936,"profit":46214,"isTotal":true}
+const totalSalesMatch = html.match(/"month":"الإجمالي","sales":([0-9.]+)/);
+const totalProfitMatch = html.match(/"month":"الإجمالي","sales":[0-9.]+,"ops":\d+,"profit":([0-9.]+)/);
+const customerCount = (html.match(/"n":"[^"]+","t"/g) || []).length;
+
+if (totalSalesMatch) {
+  const totalSales = parseFloat(totalSalesMatch[1]);
+  const totalProfit = parseFloat(totalProfitMatch?.[1] || 0);
   
   // Expenses 2026 - parse from HTML
   let exp2026 = 0;
@@ -343,7 +340,7 @@ if (paftahMatch) {
   const netIncome = totalProfit - exp2026;
   
   console.log(`\n=== SYNCING HEADER VALUES ===`);
-  console.log(`  المبيعات: ${totalSales.toFixed(2)} | الربح: ${totalProfit.toFixed(2)} | العملاء: ${totalCustomers}`);
+  console.log(`  المبيعات: ${totalSales.toFixed(2)} | الربح: ${totalProfit.toFixed(2)} | العملاء: ${customerCount}`);
   console.log(`  مصروفات 2026: ${exp2026.toFixed(2)} | صافي الدخل: ${netIncome.toFixed(2)}`);
   
   // 1. Fix "المبيعات (شامل الضريبة)"
@@ -367,10 +364,19 @@ if (paftahMatch) {
   // 4. Fix "إجمالي العملاء"
   html = html.replace(
     /(إجمالي العملاء<\/div>\s*<div class="value[^"]*" data-count=")\d+(")/,
-    `$1${totalCustomers}$2`
+    `$1${customerCount}$2`
   );
   
-  console.log('✓ Synced header: المبيعات, الربح, صافي الدخل, العملاء');
+  // 5. Fix the profit margin text
+  const margin = totalSales > 0 ? (totalProfit / totalSales * 100).toFixed(1) : 0;
+  html = html.replace(
+    /(هامش ربح )\d+\.?\d*(%)/,
+    `$1${margin}$2`
+  );
+  
+  console.log('✓ Synced header: المبيعات=' + totalSales.toFixed(0) + ' | الربح=' + totalProfit.toFixed(0) + ' | صافي=' + netIncome.toFixed(0) + ' | عملاء=' + customerCount + ' | هامش=' + margin + '%');
+} else {
+  console.log('⚠ Could not find monthly totals in PAFTAH_DATA');
 }
 
 writeFileSync(htmlPath, html, 'utf-8');
