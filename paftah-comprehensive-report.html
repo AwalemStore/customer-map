@@ -6049,8 +6049,8 @@ function downloadWaCSV() {
   function buildCmdItems() {
     cmdItems = [];
     // Tabs
-    var tabNames = {'overview':'نظرة عامة','monthly':'التحليل الشهري','customers':'العملاء','sales':'المبيعات والفواتير','products':'المنتجات والمخزون','expenses':'المصروفات','activity':'سجل النشاطات','whatsapp':'واتساب'};
-    var tabIcons = {'overview':'bar','monthly':'calendar','customers':'users','sales':'receipt','products':'box','expenses':'wallet','activity':'document','whatsapp':'phone'};
+    var tabNames = {'overview':'نظرة عامة','executive':'لوحة المعلومات','pnl':'الأرباح والخسائر','monthly':'التحليل الشهري','customers':'العملاء','sales':'المبيعات والفواتير','products':'المنتجات والمخزون','expenses':'المصروفات','weekly':'تقرير أسبوعي','reports':'تقارير','tax':'ضرائب Q2','q1returns':'مرتجعات Q1','vip':'العملاء المميزين','taxes':'الضرائب','daily':'ملخص يومي','activity':'سجل النشاطات','whatsapp':'واتساب'};
+    var tabIcons = {'overview':'bar','executive':'bar','pnl':'money','monthly':'calendar','customers':'users','sales':'receipt','products':'box','expenses':'wallet','weekly':'calendar','reports':'clipboard','tax':'percent','q1returns':'back','vip':'star','taxes':'percent','daily':'clock','activity':'document','whatsapp':'phone'};
     Object.keys(tabNames).forEach(function(id){
       cmdItems.push({label:tabNames[id], hint:'تبويب', icon:tabIcons[id]||'bar', action:function(){switchTab(id);closeCmd();}});
     });
@@ -6064,9 +6064,18 @@ function downloadWaCSV() {
     // Actions
     cmdItems.push({label:'تصدير الفواتير CSV', hint:'تنزيل', icon:'document', action:function(){exportCSV('invoices');closeCmd();}});
     cmdItems.push({label:'تصدير العملاء CSV', hint:'تنزيل', icon:'users', action:function(){exportCSV('customers');closeCmd();}});
+    cmdItems.push({label:'تصدير سندات المصروفات CSV', hint:'تنزيل', icon:'wallet', action:function(){exportExpensesCSV();closeCmd();}});
     cmdItems.push({label:'طباعة PDF', hint:'تنزيل', icon:'print', action:function(){window.print();closeCmd();}});
     cmdItems.push({label:'تبديل الوضع الداكن', hint:'تبديل', icon:'moon', action:function(){toggleTheme();closeCmd();}});
     cmdItems.push({label:'وضع الشرائح (عرض)', hint:'تقديم', icon:'print', action:function(){startPresentation();closeCmd();}});
+
+    // Expenses (top 100 by amount)
+    if (typeof EXPENSES_DATA !== 'undefined') {
+      var topExp = EXPENSES_DATA.expenses.slice().sort(function(a,b){return b.amount-a.amount;}).slice(0,100);
+      topExp.forEach(function(e){
+        cmdItems.push({label:e.number + ' - ' + e.description.trim(), hint:e.date + ' | ' + e.amount + ' ر.س', icon:'wallet', action:function(){switchTab('expenses');closeCmd();setTimeout(function(){var s=document.getElementById('expTableSearch');if(s){s.value=e.number;renderExpenses();}},200);}});
+      });
+    }
   }
   function openCmd() {
     document.getElementById('cmdOverlay').classList.add('active');
