@@ -1,13 +1,13 @@
-name: Exp Dbg
+name: Edbg
 on:
   workflow_dispatch:
 jobs:
-  debug:
+  d:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: '22' }
-      - name: Debug
+      - name: D
         env: { REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }} }
         run: node scripts/debug-exp.mjs
