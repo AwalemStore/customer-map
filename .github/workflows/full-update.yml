@@ -1,7 +1,8 @@
 name: Full Update
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 1 * * *'
+    - cron: '0 13 * * *'
   workflow_dispatch:
 permissions:
   contents: write
@@ -43,11 +44,11 @@ jobs:
           REWAA_EMAIL: info@paftah.com
           REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
         run: node scripts/fetch-dashboard.mjs
-      - name: Reports
+      - name: Reports (weekly + monthly)
         env:
           REWAA_EMAIL: info@paftah.com
           REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
-        run: node scripts/fetch-reports.mjs || true
+        run: node scripts/fetch-reports.mjs
       - name: Expenses
         env:
           REWAA_EMAIL: info@paftah.com
