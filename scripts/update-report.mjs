@@ -80,9 +80,8 @@ const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو
 async function fetchMonthlyStats(token) {
   console.log('[2/7] Fetching monthly stats...');
   const months = [];
-  const now = new Date();
-  const maxMonth = Math.min(12, (now.getUTCMonth() + 4 + ((now.getUTCFullYear() - 2026) * 12)));
-  for (let m = 1; m <= Math.max(maxMonth, 5); m++) {
+  const currentMonth = new Date().getUTCMonth() + 1;
+  for (let m = 1; m <= currentMonth; m++) {
     const { startDate, endDate } = monthRange(2026, m);
     const path = `/reporting-bridge/dashboard/stats?startDate=${startDate}&endDate=${endDate}&branches=1,2,3&currentMonth=true&isAccountingInstalled=true&startTime=00:00:00&endTime=23:59:59&timezone=${TIMEZONE}`;
     const stats = await apiFetchSafe(token, path);
@@ -96,7 +95,8 @@ async function fetchMonthlyStats(token) {
 async function fetchDailyCharts(token) {
   console.log('[3/7] Fetching daily charts...');
   const allDaily = [];
-  for (let m = 1; m <= 5; m++) {
+  const currentMonth = new Date().getUTCMonth() + 1;
+  for (let m = 1; m <= currentMonth; m++) {
     const { startDate, endDate } = monthRange(2026, m);
     const path = `/reporting-bridge/dashboard/charts/days?startDate=${startDate}&endDate=${endDate}&timezone=${TIMEZONE}&branches=&startTime=00:00:00&endTime=23:59:59`;
     const days = await apiFetchSafe(token, path);
@@ -109,7 +109,8 @@ async function fetchDailyCharts(token) {
 async function fetchPaymentMethods(token) {
   console.log('[4/7] Fetching payment methods...');
   const allPayments = [];
-  for (let m = 1; m <= 5; m++) {
+  const currentMonth = new Date().getUTCMonth() + 1;
+  for (let m = 1; m <= currentMonth; m++) {
     const { startDate, endDate } = monthRange(2026, m);
     const path = `/reporting-bridge/dashboard/payment-methods-report?startDate=${startDate}&endDate=${endDate}&location=&timezone=${TIMEZONE}&startTime=00:00:00&endTime=23:59:59`;
     const pm = await apiFetchSafe(token, path);
@@ -217,7 +218,7 @@ function buildInvoiceArray(apiInvoices) {
   return apiInvoices
     .filter(inv => {
       const d = new Date(inv.date);
-      if (d.getFullYear() !== 2026 || d.getMonth() < 0 || d.getMonth() > 4) return false;
+      if (d.getFullYear() !== 2026) return false;
       const key = inv.invoiceNumber;
       if (seen.has(key)) return false;
       seen.add(key);
