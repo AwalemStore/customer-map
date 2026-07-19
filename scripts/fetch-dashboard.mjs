@@ -302,5 +302,8 @@ const invEnd = html.indexOf('];', invStart) + 2;
 if (invStart > -1 && invEnd > invStart) {
   const newInv = 'const invoices = ' + JSON.stringify(cleanInvoices);
   html = html.substring(0, invStart) + newInv + ';' + html.substring(invEnd);
-  console.log('✓ Replaced invoices array with clean data');
+  writeFileSync(htmlPath, html, 'utf-8');
+  console.log('✓ Replaced invoices array with clean data (' + cleanInvoices.length + ' invoices)');
+} else {
+  console.log('⚠ Could not find invoices array in HTML');
 }
