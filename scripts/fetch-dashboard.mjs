@@ -78,6 +78,7 @@ while (hasMore) {
     if (d.getFullYear() === 2026 && d.getMonth() <= 8) {
       allInv.push({
         date: (inv.completionDate || inv.date).substring(0,10),
+        num: inv.invoiceNumber || '',
         type: inv.isReturn || inv.invoiceNumber?.startsWith('R') ? 'return' : 'sale',
         total: parseFloat(inv.total || 0),
         pm: inv.paymentMethod || '',
@@ -259,11 +260,13 @@ console.log('\n✓ All data injected from official Rewaa charts API');
 
 // === CLEAN INVOICES ARRAY ===
 // Replace the duplicated invoices with clean unique ones
+// Sort by invoice number ascending (and date as fallback) - oldest first (Jan 1 → today)
 const cleanInvoices = [];
 const seenNums = new Set();
 allInv.forEach(inv => {
-  if (!seenNums.has(inv.num || inv.date + inv.customer)) {
-    seenNums.add(inv.num || inv.date + inv.customer);
+  const key = inv.num || (inv.date + inv.customer + inv.total);
+  if (!seenNums.has(key)) {
+    seenNums.add(key);
     cleanInvoices.push({
       date: inv.date,
       num: inv.num || '',
@@ -272,8 +275,26 @@ allInv.forEach(inv => {
     });
   }
 });
-cleanInvoices.sort((a, b) => b.date.localeCompare(a.date));
+// Sort by invoice number asc; returns ('R...') sort by their number too
+cleanInvoices.sort((a, b) => {
+  // Sale invoices first (no R prefix), then returns
+  const aIsReturn = a.num.startsWith('R');
+  const bIsReturn = b.num.startsWith('R');
+  if (aIsReturn !== bIsReturn) return aIsReturn ? 1 : -1;
+  // Within same type: numeric sort by invoice number
+  const aNum = parseInt(a.num.replace(/\D/g, '')) || 0;
+  const bNum = parseInt(b.num.replace(/\D/g, '')) || 0;
+  if (aNum !== bNum) return aNum - bNum;
+  // Fallback: by date asc
+  return a.date.localeCompare(b.date);
+});
 console.log(`Clean invoices: ${cleanInvoices.length} (was ${allInv.length})`);
+console.log(`  Sales: ${cleanInvoices.filter(i => i.type === 'sale').length}`);
+console.log(`  Returns: ${cleanInvoices.filter(i => i.type === 'return').length}`);
+if (cleanInvoices.length > 0) {
+  console.log(`  Date range: ${cleanInvoices[0].date} → ${cleanInvoices[cleanInvoices.length-1].date}`);
+  console.log(`  First: ${cleanInvoices[0].num} | Last: ${cleanInvoices[cleanInvoices.length-1].num}`);
+}
 
 // Replace invoices in HTML
 const invStart = html.indexOf('const invoices = ');
