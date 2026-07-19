@@ -4633,7 +4633,13 @@ function initWeeklyReport() {
   }
   
   const weeks = [...WEEKLY_REPORT].sort((a,b) => a.weekStart.localeCompare(b.weekStart));
-  const total = weeks.reduce((s,w) => s + (w.sales || 0), 0);
+  // Calculate NET sales (gross - returns) to match Rewaa dashboard
+  weeks.forEach(w => {
+    w.netSales = (w.sales || 0) - (w.returns || 0);
+  });
+  const totalGross = weeks.reduce((s,w) => s + (w.sales || 0), 0);
+  const totalReturns = weeks.reduce((s,w) => s + (w.returns || 0), 0);
+  const totalNet = totalGross - totalReturns;
   const totalCash = weeks.reduce((s,w) => s + (w.totalCashIn || 0), 0);
   const totalCredit = weeks.reduce((s,w) => s + (w.creditSales || 0), 0);
   
@@ -4644,51 +4650,56 @@ function initWeeklyReport() {
         <div class="kpi-value">${weeks.length}</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">📈 إجمالي المبيعات</div>
-        <div class="kpi-value" style="color:var(--primary)">${total.toLocaleString('en-US', {minimumFractionDigits:0})} ر.س</div>
+        <div class="kpi-label">📈 صافي المبيعات</div>
+        <div class="kpi-value" style="color:var(--primary)">${totalNet.toLocaleString('en-US', {minimumFractionDigits:0})} ر.س</div>
+        <div class="kpi-sub">بعد خصم المرتجعات</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">💵 النقدي المحصل</div>
         <div class="kpi-value" style="color:var(--success)">${totalCash.toLocaleString('en-US', {minimumFractionDigits:0})} ر.س</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">📋 الآجل</div>
-        <div class="kpi-value" style="color:var(--warning,#F59E0B)">${totalCredit.toLocaleString('en-US', {minimumFractionDigits:0})} ر.س</div>
+        <div class="kpi-label">↩️ المرتجعات</div>
+        <div class="kpi-value" style="color:var(--danger)">${totalReturns.toLocaleString('en-US', {minimumFractionDigits:0})} ر.س</div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title"><span class="icon" data-ico="calendar"></span> التقارير الأسبوعية</div>
+      <div class="card-title"><span class="icon" data-ico="calendar"></span> المبيعات الأسبوعية (صافي)</div>
       <div class="chart-container"><canvas id="weeklyChart"></canvas></div>
     </div>
 
     <div class="card">
-      <div class="card-title"><span class="icon" data-ico="clipboard"></span> تفصيل الأسابيع</div>
-      <input type="text" id="weekSearch" placeholder="🔍 بحث بتاريخ الأسبوع..." oninput="filterWeeks()" style="width:100%;padding:10px 14px;border:2px solid var(--primary);border-radius:8px;margin-bottom:12px;font-size:14px">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <span><span class="icon" data-ico="clipboard"></span> تفصيل الأسابيع</span>
+        <input type="text" id="weekSearch" placeholder="🔍 بحث بتاريخ الأسبوع..." oninput="filterWeeks()" style="padding:10px 16px;border:2px solid var(--primary);border-radius:10px;font-size:14px;min-width:300px">
+      </div>
       <div class="table-wrapper">
         <table class="data-table" id="weekTable">
           <thead>
-            <tr><th>الأسبوع</th><th>المبيعات</th><th>عدد الفواتير</th><th>النقدي</th><th>الآجل</th><th>متوسط الفاتورة</th><th>العملاء</th></tr>
+            <tr><th>الأسبوع</th><th>صافي المبيعات</th><th>مبيعات قائمة</th><th>مرتجع</th><th>الفواتير</th><th>النقدي</th><th>الآجل</th><th>متوسط الفاتورة</th></tr>
           </thead>
           <tbody>
             ${weeks.map(w => `<tr>
               <td style="font-weight:600">${w.weekStart}<br><small style="color:var(--text-light)">إلى ${w.weekEnd}</small></td>
-              <td class="amount" style="color:var(--success);font-weight:600">${(w.sales||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+              <td class="amount" style="color:var(--primary);font-weight:700">${(w.netSales||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+              <td class="amount">${(w.sales||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+              <td class="amount negative">${(w.returns||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
               <td>${w.salesCount || 0}</td>
               <td>${(w.totalCashIn||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
               <td>${(w.creditSales||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
               <td>${(w.avgInvoice||0).toLocaleString('en-US', {minimumFractionDigits:0})}</td>
-              <td>${w.uniqueCustomers || 0}</td>
             </tr>`).join('')}
           </tbody>
           <tfoot>
             <tr style="background:var(--primary-light);font-weight:700">
               <td>الإجمالي</td>
-              <td>${total.toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+              <td>${totalNet.toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+              <td>${totalGross.toLocaleString('en-US', {minimumFractionDigits:0})}</td>
+              <td>${totalReturns.toLocaleString('en-US', {minimumFractionDigits:0})}</td>
               <td>${weeks.reduce((s,w) => s + (w.salesCount||0), 0)}</td>
               <td>${totalCash.toLocaleString('en-US', {minimumFractionDigits:0})}</td>
               <td>${totalCredit.toLocaleString('en-US', {minimumFractionDigits:0})}</td>
-              <td>-</td>
               <td>-</td>
             </tr>
           </tfoot>
@@ -4704,7 +4715,8 @@ function initWeeklyReport() {
       data: {
         labels: weeks.map(w => w.weekStart.substring(5)),
         datasets: [
-          { label: 'المبيعات', data: weeks.map(w => w.sales), backgroundColor: '#3B82F6' },
+          { label: 'صافي المبيعات', data: weeks.map(w => w.netSales), backgroundColor: '#3B82F6' },
+          { label: 'المرتجعات', data: weeks.map(w => w.returns), backgroundColor: '#EF4444' },
           { label: 'النقدي', data: weeks.map(w => w.totalCashIn), backgroundColor: '#10B981' }
         ]
       },
