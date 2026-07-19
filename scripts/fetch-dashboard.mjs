@@ -311,9 +311,10 @@ if (invStart > -1 && invEnd > invStart) {
 // === SYNC "عمليات البيع" COUNTER WITH ACTUAL INVOICE COUNT ===
 const saleCount = cleanInvoices.filter(i => i.type === 'sale').length;
 const returnCount = cleanInvoices.filter(i => i.type === 'return').length;
+const oldCounter = html.match(/data-count="(\d+)" data-int="1">0<\/div>\s*<div class="sub">يناير - يوليو 2026/);
 html = html.replace(
-  /(<div class="value counter-animate" data-count=")\d+(" data-int="1">0<\/div>\s*<div class="sub">يناير - يوليو 2026<\/div>)/,
-  `$1${saleCount}$2`
+  /data-count="\d+" data-int="1">0<\/div>(\s*)<div class="sub">يناير - يوليو 2026/,
+  `data-count="${saleCount}" data-int="1">0</div>$1<div class="sub">يناير - يوليو 2026`
 );
-console.log(`✓ Synced "عمليات البيع" counter to ${saleCount} (sales) | ${returnCount} returns`);
+console.log(`✓ Synced "عمليات البيع" counter: ${oldCounter?.[1] || '?'} → ${saleCount} (sales) | ${returnCount} returns`);
 writeFileSync(htmlPath, html, 'utf-8');
