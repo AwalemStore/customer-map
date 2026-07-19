@@ -333,13 +333,7 @@ function updateHtmlReport(paftahData, invoiceArray, monthlyStats, inventoryValue
   const monthlyStr = `PAFTAH_DATA.monthly = ${JSON.stringify(monthlyArr)};`;
   html = html.replace(/PAFTAH_DATA\.monthly = \[[\s\S]*?\];/, monthlyStr);
 
-  // --- Replace invoices array ---
-  if (invoiceArray.length > 0) {
-    const invStart = html.indexOf('const invoices = ');
-    const invEnd = html.indexOf('];', invStart) + 2
-    const newInvStr = `const invoices = ${JSON.stringify(invoiceArray)}`;
-    html = html.substring(0, invStart) + newInvStr + ';' + html.substring(invEnd);
-  }
+  // --- Invoices array is now handled by fetch-dashboard.mjs (deduplicated) ---
 
   // --- Update header counter data-count attributes ---
   html = html.replace(/data-count="184233\.37"/, `data-count="${totalSales.toFixed(2)}"`);
