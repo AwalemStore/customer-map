@@ -355,9 +355,9 @@ if (totalSalesMatch) {
     `$1${totalProfit.toFixed(2)}$2`
   );
   
-  // 3. Fix "صافي الدخل"
+  // 3. Fix "صافي الدخل" (supports negative values)
   html = html.replace(
-    /(صافي الدخل<\/div>\s*<div class="value[^"]*" data-count=")[0-9.]+(")/,
+    /(صافي الدخل<\/div>\s*<div class="value[^"]*" data-count=")[-0-9.]+(")/,
     `$1${netIncome.toFixed(2)}$2`
   );
   
