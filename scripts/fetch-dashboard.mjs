@@ -303,8 +303,17 @@ const invEnd = html.indexOf('];', invStart) + 2;
 if (invStart > -1 && invEnd > invStart) {
   const newInv = 'const invoices = ' + JSON.stringify(cleanInvoices);
   html = html.substring(0, invStart) + newInv + ';' + html.substring(invEnd);
-  writeFileSync(htmlPath, html, 'utf-8');
   console.log('✓ Replaced invoices array with clean data (' + cleanInvoices.length + ' invoices)');
 } else {
   console.log('⚠ Could not find invoices array in HTML');
 }
+
+// === SYNC "عمليات البيع" COUNTER WITH ACTUAL INVOICE COUNT ===
+const saleCount = cleanInvoices.filter(i => i.type === 'sale').length;
+const returnCount = cleanInvoices.filter(i => i.type === 'return').length;
+html = html.replace(
+  /(<div class="value counter-animate" data-count=")\d+(" data-int="1">0<\/div>\s*<div class="sub">يناير - يوليو 2026<\/div>)/,
+  `$1${saleCount}$2`
+);
+console.log(`✓ Synced "عمليات البيع" counter to ${saleCount} (sales) | ${returnCount} returns`);
+writeFileSync(htmlPath, html, 'utf-8');
