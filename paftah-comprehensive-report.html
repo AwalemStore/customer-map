@@ -4195,7 +4195,12 @@ function renderExpenses() {
   const month = document.getElementById('expMonthFilter')?.value || '';
   const sortBy = document.getElementById('expSortBy')?.value || 'number';
 
-  if (search) exp = exp.filter(e => e.description.toLowerCase().includes(search) || e.number.toLowerCase().includes(search));
+  if (search) exp = exp.filter(e => 
+    e.description.toLowerCase().includes(search) || 
+    e.number.toLowerCase().includes(search) ||
+    smartCategory(e).toLowerCase().includes(search) ||
+    (e.category || '').toLowerCase().includes(search)
+  );
   if (cat) exp = exp.filter(e => smartCategory(e) === cat);
   if (month) exp = exp.filter(e => e.date.startsWith(month));
 
