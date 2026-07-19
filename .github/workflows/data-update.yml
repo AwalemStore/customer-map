@@ -14,40 +14,29 @@ jobs:
         with:
           node-version: '22'
       - name: Update report
-        env:
-          REWAA_EMAIL: info@paftah.com
-          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
+        env: { REWAA_EMAIL: info@paftah.com, REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}, REWAA_DASH_PHONE: ${{ secrets.REWAA_DASH_PHONE }} }
         run: node scripts/update-report.mjs
       - name: Q2 tax
-        env:
-          REWAA_EMAIL: info@paftah.com
-          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
+        env: { REWAA_EMAIL: info@paftah.com, REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}, REWAA_DASH_PHONE: ${{ secrets.REWAA_DASH_PHONE }} }
         run: node scripts/fetch-q2-tax.mjs
       - name: Q1 returns
-        env:
-          REWAA_EMAIL: info@paftah.com
-          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
+        env: { REWAA_EMAIL: info@paftah.com, REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}, REWAA_DASH_PHONE: ${{ secrets.REWAA_DASH_PHONE }} }
         run: node scripts/fetch-q1-returns.mjs
       - name: Aging
-        env:
-          REWAA_EMAIL: info@paftah.com
-          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
+        env: { REWAA_EMAIL: info@paftah.com, REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}, REWAA_DASH_PHONE: ${{ secrets.REWAA_DASH_PHONE }} }
         run: node scripts/fetch-aging.mjs
-      - name: Customer analytics
-        env:
-          REWAA_EMAIL: info@paftah.com
-          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
+      - name: Analytics
+        env: { REWAA_EMAIL: info@paftah.com, REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}, REWAA_DASH_PHONE: ${{ secrets.REWAA_DASH_PHONE }} }
         run: node scripts/customer-analytics.mjs
-      - name: Dashboard (daily summary + taxes + weekly + monthly)
-        env:
-          REWAA_EMAIL: info@paftah.com
-          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
+      - name: Dashboard
+        env: { REWAA_EMAIL: info@paftah.com, REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}, REWAA_DASH_PHONE: ${{ secrets.REWAA_DASH_PHONE }} }
         run: node scripts/fetch-dashboard.mjs
-      - name: Reports (weekly + monthly + audit)
-        env:
-          REWAA_EMAIL: info@paftah.com
-          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
+      - name: Reports
+        env: { REWAA_EMAIL: info@paftah.com, REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}, REWAA_DASH_PHONE: ${{ secrets.REWAA_DASH_PHONE }} }
         run: node scripts/fetch-reports.mjs || true
+      - name: Expenses
+        env: { REWAA_EMAIL: info@paftah.com, REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}, REWAA_DASH_PHONE: ${{ secrets.REWAA_DASH_PHONE }} }
+        run: node scripts/fetch-expenses.mjs
       - name: Commit
         run: |
           git config user.name "Paftah Bot"
