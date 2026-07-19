@@ -2846,6 +2846,10 @@ function switchTab(tabId) {
   if (tabId === 'vip') { initVipTab(); }
   if (tabId === 'taxes') { initTaxesTab(); }
   if (tabId === 'daily') { initDailyTab(); }
+  if (tabId === 'executive') { initExecutiveDashboard(); }
+  if (tabId === 'pnl') { initPnL(); }
+  if (tabId === 'weekly') { initWeeklyReport(); }
+  if (tabId === 'reports') { initReports(); }
   setTimeout(() => {
     Object.values(Chart.instances).forEach(c => {
       if (c.canvas.closest('.tab-panel.active')) c.resize();
