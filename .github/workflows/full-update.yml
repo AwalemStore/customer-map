@@ -6,6 +6,8 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  pages: write
+  id-token: write
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -60,3 +62,11 @@ jobs:
           git config user.email "bot@paftah.com"
           git add paftah-comprehensive-report.html
           git diff --staged --quiet || (git commit -m "auto: $(date -u +'%Y-%m-%d %H:%M')" && git push)
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
