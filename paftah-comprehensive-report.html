@@ -4645,14 +4645,28 @@ function initExecutiveDashboard() {
   const ctx3 = document.getElementById('execExpChart');
   if (ctx3 && typeof EXPENSES_DATA !== 'undefined' && EXPENSES_DATA.categories) {
     var sortedCats = EXPENSES_DATA.categories.slice().sort(function(a,b){return b.total - a.total;}).slice(0,6);
-    new Chart(ctx3, {
-      type: 'doughnut',
-      data: {
-        labels: sortedCats.map(function(c){return c.name;}),
-        datasets: [{ data: sortedCats.map(function(c){return c.total;}), backgroundColor: ['#EF4444','#F59E0B','#3B82F6','#8B5CF6','#10B981','#EC4899'] }]
-      },
-      options: { responsive: true, plugins: { legend: { position: 'right', labels: { font: { size: 10 } } } } }
+    var expTotal = EXPENSES_DATA.categories.reduce(function(s,c){return s + c.total;}, 0);
+    var expColors = ['#EF4444','#F59E0B','#3B82F6','#8B5CF6','#10B981','#EC4899'];
+    var expHtml = '<div style="padding:8px 0">';
+    sortedCats.forEach(function(c, i) {
+      var pct = (c.total / expTotal * 100).toFixed(1);
+      var catAr = c.name;
+      var map = {'Salaries And Administrative Fees':'رواتب ورسوم إدارية','Shipping And Custom Fees':'شحن وجمارك','Government Fees':'رسوم حكومية','Hospitality and Cleanliness':'ضيافة ونظافة','Social Insurance Expense':'تأمينات اجتماعية','Zakat':'زكاة'};
+      catAr = map[catAr] || catAr;
+      expHtml += '<div style="margin-bottom:14px">';
+      expHtml += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">';
+      expHtml += '<div style="display:flex;align-items:center;gap:8px"><span style="width:12px;height:12px;border-radius:3px;background:' + expColors[i] + ';flex-shrink:0"></span><span style="font-size:0.8rem;font-weight:600">' + catAr + '</span></div>';
+      expHtml += '<span style="font-size:0.82rem;font-weight:800;color:' + expColors[i] + '">' + c.total.toLocaleString('en-US',{minimumFractionDigits:0}) + ' ر.س</span>';
+      expHtml += '</div>';
+      expHtml += '<div style="height:10px;border-radius:5px;background:rgba(0,0,0,0.05);overflow:hidden">';
+      expHtml += '<div style="height:100%;width:' + pct + '%;background:' + expColors[i] + ';border-radius:5px"></div>';
+      expHtml += '</div>';
+      expHtml += '<div style="font-size:0.68rem;color:var(--text-light);margin-top:2px">' + pct + '% | ' + c.count + ' سند</div>';
+      expHtml += '</div>';
     });
+    expHtml += '</div>';
+    ctx3.parentElement.innerHTML = expHtml;
+  }
   }
 }
 
