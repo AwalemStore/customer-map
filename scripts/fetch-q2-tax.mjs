@@ -71,7 +71,7 @@ async function fetchAllInvoicesQ2(token) {
   return allInvoices;
 }
 
-function updateTaxTab(q2Invoices) {
+function updateTaxTab(q2Invoices, q2Collections) {
   const htmlPath = join(REPO_ROOT, 'paftah-comprehensive-report.html');
   let html = readFileSync(htmlPath, 'utf-8');
 
@@ -87,11 +87,12 @@ function updateTaxTab(q2Invoices) {
     returnsByCustomer[name] = (returnsByCustomer[name] || 0) + r.total;
   });
   
-  // Step 3: Only include sales where customer ACTUALLY paid (paidAmount > 0)
-  // Then subtract any returns for that customer
-  const q2Paid = q2Sales.filter(i => i.paidAmount > 0);
+  // Step 3: Only include sales where customer ACTUALLY paid in Q2
+  // Cash/Card sales = collected at invoice time (during Q2) ✓
+  // Post Pay (آجل) paidAmount might include payments from July → exclude
+  const q2Paid = q2Invoices.filter(i => i.type === 'sale' && i.actualCollected > 0);
   
-  // Group by customer - use paidAmount, subtract returns
+  // Group by customer - use actualCollected (NOT paidAmount which may include later payments)
   const customerMap = {};
   q2Paid.forEach(inv => {
     const name = inv.customerName || 'غير محدد';
@@ -99,7 +100,7 @@ function updateTaxTab(q2Invoices) {
       customerMap[name] = { name, sales: [], totalPaid: 0, totalSales: 0, invoiceCount: 0, dates: [], returns: 0 };
     }
     customerMap[name].sales.push(inv);
-    customerMap[name].totalPaid += inv.paidAmount;
+    customerMap[name].totalPaid += inv.actualCollected;
     customerMap[name].totalSales += inv.total;
     customerMap[name].invoiceCount++;
     customerMap[name].dates.push(inv.date);
@@ -119,12 +120,15 @@ function updateTaxTab(q2Invoices) {
   
   // Build the Q2 data JSON
   const q2Data = {
+    period: 'Q2 2026 (أبريل - يونيو)',
     totalCollected: customers.reduce((s, c) => s + c.totalPaid, 0),
     totalSales: customers.reduce((s, c) => s + c.totalSales, 0),
     customerCount: customers.length,
     invoiceCount: q2Paid.length,
     vatAmount: customers.reduce((s, c) => s + c.totalPaid * 15 / 115, 0),
     netAmount: customers.reduce((s, c) => s + c.totalPaid * 100 / 115, 0),
+    monthlyCollections: q2Collections || {},
+    note: 'فقط المبيعات النقدية/البطاقة في Q2 (أبريل-يونيو). التحصيلات اللاحقة (يوليو+) غير مضمنة.',
     customers: customers.map(c => ({
       name: c.name,
       totalPaid: +c.totalPaid.toFixed(2),
@@ -277,6 +281,32 @@ function exportTaxCSV() {
   console.log('  ✓ Updated tax tab with Q2 invoice data');
 }
 
+async function fetchQ2Collections(token) {
+  console.log('[2.5/3] Fetching Q2 payment collections (Apr-Jun)...');
+  const collections = {};
+  const months = [
+    { name: 'April', start: '2026-04-01', end: '2026-05-01' },
+    { name: 'May', start: '2026-05-01', end: '2026-06-01' },
+    { name: 'June', start: '2026-06-01', end: '2026-07-01' },
+  ];
+  
+  for (const m of months) {
+    const startISO = new Date(m.start + 'T00:00:00+03:00').toISOString();
+    const endISO = new Date(m.end + 'T00:00:00+03:00').toISOString();
+    const path = `/reporting-bridge/dashboard/payment-methods-report?startDate=${startISO}&endDate=${endISO}&location=&timezone=Asia/Riyadh&startTime=00:00:00&endTime=23:59:59`;
+    try {
+      const res = await fetch(`${API_BASE}${path}`, { headers: { accept: 'application/json', authorization: `Bearer ${token}` } });
+      if (!res.ok) { console.log(`  ⚠ ${m.name}: API ${res.status}`); continue; }
+      const data = await res.json();
+      // Total cash collected this month (cash sales + collections from Post Pay)
+      const monthTotal = data.total || 0;
+      collections[m.name] = monthTotal;
+      console.log(`  ✓ ${m.name}: ${monthTotal.toFixed(2)} ر.س collected`);
+    } catch(e) { console.log(`  ⚠ ${m.name}: ${e.message}`); }
+  }
+  return collections;
+}
+
 async function main() {
   console.log('=== Q2 Tax Report Generator ===');
   console.log('Time: ' + new Date().toISOString() + '\\n');
@@ -285,12 +315,15 @@ async function main() {
   console.log('✓ Authenticated');
 
   const q2Invoices = await fetchAllInvoicesQ2(token);
-  console.log(`\\n[3/3] Total Q2 invoices: ${q2Invoices.length}`);
+  console.log(`\\n[3/4] Total Q2 invoices: ${q2Invoices.length}`);
   console.log(`  Sales: ${q2Invoices.filter(i => i.type === 'sale').length}`);
   console.log(`  Returns: ${q2Invoices.filter(i => i.type === 'return').length}`);
-  console.log(`  With payment: ${q2Invoices.filter(i => i.paidAmount > 0).length}`);
+  console.log(`  Cash/Card (actualCollected > 0): ${q2Invoices.filter(i => i.actualCollected > 0).length}`);
 
-  updateTaxTab(q2Invoices);
+  const q2Collections = await fetchQ2Collections(token);
+  console.log(`\\nQ2 Total collections: ${Object.values(q2Collections).reduce((a,b)=>a+b,0).toFixed(2)} ر.س`);
+
+  updateTaxTab(q2Invoices, q2Collections);
   console.log('\\nDone!');
 }
 
