@@ -4605,36 +4605,51 @@ function initExecutiveDashboard() {
     new Chart(ctx1, {
       type: 'bar',
       data: {
-        labels: months.map(m => AR_MONTHS_SHORT[m.month-1]),
-        datasets: [{ label: 'المبيعات', data: months.map(m => m.sales), backgroundColor: '#3B82F6' }]
+        labels: months.map(m => m.month),
+        datasets: [{ label: 'المبيعات', data: months.map(m => m.sales), backgroundColor: '#3B82F6', borderRadius: 6 }]
       },
-      options: { responsive: true, plugins: { legend: { display: false } } }
+      options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
   }
 
   const ctx2 = document.getElementById('execCashChart');
   if (ctx2) {
+    // Get cash data from DAILY_SUMMARY grouped by month
+    var cashByMonth = {};
+    if (typeof DAILY_SUMMARY !== 'undefined') {
+      DAILY_SUMMARY.forEach(function(d) {
+        var mk = d.date.substring(0,7);
+        cashByMonth[mk] = (cashByMonth[mk] || 0) + (d.totalCashIn || 0);
+      });
+    }
+    var monthLabels = months.map(m => m.month);
+    var salesData = months.map(m => m.sales);
+    var cashData = months.map(function(m, i) {
+      var mk = '2026-' + String(i+1).padStart(2,'0');
+      return Math.round(cashByMonth[mk] || 0);
+    });
+
     new Chart(ctx2, {
       type: 'line',
       data: {
-        labels: months.map(m => AR_MONTHS_SHORT[m.month-1]),
+        labels: monthLabels,
         datasets: [
-          { label: 'المبيعات', data: months.map(m => m.sales), borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,0.1)' },
-          { label: 'التحصيل', data: months.map(m => m.totalPaid || 0), borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.1)' }
+          { label: 'المبيعات', data: salesData, borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.3, fill: true },
+          { label: 'التحصيل النقدي', data: cashData, borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.3, fill: true }
         ]
       },
-      options: { responsive: true }
+      options: { responsive: true, scales: { y: { beginAtZero: true } } }
     });
   }
 
   const ctx3 = document.getElementById('execExpChart');
-  if (ctx3 && typeof EXPENSES_DATA !== 'undefined') {
-    const cats = Object.entries(EXPENSES_DATA.categories.sort((a,b) => b.total - a.total).slice(0,6).map(c => ({name: c.name, total: c.total})));
+  if (ctx3 && typeof EXPENSES_DATA !== 'undefined' && EXPENSES_DATA.categories) {
+    var sortedCats = EXPENSES_DATA.categories.slice().sort(function(a,b){return b.total - a.total;}).slice(0,6);
     new Chart(ctx3, {
       type: 'doughnut',
       data: {
-        labels: EXPENSES_DATA.categories.slice(0,6).map(c => c.name),
-        datasets: [{ data: EXPENSES_DATA.categories.slice(0,6).map(c => c.total), backgroundColor: ['#EF4444','#F59E0B','#3B82F6','#8B5CF6','#10B981','#EC4899'] }]
+        labels: sortedCats.map(function(c){return c.name;}),
+        datasets: [{ data: sortedCats.map(function(c){return c.total;}), backgroundColor: ['#EF4444','#F59E0B','#3B82F6','#8B5CF6','#10B981','#EC4899'] }]
       },
       options: { responsive: true, plugins: { legend: { position: 'right', labels: { font: { size: 10 } } } } }
     });
