@@ -1609,7 +1609,7 @@ body {
       </div>
       <div class="alert-item alert-red">
         <span class="alert-dot red"></span>
-        <span>صافي الدخل إيجابي: 45,917.61 ر.س</strong></span>
+        <span id="netIncomeAlert">جاري التحديث...</strong></span>
       </div>
       <div class="alert-item alert-yellow">
         <span class="alert-dot yellow"></span>
@@ -1660,8 +1660,8 @@ body {
 <div id="tab-overview" class="tab-panel active">
 
   <div class="card">
-    <div class="exec-summary-text">
-      خلال الفترة من 1 يناير إلى 18 يوليو 2026، بلغت إجمالي مبيعات الشركة 224,561 ر.س عبر 975 عملية بيع، محققةً ربحاً إجمالياً قدره 47,525 ر.س بنسبة هامش 20.9%. إلا أن صافي الدخل إيجابي بمبلغ 45,918 ر.س نتيجة المصروفات التشغيلية. يُعد العميل 'أسواق افرا العربية' الأكثر مديونية بمبلغ 42,700 ر.س، فيما تبلغ إجمالي المديونية 158,994 ر.س. يوصى بالتركيز على تحصيل المديونية المتراكمة وتحديد أهداف مبيعات شهرية واضحة.
+    <div class="exec-summary-text" id="execSummaryText">
+      جاري التحديث...
     </div>
   </div>
 
@@ -3833,6 +3833,66 @@ function renderSalesHeatmap() {
 }
 
 // ===== FORECAST =====
+// ===== DYNAMIC EXECUTIVE SUMMARY =====
+function renderExecSummary() {
+  var m = PAFTAH_DATA.monthly.filter(function(x){return !x.isTotal;});
+  var total = PAFTAH_DATA.monthly.find(function(x){return x.isTotal;}) || {};
+  if (!total.sales) return;
+
+  var months = AR_MONTHS_SHORT;
+  var lastMonth = m[m.length - 1] || {};
+  var endDay = new Date().getDate();
+  var endMonthIdx = new Date().getMonth();
+  var endYear = new Date().getFullYear();
+
+  // Calculate real values
+  var totalSales = total.sales;
+  var totalOps = total.ops || m.reduce(function(s,x){return s + (x.ops||0);}, 0);
+  var totalProfit = total.profit || 0;
+  var margin = totalSales > 0 ? (totalProfit / totalSales * 100).toFixed(1) : 0;
+
+  // Expenses
+  var expenses2026 = 0;
+  if (typeof EXPENSES_DATA !== 'undefined') {
+    EXPENSES_DATA.expenses.forEach(function(e) {
+      if (e.date && e.date.startsWith('2026')) expenses2026 += e.amount;
+    });
+  }
+  var netIncome = totalProfit - expenses2026;
+
+  // Customers
+  var totalDebt = PAFTAH_DATA.customers.reduce(function(s,c){return s + (c.db||0);}, 0);
+  var topDebtor = PAFTAH_DATA.customers.slice().sort(function(a,b){return (b.db||0) - (a.db||0);})[0];
+
+  // Best month
+  var bestMonth = m.slice().sort(function(a,b){return b.sales - a.sales;})[0];
+
+  var periodText = 'من 1 ' + months[0] + ' إلى ' + endDay + ' ' + months[endMonthIdx] + ' ' + endYear;
+  var netStr = netIncome >= 0
+    ? 'صافي الدخل إيجابي بمبلغ <strong>' + fmt(netIncome) + ' ر.س</strong> '
+    : 'صافي الدخل سالك بمبلغ <strong style="color:var(--danger)">' + fmt(Math.abs(netIncome)) + ' ر.س</strong> (المصروفات تجاوزت الربح) ';
+
+  var html = 'خلال الفترة <strong>' + periodText + '</strong>، بلغت إجمالي مبيعات الشركة <strong style="color:var(--primary)">' + fmt(totalSales) + ' ر.س</strong> '
+    + 'عبر <strong>' + totalOps + '</strong> عملية بيع، محققةً ربحاً إجمالياً قدره <strong style="color:var(--success)">' + fmt(totalProfit) + ' ر.س</strong> '
+    + 'بنسبة هامش <strong>' + margin + '%</strong>. ';
+
+  html += 'بعد خصم مصروفات تشغيلية بقيمة <strong style="color:var(--danger)">' + fmt(expenses2026) + ' ر.س</strong>، ' + netStr;
+
+  if (bestMonth) {
+    html += 'أفضل شهر كان <strong>' + bestMonth.month + '</strong> بمبيعات ' + fmt(bestMonth.sales) + ' ر.س. ';
+  }
+
+  if (topDebtor && topDebtor.db > 0) {
+    html += 'يُعد العميل <strong>\'' + topDebtor.n + '\'</strong> الأكثر مديونية بمبلغ <strong style="color:var(--danger)">' + fmt(topDebtor.db) + ' ر.س</strong>، ';
+    html += 'فيما تبلغ إجمالي المديونية <strong>' + fmt(totalDebt) + ' ر.س</strong>. ';
+  }
+
+  html += 'يوصى بالتركيز على تحصيل المديونية المتراكمة وتحديد أهداف مبيعات شهرية واضحة.';
+
+  var el = document.getElementById('execSummaryText');
+  if (el) el.innerHTML = html;
+}
+
 function renderForecast() {
   var m = PAFTAH_DATA.monthly.filter(function(x){return !x.isTotal;});
   if (m.length < 3) return;
@@ -3841,7 +3901,8 @@ function renderForecast() {
   var prevPrev = m[m.length - 3];
   var avgGrowth = ((prev.sales / prevPrev.sales) + (last.sales / prev.sales)) / 2;
   var dailyAvg = last.sales / (last.note ? parseInt(last.note.split('-').pop()) : 30);
-  var daysInMonth = new Date(2026, m.length, 0).getDate();
+  var nextMonthIdx = m.length; // 0-indexed, next month after last data
+  var daysInMonth = new Date(2026, nextMonthIdx + 1, 0).getDate();
   var forecastFull = dailyAvg * daysInMonth;
   var projected = last.sales * avgGrowth;
   var predicted = Math.round((forecastFull + projected) / 2);
@@ -3851,7 +3912,7 @@ function renderForecast() {
   var trendIcon = isUp ? '📈' : '📉';
   var trendText = isUp ? 'صعودي' : 'تراجعي';
   var trendColor = isUp ? '#10B981' : '#EF4444';
-  var nextMonthName = AR_MONTHS_SHORT[m.length] || 'الشهر القادم';
+  var nextMonthName = AR_MONTHS_SHORT[nextMonthIdx] || 'الشهر القادم';
   var changePct = last.sales > 0 ? ((predicted - last.sales) / last.sales * 100) : 0;
 
   var html = '';
@@ -4088,7 +4149,7 @@ function renderSmartAlerts() {
   var zeroPay = PAFTAH_DATA.customers.filter(function(c){return c.db > 0 && c.p === 0;}).length;
   var topDebtor = PAFTAH_DATA.customers.sort(function(a,b){return b.db-a.db;})[0];
   if (topDebtor && topDebtor.db > 10000) alerts.push({type:'critical',text:'عميل واحد ('+topDebtor.n+') عليه '+fmt(topDebtor.db)+' ر.س = '+Math.round(topDebtor.db/totalDebt*100)+'% من الديون'});
-  if (total && total.netIncome < 0) alerts.push({type:'critical',text:'صافي الدخل إيجابي: 45,917.61 ر.س'});
+  if (total) { var ni = total.profit - (typeof EXPENSES_DATA !== 'undefined' ? EXPENSES_DATA.expenses.filter(function(e){return e.date.startsWith('2026');}).reduce(function(s,e){return s+e.amount;},0) : 0); var el = document.getElementById('netIncomeAlert'); if (el) el.innerHTML = (ni >= 0 ? 'صافي الدخل: ' + ni.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}) : 'صافي الدخل سالب: ' + Math.abs(ni).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0})) + ' ر.س'; }
   if (zeroPay > 0) alerts.push({type:'warning',text:zeroPay+' عميل مديونية '+fmt(PAFTAH_DATA.customers.filter(function(c){return c.db>0&&c.p===0;}).reduce(function(s,c){return s+c.db;},0))+' ر.س بدون أي سداد'});
   if (total && total.margin < 20) alerts.push({type:'info',text:'هامش الربح '+total.margin+'% تحت المطلوب (25%+)'});
   var paidCustomers = PAFTAH_DATA.customers.filter(function(c){return c.p > 0;}).length;
@@ -4915,6 +4976,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderHealthGauge();
   renderSalesHeatmap();
   renderForecast();
+  renderExecSummary();
   renderRFM();
   renderQR();
   renderTreemap();
