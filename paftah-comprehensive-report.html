@@ -1688,7 +1688,7 @@ body {
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon" data-ico="receipt"></span> آخر الفواتير المسجلة - مايو 2026</div>
+    <div class="card-title" id="invoiceTabTitle"><span class="icon" data-ico="receipt"></span> آخر الفواتير المسجلة</div>
     <div class="smart-filter-bar">
       <span class="sfb-label">🔍 فلترة ذكية</span>
       <input type="text" class="smart-filter-input" id="smartInvoiceSearch" placeholder="بحث برقم الفاتورة، المبلغ، التاريخ...">
@@ -2877,8 +2877,24 @@ function switchTab(tabId) {
 }
 
 // ===== FORMAT NUMBER =====
-function safeChart(canvasId, config) {
-  var canvas = document.getElementById(canvasId);
+function copyText(text, el) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text);
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  }
+  if (el) {
+    var orig = el.innerHTML;
+    el.innerHTML = '✅ تم النسخ';
+    el.style.background = '#DCFCE7';
+    el.style.color = '#10B981';
+    setTimeout(function() { el.innerHTML = orig; el.style.background = '#F3F0F8'; el.style.color = 'var(--primary)'; }, 1200);
+  }
+}
+
+function safeChart(canvasId, config) {  var canvas = document.getElementById(canvasId);
   if (!canvas) return null;
   var existing = Chart.getChart(canvas);
   if (existing) existing.destroy();
@@ -2966,10 +2982,10 @@ function populateInvoicesSmart() {
     total += amt;
     html += '<tr class="' + (isReturn ? 'return-row' : '') + '">' +
       '<td>' + (i+1) + '</td>' +
-      '<td>' + inv.date + '</td>' +
-      '<td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px">' + inv.num + '</code></td>' +
+      '<td style="white-space:nowrap">' + inv.date + '</td>' +
+      '<td><code style="background:#F3F0F8;padding:3px 10px;border-radius:6px;white-space:nowrap;cursor:pointer;font-size:0.78rem;font-weight:600;color:var(--primary);user-select:all" onclick="copyText(\'' + inv.num + '\',this)" title="اضغط للنسخ">' + inv.num + ' 📋</code></td>' +
       '<td><span class="' + (isReturn ? 'status-return' : 'status-sale') + '">' + (isReturn ? 'مرتجع' : 'بيع') + '</span></td>' +
-      '<td class="amount ' + (isReturn ? 'negative' : 'positive') + '">' + (isReturn ? '-' : '') + fmt(inv.amount) + '</td>' +
+      '<td class="amount ' + (isReturn ? 'negative' : 'positive') + '" style="white-space:nowrap">' + (isReturn ? '-' : '') + fmt(inv.amount) + '</td>' +
       '</tr>';
   });
   tbody.innerHTML = html;
@@ -4481,7 +4497,7 @@ function renderExpenseCharts(smartCatMap) {
   // Category chart (pie)
   const ctx1 = document.getElementById('expenseCategoryChart');
   if (ctx1) {
-    safeChart("execMonthlyChart", {
+    safeChart("expenseCategoryChart", {
       type: 'doughnut',
       data: {
         labels: cats.map(c => c.name),
@@ -4498,7 +4514,7 @@ function renderExpenseCharts(smartCatMap) {
   const monthly = EXPENSES_DATA.monthly.filter(m => m.month >= '2026-01');
   const ctx2 = document.getElementById('expenseMonthlyChart');
   if (ctx2) {
-    safeChart("execCashChart", {
+    safeChart("expenseMonthlyChart", {
       type: 'bar',
       data: {
         labels: monthly.map(m => {
@@ -4508,7 +4524,8 @@ function renderExpenseCharts(smartCatMap) {
         datasets: [{
           label: 'المصروفات (ر.س)',
           data: monthly.map(m => m.total),
-          backgroundColor: '#EF4444'
+          backgroundColor: '#EF4444',
+          borderRadius: 6
         }]
       },
       options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
