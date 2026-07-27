@@ -2877,6 +2877,14 @@ function switchTab(tabId) {
 }
 
 // ===== FORMAT NUMBER =====
+function safeChart(canvasId, config) {
+  var canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  var existing = Chart.getChart(canvas);
+  if (existing) existing.destroy();
+  return new Chart(canvas, config);
+}
+
 function fmt(n) {
   return n.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }
@@ -3145,7 +3153,7 @@ function initCharts() {
   })();
 
   // Sales Daily Detail Chart
-  new Chart(document.getElementById('salesDailyDetailChart'), {
+  safeChart('salesDailyDetailChart', {
     type: 'line',
     data: {
       labels: labels,
@@ -3184,7 +3192,7 @@ function initCharts() {
   });
 
   // Payment Detail Chart
-  new Chart(document.getElementById('paymentDetailChart'), {
+  safeChart('paymentDetailChart', {
     type: 'bar',
     data: {
       labels: ['نقدي', 'آجل', 'بطاقة ائتمانية', 'رواء باي'],
@@ -3205,7 +3213,7 @@ function initCharts() {
   });
 
   // Inventory Chart
-  new Chart(document.getElementById('inventoryChart'), {
+  safeChart('inventoryChart', {
     type: 'doughnut',
     data: {
       labels: ['مسحوق غسيل بفتة 1 كيلو', 'بفته 250 جرام', 'مسحوق 25 كيلو', 'كرتون بفتة 1 كيلو', 'مسحوق 2.5 كيلو', 'كرتون بفتة 250 جم', '4-مسحوق 2.5 كيلو'],
@@ -3227,7 +3235,7 @@ function initCharts() {
   });
 
   // Expense Category Chart
-  new Chart(document.getElementById('expenseCategoryChart'), {
+  safeChart('expenseCategoryChart', {
     type: 'doughnut',
     data: {
       labels: ['ضريبة القيمة المضافة', 'الرواتب والرسوم الإدارية', 'الرسوم الحكومية', 'ايجار المستودع', 'مصاريف اخرى', 'اتصالات'],
@@ -3249,7 +3257,7 @@ function initCharts() {
   });
 
   // Expense Bar Chart
-  new Chart(document.getElementById('expenseBarChart'), {
+  safeChart('expenseBarChart', {
     type: 'bar',
     data: {
       labels: ['ضريبة القيمة المضافة', 'الرواتب', 'الرسوم الحكومية', 'ايجار المستودع', 'اتصالات', 'مصاريف اخرى'],
@@ -3283,7 +3291,7 @@ function initCharts() {
   };
 
   // Customer Types Chart
-  new Chart(document.getElementById('customerTypesChart'), {
+  safeChart('customerTypesChart', {
     type: 'bar',
     data: {
       labels: Object.keys(PAFTAH_DATA.types),
@@ -3306,7 +3314,7 @@ function initCharts() {
 
   // District Debt Chart (Top 10)
   const top10Debt = PAFTAH_DATA.districts.slice(0, 10);
-  new Chart(document.getElementById('districtDebtChart'), {
+  safeChart('districtDebtChart', {
     type: 'bar',
     data: {
       labels: top10Debt.map(d => d.d),
@@ -3328,7 +3336,7 @@ function initCharts() {
 
   // District Paid Chart (Top 10 by payment)
   const top10Paid = [...PAFTAH_DATA.districts].sort((a,b) => b.p - a.p).slice(0, 10);
-  new Chart(document.getElementById('districtPaidChart'), {
+  safeChart('districtPaidChart', {
     type: 'bar',
     data: {
       labels: top10Paid.map(d => d.d),
@@ -3357,7 +3365,7 @@ function initMonthlyCharts() {
   var profitArr = md.map(function(m) { return m.profit; });
   var netArr = md.map(function(m) { return m.netIncome; });
 
-  new Chart(document.getElementById('monthlySalesProfitChart'), {
+  safeChart('monthlySalesProfitChart', {
     type: 'bar',
     data: {
       labels: labels,
@@ -3404,7 +3412,7 @@ function initMonthlyCharts() {
     }
   });
 
-  new Chart(document.getElementById('monthlyNetIncomeChart'), {
+  safeChart('monthlyNetIncomeChart', {
     type: 'line',
     data: {
       labels: labels,
@@ -3448,7 +3456,7 @@ function initMonthlyCharts() {
   var cardData = md.map(function(m) { return (m.payments && m.payments.card) || 0; });
   var rewaaData = md.map(function(m) { return (m.payments && m.payments.rewaapay) || 0; });
 
-  new Chart(document.getElementById('monthlyPaymentChart'), {
+  safeChart('monthlyPaymentChart', {
     type: 'bar',
     data: {
       labels: labels,
@@ -4473,7 +4481,7 @@ function renderExpenseCharts(smartCatMap) {
   // Category chart (pie)
   const ctx1 = document.getElementById('expenseCategoryChart');
   if (ctx1) {
-    new Chart(ctx1, {
+    safeChart("execMonthlyChart", {
       type: 'doughnut',
       data: {
         labels: cats.map(c => c.name),
@@ -4490,7 +4498,7 @@ function renderExpenseCharts(smartCatMap) {
   const monthly = EXPENSES_DATA.monthly.filter(m => m.month >= '2026-01');
   const ctx2 = document.getElementById('expenseMonthlyChart');
   if (ctx2) {
-    new Chart(ctx2, {
+    safeChart("execCashChart", {
       type: 'bar',
       data: {
         labels: monthly.map(m => {
@@ -4629,7 +4637,7 @@ function initExecutiveDashboard() {
   // Charts
   const ctx1 = document.getElementById('execMonthlyChart');
   if (ctx1) {
-    new Chart(ctx1, {
+    safeChart("execMonthlyChart", {
       type: 'bar',
       data: {
         labels: months.map(m => m.month),
@@ -4656,7 +4664,7 @@ function initExecutiveDashboard() {
       return Math.round(cashByMonth[mk] || 0);
     });
 
-    new Chart(ctx2, {
+    safeChart("execCashChart", {
       type: 'line',
       data: {
         labels: monthLabels,
@@ -4793,7 +4801,7 @@ function initPnL() {
   
   const ctx = document.getElementById('pnlChart');
   if (ctx) {
-    new Chart(ctx, {
+    safeChart("pnlChart", {
       type: 'bar',
       data: {
         labels: rows.map(r => r.month),
@@ -4809,7 +4817,7 @@ function initPnL() {
   
   const ctx2 = document.getElementById('pnlNetChart');
   if (ctx2) {
-    new Chart(ctx2, {
+    safeChart("execCashChart", {
       type: 'line',
       data: {
         labels: rows.map(r => r.month),
@@ -4908,7 +4916,7 @@ function initWeeklyReport() {
   
   const ctx = document.getElementById('weeklyChart');
   if (ctx) {
-    new Chart(ctx, {
+    safeChart("pnlChart", {
       type: 'bar',
       data: {
         labels: weeks.map(w => w.weekStart.substring(5)),
@@ -5302,7 +5310,7 @@ function initDailyTab() {
 
   // Weekday chart
   if (weekdays) {
-    new Chart(document.getElementById('weekdayChart'), {
+    safeChart('weekdayChart', {
       type: 'bar',
       data: {
         labels: weekdays.map(w => w.day),
@@ -5480,7 +5488,7 @@ function initVipTab() {
   // Growth chart
   var ctx = document.getElementById('customerGrowthChart');
   if (ctx) {
-    new Chart(ctx, {
+    safeChart("pnlChart", {
       type: 'bar',
       data: {
         labels: data.newCustomersByMonth.map(m => m.month),
