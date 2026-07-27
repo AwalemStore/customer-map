@@ -3441,15 +3441,22 @@ function initMonthlyCharts() {
     }
   });
 
+  // Build payment data from MONTHLY_REPORT
+  var monthlyReport = (typeof MONTHLY_REPORT !== 'undefined') ? MONTHLY_REPORT : null;
+  var cashData = md.map(function(m, i) { return monthlyReport && monthlyReport[i] ? (monthlyReport[i].cashSales || 0) : ((m.payments && m.payments.cash) || 0); });
+  var ajelData = md.map(function(m, i) { return monthlyReport && monthlyReport[i] ? (monthlyReport[i].creditSales || 0) : ((m.payments && m.payments.ajel) || 0); });
+  var cardData = md.map(function(m) { return (m.payments && m.payments.card) || 0; });
+  var rewaaData = md.map(function(m) { return (m.payments && m.payments.rewaapay) || 0; });
+
   new Chart(document.getElementById('monthlyPaymentChart'), {
     type: 'bar',
     data: {
       labels: labels,
       datasets: [
-        { label: 'نقدي', data: md.map(function(m) { return (m.payments && m.payments.cash) || 0; }), backgroundColor: 'rgba(16,185,129,0.7)', borderRadius: 4 },
-        { label: 'آجل', data: md.map(function(m) { return (m.payments && m.payments.ajel) || 0; }), backgroundColor: 'rgba(51,48,136,0.75)', borderRadius: 4 },
-        { label: 'بطاقة', data: md.map(function(m) { return (m.payments && m.payments.card) || 0; }), backgroundColor: 'rgba(239,68,68,0.7)', borderRadius: 4 },
-        { label: 'رواء باي', data: md.map(function(m) { return (m.payments && m.payments.rewaapay) || 0; }), backgroundColor: 'rgba(245,158,11,0.7)', borderRadius: 4 }
+        { label: 'نقدي', data: cashData, backgroundColor: 'rgba(16,185,129,0.7)', borderRadius: 4 },
+        { label: 'آجل', data: ajelData, backgroundColor: 'rgba(51,48,136,0.75)', borderRadius: 4 },
+        { label: 'بطاقة', data: cardData, backgroundColor: 'rgba(239,68,68,0.7)', borderRadius: 4 },
+        { label: 'رواء باي', data: rewaaData, backgroundColor: 'rgba(245,158,11,0.7)', borderRadius: 4 }
       ]
     },
     options: {
@@ -3499,9 +3506,17 @@ function buildMonthlyKpiTable() {
 function buildMonthlyPaymentsTable() {
   var md = PAFTAH_DATA.monthly;
   var html = '';
-  md.forEach(function(m) {
+  // Use MONTHLY_REPORT for payment data if available
+  var monthlyReport = (typeof MONTHLY_REPORT !== 'undefined') ? MONTHLY_REPORT : null;
+  md.forEach(function(m, idx) {
     if (m.isTotal) return;
-    var p = m.payments || {ajel:0, card:0, cash:0, rewaapay:0};
+    var p;
+    if (monthlyReport && monthlyReport[idx]) {
+      var mr = monthlyReport[idx];
+      p = { cash: mr.cashSales || 0, ajel: mr.creditSales || 0, card: 0, rewaapay: 0 };
+    } else {
+      p = m.payments || {ajel:0, card:0, cash:0, rewaapay:0};
+    }
     html += '<tr>' +
       '<td style="font-weight:600">' + m.month + '</td>' +
       '<td class="amount ' + (p.ajel < 0 ? 'negative' : '') + '">' + fmt(p.ajel) + '</td>' +
@@ -4087,28 +4102,40 @@ function getDistrictTrend(district) {
 
 // ===== TREEMAP =====
 function renderTreemap() {
-  var top = PAFTAH_DATA.districts.slice(0, 20);
+  var top = PAFTAH_DATA.districts.slice(0, 15);
   var maxDb = top[0] ? top[0].db : 1;
-  var colors = ['#333088','#4D49A8','#6366F1','#818CF8','#A78BFA','#9982BB','#7C3AED','#6D28D9','#5B21B6','#4C1D95'];
+  var totalDb = PAFTAH_DATA.districts.reduce(function(s,d){return s + d.db;}, 0);
   var wrap = document.getElementById('treemapContainer');
   if (!wrap) return;
-  var w = wrap.clientWidth || 600;
-  var h = 300;
-  var html = '<div class="treemap-wrap" style="width:'+w+'px;height:'+h+'px">';
-  var x = 0, y = 0, rowH = 0;
+
+  var html = '';
   top.forEach(function(d, i) {
-    var pct = d.db / (maxDb * 3.5);
-    var bw = Math.max(pct * w, 40);
-    if (x + bw > w) { x = 0; y += rowH + 3; rowH = 0; }
-    var bh = Math.max(50, (1 - pct * 0.5) * 70);
-    rowH = Math.max(rowH, bh);
-    html += '<div class="treemap-block" style="left:'+x+'px;top:'+y+'px;width:'+(bw-3)+'px;height:'+bh+'px;background:'+colors[i%colors.length]+'" title="'+d.d+': '+fmt(d.db)+' ر.س ('+d.c+' عميل)">';
-    html += '<span class="tm-name">'+d.d+'</span>';
-    html += '<span class="tm-val">'+fmt(d.db)+'</span>';
+    var pctOfTotal = totalDb > 0 ? (d.db / totalDb * 100) : 0;
+    var barPct = maxDb > 0 ? (d.db / maxDb * 100) : 0;
+    var color = d.db > 20000 ? '#EF4444' : d.db > 8000 ? '#F59E0B' : d.db > 3000 ? '#3B82F6' : d.db > 500 ? '#8B5CF6' : '#10B981';
+    var riskLabel = d.db > 20000 ? 'حرج' : d.db > 8000 ? 'عالي' : d.db > 3000 ? 'متوسط' : 'منخفض';
+    var riskColor = d.db > 20000 ? '#EF4444' : d.db > 8000 ? '#F59E0B' : d.db > 3000 ? '#3B82F6' : '#10B981';
+
+    html += '<div style="margin-bottom:12px;padding:12px 14px;border-radius:10px;background:rgba(0,0,0,0.02);border-right:3px solid ' + color + '">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+    html += '<div style="display:flex;align-items:center;gap:8px">';
+    html += '<span style="font-size:0.7rem;font-weight:800;color:var(--text-light);background:rgba(0,0,0,0.06);padding:2px 7px;border-radius:6px">' + (i+1) + '</span>';
+    html += '<span style="font-size:0.85rem;font-weight:700;color:var(--text)">' + d.d + '</span>';
+    html += '<span style="font-size:0.62rem;font-weight:700;color:' + riskColor + ';background:' + riskColor + '15;padding:2px 6px;border-radius:4px">' + riskLabel + '</span>';
     html += '</div>';
-    x += bw;
+    html += '<span style="font-size:0.88rem;font-weight:800;color:' + color + '">' + fmt(d.db) + ' ر.س</span>';
+    html += '</div>';
+    html += '<div style="height:8px;border-radius:4px;background:rgba(0,0,0,0.04);overflow:hidden">';
+    html += '<div style="height:100%;width:' + barPct + '%;background:linear-gradient(90deg,' + color + ',' + color + 'cc);border-radius:4px;transition:width 0.6s"></div>';
+    html += '</div>';
+    html += '<div style="display:flex;justify-content:space-between;margin-top:4px;font-size:0.66rem;color:var(--text-light)">';
+    html += '<span>' + d.c + ' عميل</span>';
+    html += '<span>' + pctOfTotal.toFixed(1) + '% من الإجمالي</span>';
+    html += '<span>متوسط ' + (d.c > 0 ? fmt(d.db / d.c) : 0) + ' ر.س/عميل</span>';
+    html += '</div>';
+    html += '</div>';
   });
-  html += '</div>';
+
   wrap.innerHTML = html;
 }
 
@@ -4695,11 +4722,13 @@ function initPnL() {
   const netIncome = total.profit - totalExp;
   
   // Build monthly P&L table
-  const rows = months.map(mo => {
-    const exp = expByMonth['2026-' + String(mo.month).padStart(2,'0')] || 0;
+  const rows = months.map((mo, idx) => {
+    const monthNum = idx + 1;
+    const monthKey = '2026-' + String(monthNum).padStart(2,'0');
+    const exp = expByMonth[monthKey] || 0;
     const cogsM = mo.sales - mo.profit;
     const netM = mo.profit - exp;
-    return { month: AR_MONTHS_SHORT[mo.month-1], sales: mo.sales, cogs: cogsM, profit: mo.profit, exp, net: netM };
+    return { month: mo.month, monthNum, sales: mo.sales, cogs: cogsM, profit: mo.profit, exp, net: netM };
   });
   
   el.innerHTML = `
