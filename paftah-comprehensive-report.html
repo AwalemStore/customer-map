@@ -3891,11 +3891,23 @@ function renderForecast() {
   html += '</div>';
   html += '</div>';
 
-  // Daily average
-  html += '<div style="display:flex;justify-content:center;gap:24px;margin-top:16px;flex-wrap:wrap">';
-  html += '<div style="text-align:center"><div style="font-size:0.7rem;color:var(--text-light)">📊 متوسط يومي</div><div style="font-size:1rem;font-weight:700;color:var(--text)">' + fmt(Math.round(dailyAvg)) + ' ر.س</div></div>';
-  html += '<div style="text-align:center"><div style="font-size:0.7rem;color:var(--text-light)">📦 متوسط فاتورة</div><div style="font-size:1rem;font-weight:700;color:var(--text)">' + fmt(Math.round(predicted / (last.ops || 100))) + ' ر.س</div></div>';
-  html += '<div style="text-align:center"><div style="font-size:0.7rem;color:var(--text-light)">📅 عدد الأيام</div><div style="font-size:1rem;font-weight:700;color:var(--text)">' + daysInMonth + ' يوم</div></div>';
+  // Daily average stats - clean card layout
+  html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px">';
+  html += '<div style="padding:14px 12px;border-radius:10px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.12);text-align:center">';
+  html += '<div style="font-size:1.4rem;margin-bottom:4px">📊</div>';
+  html += '<div style="font-size:0.7rem;color:var(--text-light);margin-bottom:2px">متوسط يومي</div>';
+  html += '<div style="font-size:1.1rem;font-weight:800;color:#3B82F6">' + fmt(Math.round(dailyAvg)) + ' <span style="font-size:0.7rem;font-weight:600">ر.س</span></div>';
+  html += '</div>';
+  html += '<div style="padding:14px 12px;border-radius:10px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.12);text-align:center">';
+  html += '<div style="font-size:1.4rem;margin-bottom:4px">📦</div>';
+  html += '<div style="font-size:0.7rem;color:var(--text-light);margin-bottom:2px">متوسط فاتورة</div>';
+  html += '<div style="font-size:1.1rem;font-weight:800;color:#F59E0B">' + fmt(Math.round(predicted / (last.ops || 100))) + ' <span style="font-size:0.7rem;font-weight:600">ر.س</span></div>';
+  html += '</div>';
+  html += '<div style="padding:14px 12px;border-radius:10px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.12);text-align:center">';
+  html += '<div style="font-size:1.4rem;margin-bottom:4px">📅</div>';
+  html += '<div style="font-size:0.7rem;color:var(--text-light);margin-bottom:2px">عدد الأيام</div>';
+  html += '<div style="font-size:1.1rem;font-weight:800;color:#8B5CF6">' + daysInMonth + ' <span style="font-size:0.7rem;font-weight:600">يوم</span></div>';
+  html += '</div>';
   html += '</div>';
 
   // Dua / motivation
