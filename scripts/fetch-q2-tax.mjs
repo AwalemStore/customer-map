@@ -119,8 +119,45 @@ function updateTaxTab(q2Invoices, q2Collections) {
     .sort((a, b) => b.totalPaid - a.totalPaid);
   
   // Build the Q2 data JSON
-  // Also build credit collection data: Q2 credit invoices that were collected
-  const creditCollected = q2Invoices.filter(i => i.type === 'sale' && i.isPostPay && i.paidAmount > 0);
+  // Credit collection: Q2 credit invoices where the CUSTOMER actually paid (verified from PAFTAH_DATA)
+  // We cross-reference with customer totalPaid to filter out false positives
+  
+  // First, read PAFTAH_DATA from HTML to get real customer payments
+  const paftahMatch = html.match(/"customers":\[(\{"n":"[^"]+".*?\})\]/s);
+  let customerPaidMap = {};
+  if (paftahMatch) {
+    try {
+      // Extract customer names and their paid amounts
+      const custMatches = [...html.matchAll(/"n":"([^"]+)","t":"[^"]*","d":"[^"]*","ph":"[^"]*","p":([0-9.]+)/g)];
+      custMatches.forEach(m => { customerPaidMap[m[1].trim()] = parseFloat(m[2]); });
+      console.log(`  ✓ Loaded ${Object.keys(customerPaidMap).length} customer payment records`);
+    } catch(e) { console.log('  ⚠ Could not parse customer payments'); }
+  }
+  
+  // Filter credit invoices: only include if customer ACTUALLY has totalPaid > 0
+  const creditCollected = q2Invoices.filter(i => {
+    if (i.type !== 'sale' || !i.isPostPay) return false;
+    const realPaid = customerPaidMap[i.customerName?.trim()] || 0;
+    return realPaid > 0;
+  }).map(i => {
+    const realPaid = customerPaidMap[i.customerName?.trim()] || 0;
+    return {
+      invoiceNumber: i.invoiceNumber,
+      customerName: i.customerName,
+      issueDate: i.date,
+      total: +i.total.toFixed(2),
+      paidAmount: +Math.min(i.paidAmount, realPaid).toFixed(2),
+      note: 'فاتورة آجل - العميل سدد (مؤكد من كشف الحساب)',
+    };
+  });
+  
+  // Remove customers with 0 real paid (like التقدم الراقي: invoice says paid but customer totalPaid=0)
+  const removedCount = q2Invoices.filter(i => {
+    if (i.type !== 'sale' || !i.isPostPay || i.paidAmount <= 0) return false;
+    const realPaid = customerPaidMap[i.customerName?.trim()] || 0;
+    return realPaid === 0;
+  }).length;
+  console.log(`  ✓ Removed ${removedCount} false-positive credit invoices (paidAmount>0 but customer totalPaid=0)`);
   
   // Build daily collections summary
   const dailySummary = (q2Collections || []).map(d => ({
