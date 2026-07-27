@@ -119,15 +119,30 @@ function updateTaxTab(q2Invoices, q2Collections) {
     .sort((a, b) => b.totalPaid - a.totalPaid);
   
   // Build the Q2 data JSON
+  // Also build credit collection data: Q2 credit invoices that were collected
+  const creditCollected = q2Invoices.filter(i => i.type === 'sale' && i.isPostPay && i.paidAmount > 0);
+  
+  // Build daily collections summary
+  const dailySummary = (q2Collections || []).map(d => ({
+    date: d.date,
+    cash: +d.cash.toFixed(2),
+    customerDebit: +d.customerDebit.toFixed(2),
+    card: +d.card.toFixed(2),
+    total: +d.total.toFixed(2),
+  }));
+  
+  const totalCashSales = customers.reduce((s, c) => s + c.totalPaid, 0);
+  const totalCreditCollected = creditCollected.reduce((s, i) => s + i.paidAmount, 0);
+  
   const q2Data = {
     period: 'Q2 2026 (أبريل - يونيو)',
-    totalCollected: customers.reduce((s, c) => s + c.totalPaid, 0),
+    totalCollected: totalCashSales,
+    totalCreditCollected: +totalCreditCollected.toFixed(2),
     totalSales: customers.reduce((s, c) => s + c.totalSales, 0),
     customerCount: customers.length,
     invoiceCount: q2Paid.length,
     vatAmount: customers.reduce((s, c) => s + c.totalPaid * 15 / 115, 0),
     netAmount: customers.reduce((s, c) => s + c.totalPaid * 100 / 115, 0),
-    monthlyCollections: q2Collections || {},
     note: 'فقط المبيعات النقدية/البطاقة في Q2 (أبريل-يونيو). التحصيلات اللاحقة (يوليو+) غير مضمنة.',
     customers: customers.map(c => ({
       name: c.name,
@@ -139,6 +154,17 @@ function updateTaxTab(q2Invoices, q2Collections) {
       vat: +(c.totalPaid * 15 / 115).toFixed(2),
       net: +(c.totalPaid * 100 / 115).toFixed(2),
     })),
+    // Credit invoices that were collected (for detailed report)
+    creditCollected: creditCollected.map(i => ({
+      invoiceNumber: i.invoiceNumber,
+      customerName: i.customerName,
+      issueDate: i.date,
+      total: +i.total.toFixed(2),
+      paidAmount: +i.paidAmount.toFixed(2),
+      note: 'فاتورة آجل تحصّلت لاحقاً',
+    })),
+    // Daily collection summary
+    dailyCollections: dailySummary,
   };
 
   console.log(`  ✓ Q2 Data: ${q2Data.customerCount} customers, ${q2Data.invoiceCount} invoices`);
@@ -282,29 +308,42 @@ function exportTaxCSV() {
 }
 
 async function fetchQ2Collections(token) {
-  console.log('[2.5/3] Fetching Q2 payment collections (Apr-Jun)...');
-  const collections = {};
+  console.log('[2.5/4] Fetching Q2 daily payment collections (Apr-Jun)...');
+  const dailyCollections = []; // {date, cash, customerDebit, card, rewaaPay}
   const months = [
-    { name: 'April', start: '2026-04-01', end: '2026-05-01' },
-    { name: 'May', start: '2026-05-01', end: '2026-06-01' },
-    { name: 'June', start: '2026-06-01', end: '2026-07-01' },
+    { start: '2026-04-01', end: '2026-05-01' },
+    { start: '2026-05-01', end: '2026-06-01' },
+    { start: '2026-06-01', end: '2026-07-01' },
   ];
   
   for (const m of months) {
     const startISO = new Date(m.start + 'T00:00:00+03:00').toISOString();
     const endISO = new Date(m.end + 'T00:00:00+03:00').toISOString();
-    const path = `/reporting-bridge/dashboard/payment-methods-report?startDate=${startISO}&endDate=${endISO}&location=&timezone=Asia/Riyadh&startTime=00:00:00&endTime=23:59:59`;
-    try {
-      const res = await fetch(`${API_BASE}${path}`, { headers: { accept: 'application/json', authorization: `Bearer ${token}` } });
-      if (!res.ok) { console.log(`  ⚠ ${m.name}: API ${res.status}`); continue; }
-      const data = await res.json();
-      // Total cash collected this month (cash sales + collections from Post Pay)
-      const monthTotal = data.total || 0;
-      collections[m.name] = monthTotal;
-      console.log(`  ✓ ${m.name}: ${monthTotal.toFixed(2)} ر.س collected`);
-    } catch(e) { console.log(`  ⚠ ${m.name}: ${e.message}`); }
+    
+    // Get daily breakdown for this month
+    const daysInMonth = new Date(2026, parseInt(m.start.substring(5,7)), 0).getDate();
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayStr = m.start.substring(0,8) + String(day).padStart(2,'0');
+      const nextDay = new Date(dayStr + 'T00:00:00+03:00');
+      nextDay.setDate(nextDay.getDate() + 1);
+      
+      const path = `/reporting-bridge/dashboard/payment-methods-report?startDate=${dayStr}T00:00:00%2B03:00&endDate=${nextDay.toISOString().substring(0,10)}T00:00:00%2B03:00&location=&timezone=Asia/Riyadh&startTime=00:00:00&endTime=23:59:59`;
+      try {
+        const res = await fetch(`${API_BASE}${path}`, { headers: { accept: 'application/json', authorization: `Bearer ${token}` } });
+        if (!res.ok) continue;
+        const data = await res.json();
+        const cash = (data.paymentMethodsValues?.find(p => p.type === 'Cash')?.total) || 0;
+        const debit = (data.paymentMethodsValues?.find(p => p.type === 'CustomerDebit')?.total) || 0;
+        const card = Math.abs((data.paymentMethodsValues?.find(p => p.type === 'Card')?.total) || 0);
+        const rewaaPay = (data.paymentMethodsValues?.find(p => p.type === 'SoftPos')?.total) || 0;
+        if (cash > 0 || debit > 0 || card > 0) {
+          dailyCollections.push({ date: dayStr, cash, customerDebit: debit, card, rewaaPay, total: cash + debit + card + rewaaPay });
+        }
+      } catch(e) {}
+    }
+    console.log(`  ✓ ${m.start.substring(0,7)}: ${dailyCollections.filter(d => d.date.startsWith(m.start.substring(0,7))).length} active days`);
   }
-  return collections;
+  return dailyCollections;
 }
 
 async function main() {
