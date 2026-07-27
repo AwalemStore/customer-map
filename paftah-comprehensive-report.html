@@ -6529,9 +6529,12 @@ function downloadWaCSV() {
       html += '<div class="wf-icon">' + s.icon + '</div>';
       html += '<div class="wf-info"><div class="wf-title">' + s.title + '</div><div class="wf-subtitle">' + s.subtitle + '</div></div>';
       html += '<div class="wf-bar-track">';
-      html += '<div class="wf-bar-fill fill-' + s.fill + '" style="width:' + barWidth + '%">' + (barWidth > 12 ? valStr + ' <span class=\"wf-pct\">(' + Math.abs(s.pct).toFixed(0) + '%)</span>' : '') + '</div>';
+      html += '<div class="wf-bar-fill fill-' + s.fill + '" style="width:' + barWidth + '%"></div>';
       html += '</div>';
-      html += '<div class="wf-amount amt-' + s.amt + '">' + valStr + '</div>';
+      html += '<div class="wf-amount amt-' + s.amt + '">';
+      html += '<div style="font-size:1rem">' + valStr + ' ر.س</div>';
+      html += '<div style="font-size:0.7rem;font-weight:700;opacity:0.6">' + (s.value < 0 ? '-' : '') + Math.abs(s.pct).toFixed(1) + '% من المبيعات</div>';
+      html += '</div>';
       html += '</div>';
 
       if (i < steps.length - 1) {
