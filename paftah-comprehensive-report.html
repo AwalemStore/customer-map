@@ -1336,16 +1336,40 @@ body {
 }
 
 /* ===== WATERFALL CHART ===== */
-.waterfall-wrap { position: relative; padding: 20px 0; }
-.wf-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-.wf-label { width: 110px; text-align: left; font-size: 0.78rem; font-weight: 600; color: var(--text); flex-shrink: 0; }
-.wf-bar-area { flex: 1; height: 28px; position: relative; background: rgba(0,0,0,0.02); border-radius: 6px; }
-[data-theme="dark"] .wf-bar-area { background: rgba(255,255,255,0.02); }
-.wf-bar {
-  position: absolute;
-  top: 2px;
-  height: 24px;
-  border-radius: 6px;
+.waterfall-wrap { position: relative; padding: 24px 0; }
+.wf-card {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 10px;
+  padding: 14px 18px; border-radius: 12px; position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.wf-card:hover { transform: translateX(-4px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.wf-card.wf-positive { background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(16,185,129,0.02)); border-right: 4px solid var(--success); }
+.wf-card.wf-negative { background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.02)); border-right: 4px solid var(--danger); }
+.wf-card.wf-total { background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.02)); border-right: 4px solid var(--primary); }
+.wf-card.wf-net-positive { background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05)); border-right: 4px solid var(--success); }
+.wf-card.wf-net-negative { background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05)); border-right: 4px solid var(--danger); }
+.wf-icon { font-size: 1.5rem; flex-shrink: 0; width: 40px; text-align: center; }
+.wf-info { flex-shrink: 0; min-width: 140px; }
+.wf-title { font-size: 0.85rem; font-weight: 700; color: var(--text); }
+.wf-subtitle { font-size: 0.7rem; color: var(--text-light); margin-top: 2px; }
+.wf-bar-track { flex: 1; height: 36px; position: relative; border-radius: 8px; background: rgba(0,0,0,0.03); overflow: hidden; }
+[data-theme="dark"] .wf-bar-track { background: rgba(255,255,255,0.03); }
+.wf-bar-fill {
+  position: absolute; top: 0; height: 100%; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem; font-weight: 800; color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  transition: width 0.8s ease;
+}
+.wf-bar-fill.fill-green { background: linear-gradient(90deg, #10B981, #34D399); }
+.wf-bar-fill.fill-red { background: linear-gradient(90deg, #EF4444, #F87171); }
+.wf-bar-fill.fill-blue { background: linear-gradient(90deg, #3B82F6, #818CF8); }
+.wf-amount { font-size: 0.95rem; font-weight: 800; flex-shrink: 0; min-width: 100px; text-align: left; }
+.wf-amount.amt-green { color: var(--success); }
+.wf-amount.amt-red { color: var(--danger); }
+.wf-amount.amt-blue { color: var(--primary); }
+.wf-pct { font-size: 0.68rem; font-weight: 600; opacity: 0.7; }
+.wf-connector { text-align: center; font-size: 0.7rem; color: var(--text-light); margin: -4px 0; }
   transition: width 0.8s ease, left 0.8s ease;
   display: flex;
   align-items: center;
@@ -1355,11 +1379,6 @@ body {
   color: white;
   min-width: 0;
 }
-.wf-bar.positive { background: linear-gradient(90deg, var(--success), #34D399); }
-.wf-bar.negative { background: linear-gradient(90deg, var(--danger), #F87171); }
-.wf-bar.total { background: linear-gradient(90deg, var(--primary), #818CF8); }
-.wf-bar.connector { background: transparent; border: 1px dashed var(--border-solid); color: var(--text-secondary); }
-.wf-value { font-size: 0.76rem; font-weight: 700; color: var(--text); white-space: nowrap; width: 80px; text-align: right; flex-shrink: 0; }
 
 /* ===== HEALTH GAUGE ===== */
 .health-gauge-wrap { display: flex; align-items: center; gap: 24px; padding: 16px 0; }
@@ -6477,48 +6496,60 @@ function downloadWaCSV() {
   function renderWaterfall() {
     var m = PAFTAH_DATA.monthly;
     var total = m.find(function(x){return x.isTotal;}) || m[m.length-1];
-    // Get actual expenses from EXPENSES_DATA (2026 only)
     var expenses2026 = 0;
     if (typeof EXPENSES_DATA !== 'undefined') {
       EXPENSES_DATA.expenses.forEach(function(e) {
         if (e.date && e.date.startsWith('2026')) expenses2026 += e.amount;
       });
     }
+    var cogs = total.sales - total.profit;
     var netIncome = total.profit - expenses2026;
+    var salesPct = 100;
+    var cogsPct = (cogs / total.sales * 100);
+    var profitPct = (total.profit / total.sales * 100);
+    var expPct = (expenses2026 / total.sales * 100);
+    var netPct = (netIncome / total.sales * 100);
+
     var steps = [
-      {label:'إجمالي المبيعات', value: total.sales, type:'positive'},
-      {label:'(-) تكلفة البضاعة', value: total.sales - total.profit, type:'negative'},
-      {label:'إجمالي الربح', value: total.profit, type:'total'},
-      {label:'(-) المصروفات (' + (expenses2026/1000).toFixed(0) + 'K)', value: expenses2026, type:'negative'},
-      {label:'صافي الدخل', value: netIncome, type: netIncome >= 0 ? 'positive' : 'negative'}
+      { icon:'📈', title:'إجمالي المبيعات', subtitle:'يناير - يوليو 2026', value: total.sales, pct: salesPct, type:'positive', fill:'green', amt:'green' },
+      { icon:'📦', title:'تكلفة البضاعة', subtitle:'سعر الشراء من الموردين', value: -cogs, pct: cogsPct, type:'negative', fill:'red', amt:'red' },
+      { icon:'✅', title:'إجمالي الربح', subtitle:'المبيعات - التكلفة', value: total.profit, pct: profitPct, type:'total', fill:'blue', amt:'blue' },
+      { icon:'💸', title:'المصروفات التشغيلية', subtitle:'رواتب + إيجار + بنزين + رسوم', value: -expenses2026, pct: expPct, type:'negative', fill:'red', amt:'red' },
+      { icon: netIncome >= 0 ? '💰' : '⚠️', title:'صافي الدخل', subtitle:'الربح - المصروفات', value: netIncome, pct: Math.abs(netPct), type: netIncome >= 0 ? 'net-positive' : 'net-negative', fill: netIncome >= 0 ? 'green' : 'red', amt: netIncome >= 0 ? 'green' : 'red' },
     ];
-    var maxAbs = Math.max.apply(null, steps.map(function(s){return Math.abs(s.value);}));
+
+    var maxPct = 100;
     var html = '';
-    var running = 0;
     steps.forEach(function(s, i) {
-      var pct = Math.abs(s.value) / maxAbs * 70;
       var valStr = s.value < 0 ? '-' + fmt(Math.abs(s.value)) : fmt(s.value);
-      var leftPct = 0;
-      if (s.type === 'negative' && i > 0) {
-        running -= Math.abs(s.value);
-        leftPct = Math.max(0, running) / maxAbs * 70;
-      } else if (s.type === 'positive' || s.type === 'total') {
-        running = s.value;
-      }
-      html += '<div class="wf-row">';
-      html += '<div class="wf-label">' + s.label + '</div>';
-      html += '<div class="wf-bar-area">';
-      if (s.type === 'total') {
-        html += '<div class="wf-bar total" style="left:0;width:' + pct + '%">' + (pct > 8 ? valStr : '') + '</div>';
-      } else if (s.type === 'negative') {
-        html += '<div class="wf-bar negative" style="left:' + leftPct + '%;width:' + pct + '%">' + (pct > 8 ? valStr : '') + '</div>';
-      } else {
-        html += '<div class="wf-bar positive" style="left:0;width:' + pct + '%">' + (pct > 8 ? valStr : '') + '</div>';
-      }
+      var barWidth = Math.max(2, Math.abs(s.pct));
+      var cardClass = s.type === 'positive' ? 'wf-positive' : s.type === 'negative' ? 'wf-negative' : s.type === 'total' ? 'wf-total' : s.type === 'net-positive' ? 'wf-net-positive' : 'wf-net-negative';
+
+      html += '<div class="wf-card ' + cardClass + '">';
+      html += '<div class="wf-icon">' + s.icon + '</div>';
+      html += '<div class="wf-info"><div class="wf-title">' + s.title + '</div><div class="wf-subtitle">' + s.subtitle + '</div></div>';
+      html += '<div class="wf-bar-track">';
+      html += '<div class="wf-bar-fill fill-' + s.fill + '" style="width:' + barWidth + '%">' + (barWidth > 12 ? valStr + ' <span class=\"wf-pct\">(' + Math.abs(s.pct).toFixed(0) + '%)</span>' : '') + '</div>';
       html += '</div>';
-      html += '<div class="wf-value">' + valStr + '</div>';
+      html += '<div class="wf-amount amt-' + s.amt + '">' + valStr + '</div>';
       html += '</div>';
+
+      if (i < steps.length - 1) {
+        var next = steps[i + 1];
+        var arrow = next.value < 0 ? '▼' : '▲';
+        var arrowColor = next.value < 0 ? 'var(--danger)' : 'var(--success)';
+        html += '<div class="wf-connector" style="color:' + arrowColor + '">' + arrow + ' ' + fmt(Math.abs(next.value)) + ' ر.س</div>';
+      }
     });
+
+    // Summary footer
+    html += '<div style="margin-top:16px;padding:14px 18px;border-radius:12px;background:var(--primary-light,#eef2ff);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">';
+    html += '<div style="font-size:0.8rem;font-weight:700;color:var(--primary-dark)">💡 الخلاصة</div>';
+    var margin = total.sales > 0 ? (total.profit / total.sales * 100).toFixed(1) : 0;
+    var netMargin = total.sales > 0 ? (netIncome / total.sales * 100).toFixed(1) : 0;
+    html += '<div style="font-size:0.78rem;color:var(--text)">هامش الربح <strong style="color:var(--primary)">' + margin + '%</strong> | هامش صافي الدخل <strong style="color:' + (netIncome >= 0 ? 'var(--success)' : 'var(--danger)') + '">' + netMargin + '%</strong></div>';
+    html += '</div>';
+
     document.getElementById('waterfallChart').innerHTML = html;
   }
 </script>
