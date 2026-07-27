@@ -4716,7 +4716,7 @@ function initPnL() {
     });
   }
   
-  const totalExp = months.reduce((s,m) => s + (expByMonth['2026-' + String(m.month).padStart(2,'0')] || 0), 0);
+  const totalExp = months.reduce((s,m,idx) => s + (expByMonth['2026-' + String(idx+1).padStart(2,'0')] || 0), 0);
   const cogs = total.sales - total.profit;
   const netIncome = total.profit - totalExp;
   
