@@ -3847,14 +3847,63 @@ function renderForecast() {
   var predicted = Math.round((forecastFull + projected) / 2);
   var low = Math.round(predicted * 0.8);
   var high = Math.round(predicted * 1.2);
-  var trend = projected > last.sales ? '↑ صعودي' : '↓ تراجعي';
-  var trendColor = projected > last.sales ? 'var(--success)' : 'var(--danger)';
-  var html = '<div class="card-title"><span class="icon" data-ico="calendar"></span> توقعات الشهر القادم</div>';
-  html += '<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">';
-  html += '<div class="forecast-card"><div class="fc-val">' + fmt(predicted) + ' ر.س</div><div class="fc-range">متوقع (' + trend + ')</div></div>';
-  html += '<div style="font-size:0.82rem;color:var(--text-secondary)">نطاق التوقع: <strong>' + fmt(low) + '</strong> — <strong>' + fmt(high) + '</strong> ر.س</div>';
-  html += '<div style="font-size:0.78rem;color:var(--text-secondary)">بناءً على اتجاه آخر 3 أشهر ومتوسط المبيعات اليومية</div>';
+  var isUp = projected > last.sales;
+  var trendIcon = isUp ? '📈' : '📉';
+  var trendText = isUp ? 'صعودي' : 'تراجعي';
+  var trendColor = isUp ? '#10B981' : '#EF4444';
+  var nextMonthName = AR_MONTHS_SHORT[m.length] || 'الشهر القادم';
+  var changePct = last.sales > 0 ? ((predicted - last.sales) / last.sales * 100) : 0;
+
+  var html = '';
+  html += '<div class="card-title"><span class="icon" data-ico="calendar"></span> 🚀 توقعات ' + nextMonthName + ' 2026</div>';
+
+  // Main forecast hero card
+  html += '<div style="background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(16,185,129,0.05));border:2px solid var(--primary);border-radius:16px;padding:24px;margin:12px 0;text-align:center">';
+  html += '<div style="font-size:0.8rem;color:var(--text-light);margin-bottom:6px">المبيعات المتوقعة بإذن الله 🤲</div>';
+  html += '<div style="font-size:2.4rem;font-weight:900;color:var(--primary);line-height:1.2">' + fmt(predicted) + ' <span style="font-size:1rem;font-weight:600">ر.س</span></div>';
+  html += '<div style="margin-top:8px;display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:100px;background:' + trendColor + '20;color:' + trendColor + ';font-size:0.78rem;font-weight:700">';
+  html += trendIcon + ' اتجاه ' + trendText;
+  if (Math.abs(changePct) > 0.5) {
+    html += ' (' + (changePct > 0 ? '+' : '') + changePct.toFixed(0) + '% عن ' + last.month + ')';
+  }
   html += '</div>';
+  html += '</div>';
+
+  // Range cards
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:14px">';
+  // Low
+  html += '<div style="padding:16px;border-radius:12px;background:rgba(239,68,68,0.06);text-align:center;border:1px solid rgba(239,68,68,0.15)">';
+  html += '<div style="font-size:0.7rem;color:var(--text-light);margin-bottom:4px">الحد الأدنى</div>';
+  html += '<div style="font-size:1.3rem;font-weight:800;color:#EF4444">' + fmt(low) + '</div>';
+  html += '<div style="font-size:0.65rem;color:var(--text-light)">ر.س — سيناريو متحفظ</div>';
+  html += '</div>';
+  // Mid
+  html += '<div style="padding:16px;border-radius:12px;background:rgba(59,130,246,0.06);text-align:center;border:1px solid rgba(59,130,246,0.15)">';
+  html += '<div style="font-size:0.7rem;color:var(--text-light);margin-bottom:4px">المتوسط</div>';
+  html += '<div style="font-size:1.3rem;font-weight:800;color:#3B82F6">' + fmt(predicted) + '</div>';
+  html += '<div style="font-size:0.65rem;color:var(--text-light)">ر.س — الأكثر احتمالاً</div>';
+  html += '</div>';
+  // High
+  html += '<div style="padding:16px;border-radius:12px;background:rgba(16,185,129,0.06);text-align:center;border:1px solid rgba(16,185,129,0.15)">';
+  html += '<div style="font-size:0.7rem;color:var(--text-light);margin-bottom:4px">الحد الأعلى</div>';
+  html += '<div style="font-size:1.3rem;font-weight:800;color:#10B981">' + fmt(high) + '</div>';
+  html += '<div style="font-size:0.65rem;color:var(--text-light)">ر.س — أفضل سيناريو</div>';
+  html += '</div>';
+  html += '</div>';
+
+  // Daily average
+  html += '<div style="display:flex;justify-content:center;gap:24px;margin-top:16px;flex-wrap:wrap">';
+  html += '<div style="text-align:center"><div style="font-size:0.7rem;color:var(--text-light)">📊 متوسط يومي</div><div style="font-size:1rem;font-weight:700;color:var(--text)">' + fmt(Math.round(dailyAvg)) + ' ر.س</div></div>';
+  html += '<div style="text-align:center"><div style="font-size:0.7rem;color:var(--text-light)">📦 متوسط فاتورة</div><div style="font-size:1rem;font-weight:700;color:var(--text)">' + fmt(Math.round(predicted / (last.ops || 100))) + ' ر.س</div></div>';
+  html += '<div style="text-align:center"><div style="font-size:0.7rem;color:var(--text-light)">📅 عدد الأيام</div><div style="font-size:1rem;font-weight:700;color:var(--text)">' + daysInMonth + ' يوم</div></div>';
+  html += '</div>';
+
+  // Dua / motivation
+  html += '<div style="margin-top:18px;padding:14px 20px;border-radius:12px;background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(59,130,246,0.05));text-align:center">';
+  html += '<div style="font-size:0.9rem;font-weight:700;color:var(--primary)">اللهم بارك 🤲</div>';
+  html += '<div style="font-size:0.75rem;color:var(--text-light);margin-top:4px">التوقع مبني على متوسط آخر 3 أشهر واتجاه النمو. والأرزاق بيد الله وحده.</div>';
+  html += '</div>';
+
   document.getElementById('forecastCard').innerHTML = html;
   injectIcons();
 }
