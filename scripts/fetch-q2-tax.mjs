@@ -360,7 +360,8 @@ async function main() {
   console.log(`  Cash/Card (actualCollected > 0): ${q2Invoices.filter(i => i.actualCollected > 0).length}`);
 
   const q2Collections = await fetchQ2Collections(token);
-  console.log(`\\nQ2 Total collections: ${Object.values(q2Collections).reduce((a,b)=>a+b,0).toFixed(2)} ر.س`);
+  const q2CollectionsTotal = q2Collections.reduce((s,d) => s + d.total, 0);
+  console.log(`\nQ2 Total collections: ${q2CollectionsTotal.toFixed(2)} ر.س (${q2Collections.length} active days)`);
 
   updateTaxTab(q2Invoices, q2Collections);
   console.log('\\nDone!');
