@@ -4817,7 +4817,7 @@ function initPnL() {
   
   const ctx2 = document.getElementById('pnlNetChart');
   if (ctx2) {
-    safeChart("execCashChart", {
+    safeChart("pnlNetChart", {
       type: 'line',
       data: {
         labels: rows.map(r => r.month),
