@@ -203,14 +203,17 @@ function updateTaxTab(q2Invoices, q2Collections) {
       vat: +(c.totalPaid * 15 / 115).toFixed(2),
       net: +(c.totalPaid * 100 / 115).toFixed(2),
     })),
-    // Credit invoices that were collected (for detailed report)
-    creditCollected: creditCollected.map(i => ({
-      invoiceNumber: i.invoiceNumber,
-      customerName: i.customerName,
-      issueDate: i.date,
-      total: +i.total.toFixed(2),
-      paidAmount: +i.paidAmount.toFixed(2),
-      note: 'فاتورة آجل تحصّلت لاحقاً',
+    // Credit customers who actually paid (customer-level, verified from PAFTAH_DATA)
+    creditCollected: creditCollected.map(c => ({
+      customerName: c.customerName,
+      invoiceCount: c.invoiceCount,
+      invoiceNumbers: c.invoiceNumbers,
+      firstDate: c.firstDate,
+      lastDate: c.lastDate,
+      totalSales: c.totalSales,
+      actualPaid: c.actualPaid,
+      remainingDebt: c.remainingDebt,
+      note: c.note,
     })),
     // Daily collection summary
     dailyCollections: dailySummary,
