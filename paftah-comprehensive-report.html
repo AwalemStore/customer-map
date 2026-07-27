@@ -1493,14 +1493,9 @@ body {
 [data-theme="dark"] .alert-chip.info { background: rgba(219,234,254,0.1); }
 [data-theme="dark"] .alert-chip.success { background: rgba(220,252,231,0.1); }
 </style>
-</head>
-<body>
-
-<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="تبديل الوضع الداكن">
-  <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-</button>
-<div class="kb-hint"><kbd>Ctrl</kbd>+<kbd>K</kbd> بحث</div>
-
+ </head>
+ <body>
+ 
 <div class="cmd-overlay" id="cmdOverlay" onclick="if(event.target===this)closeCmd()">
   <div class="cmd-box">
     <div class="cmd-input-wrap">
@@ -6316,7 +6311,6 @@ function downloadWaCSV() {
     cmdItems.push({label:'تصدير العملاء CSV', hint:'تنزيل', icon:'users', action:function(){exportCSV('customers');closeCmd();}});
     cmdItems.push({label:'تصدير سندات المصروفات CSV', hint:'تنزيل', icon:'wallet', action:function(){exportExpensesCSV();closeCmd();}});
     cmdItems.push({label:'طباعة PDF', hint:'تنزيل', icon:'print', action:function(){window.print();closeCmd();}});
-    cmdItems.push({label:'تبديل الوضع الداكن', hint:'تبديل', icon:'moon', action:function(){toggleTheme();closeCmd();}});
     cmdItems.push({label:'وضع الشرائح (عرض)', hint:'تقديم', icon:'print', action:function(){startPresentation();closeCmd();}});
 
     // Expenses (top 100 by amount)
@@ -6361,7 +6355,7 @@ function downloadWaCSV() {
       var tabs = ['overview','monthly','customers','sales','products','expenses','activity','whatsapp'];
       var num = parseInt(e.key);
       if (num >= 1 && num <= 8) { switchTab(tabs[num-1]); }
-      if (e.key === 'd') toggleTheme();
+      
       if (e.key === '/') { e.preventDefault(); openCmd(); }
     }
   });
