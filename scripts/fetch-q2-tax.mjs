@@ -119,45 +119,57 @@ function updateTaxTab(q2Invoices, q2Collections) {
     .sort((a, b) => b.totalPaid - a.totalPaid);
   
   // Build the Q2 data JSON
-  // Credit collection: Q2 credit invoices where the CUSTOMER actually paid (verified from PAFTAH_DATA)
-  // We cross-reference with customer totalPaid to filter out false positives
+  // Credit collection: Group Q2 credit sales by CUSTOMER and verify against actual payments
+  // The customer's totalPaid (from PAFTAH_DATA) is the REAL collection amount
   
-  // First, read PAFTAH_DATA from HTML to get real customer payments
-  const paftahMatch = html.match(/"customers":\[(\{"n":"[^"]+".*?\})\]/s);
+  // Read customer actual payments from HTML
   let customerPaidMap = {};
-  if (paftahMatch) {
-    try {
-      // Extract customer names and their paid amounts
-      const custMatches = [...html.matchAll(/"n":"([^"]+)","t":"[^"]*","d":"[^"]*","ph":"[^"]*","p":([0-9.]+)/g)];
-      custMatches.forEach(m => { customerPaidMap[m[1].trim()] = parseFloat(m[2]); });
-      console.log(`  ✓ Loaded ${Object.keys(customerPaidMap).length} customer payment records`);
-    } catch(e) { console.log('  ⚠ Could not parse customer payments'); }
-  }
+  const custMatches = [...html.matchAll(/"n":"([^"]+)","t":"[^"]*","d":"[^"]*","ph":"[^"]*","p":([0-9.]+),"db":([0-9.]+)/g)];
+  custMatches.forEach(m => { 
+    customerPaidMap[m[1].trim()] = { paid: parseFloat(m[2]), debt: parseFloat(m[3]) }; 
+  });
+  console.log(`  ✓ Loaded ${Object.keys(customerPaidMap).length} customer payment records`);
   
-  // Filter credit invoices: only include if customer ACTUALLY has totalPaid > 0
-  const creditCollected = q2Invoices.filter(i => {
-    if (i.type !== 'sale' || !i.isPostPay) return false;
-    const realPaid = customerPaidMap[i.customerName?.trim()] || 0;
-    return realPaid > 0;
-  }).map(i => {
-    const realPaid = customerPaidMap[i.customerName?.trim()] || 0;
-    return {
-      invoiceNumber: i.invoiceNumber,
-      customerName: i.customerName,
-      issueDate: i.date,
-      total: +i.total.toFixed(2),
-      paidAmount: +Math.min(i.paidAmount, realPaid).toFixed(2),
-      note: 'فاتورة آجل - العميل سدد (مؤكد من كشف الحساب)',
-    };
+  // Group Q2 credit sales by customer
+  const q2CreditByCustomer = {};
+  q2Invoices.filter(i => i.type === 'sale' && i.isPostPay).forEach(i => {
+    const name = (i.customerName || 'غير محدد').trim();
+    if (!q2CreditByCustomer[name]) {
+      q2CreditByCustomer[name] = { name, invoices: [], totalSales: 0 };
+    }
+    q2CreditByCustomer[name].invoices.push(i);
+    q2CreditByCustomer[name].totalSales += i.total;
   });
   
-  // Remove customers with 0 real paid (like التقدم الراقي: invoice says paid but customer totalPaid=0)
-  const removedCount = q2Invoices.filter(i => {
-    if (i.type !== 'sale' || !i.isPostPay || i.paidAmount <= 0) return false;
-    const realPaid = customerPaidMap[i.customerName?.trim()] || 0;
-    return realPaid === 0;
-  }).length;
-  console.log(`  ✓ Removed ${removedCount} false-positive credit invoices (paidAmount>0 but customer totalPaid=0)`);
+  // Only include customers who ACTUALLY PAID (totalPaid > 0 from PAFTAH_DATA)
+  const creditCollected = Object.values(q2CreditByCustomer)
+    .filter(c => {
+      const real = customerPaidMap[c.name];
+      return real && real.paid > 0;
+    })
+    .map(c => {
+      const real = customerPaidMap[c.name];
+      return {
+        customerName: c.name,
+        invoiceCount: c.invoices.length,
+        invoiceNumbers: c.invoices.map(i => i.invoiceNumber).join(', '),
+        firstDate: c.invoices.map(i => i.date).sort()[0],
+        lastDate: c.invoices.map(i => i.date).sort().pop(),
+        totalSales: +c.totalSales.toFixed(2),
+        actualPaid: +real.paid.toFixed(2),
+        remainingDebt: +real.debt.toFixed(2),
+        note: 'عميل آجل في Q2 - مؤكد التحصيل من كشف الحساب (مدفوع: ' + real.paid.toFixed(0) + ' ر.س)',
+      };
+    })
+    .sort((a, b) => b.actualPaid - a.actualPaid);
+  
+  // Count removed customers (had credit sales but never paid)
+  const removedCustomers = Object.values(q2CreditByCustomer).filter(c => {
+    const real = customerPaidMap[c.name];
+    return !real || real.paid === 0;
+  });
+  console.log(`  ✓ ${creditCollected.length} customers with verified payments`);
+  console.log(`  ✓ Removed ${removedCustomers.length} customers who never paid (e.g. ${removedCustomers.slice(0,3).map(c => c.name).join(', ')})`);
   
   // Build daily collections summary
   const dailySummary = (q2Collections || []).map(d => ({
@@ -169,7 +181,7 @@ function updateTaxTab(q2Invoices, q2Collections) {
   }));
   
   const totalCashSales = customers.reduce((s, c) => s + c.totalPaid, 0);
-  const totalCreditCollected = creditCollected.reduce((s, i) => s + i.paidAmount, 0);
+  const totalCreditCollected = creditCollected.reduce((s, c) => s + c.actualPaid, 0);
   
   const q2Data = {
     period: 'Q2 2026 (أبريل - يونيو)',
