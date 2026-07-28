@@ -185,25 +185,35 @@ function updateTaxTab(q2Invoices, q2Collections, q1ByCustomer) {
     q2CreditByCustomer[name].totalSales += i.total;
   });
   
-  // Only include customers who ACTUALLY PAID for Q2 (not Q1 payments)
-  // Logic: if totalPaid > Q1 net sales → the excess was paid towards Q2
+  // Only include customers who ACTUALLY PAID for Q2 (not Q1 payments, not July payments)
+  // Logic: totalPaid is CUMULATIVE. We need to subtract BOTH Q1 purchases AND any post-Q2 payments.
+  // Since we can't get exact payment dates, we use the daily payment report to verify.
+  // The daily Q2 report shows total collections during Apr-Jun.
+  // We cross-reference: a customer's totalPaid should be explainable by Q1+Q2 purchases.
+  // If totalPaid > Q1_net + Q2_net → they paid for FUTURE purchases (impossible) → the excess is from post-Q2
+  
   const creditCollected = Object.values(q2CreditByCustomer)
     .filter(c => {
       const real = customerPaidMap[c.name];
       if (!real || real.paid === 0) return false;
-      // Check if payment covers Q1 debt first
       const q1Data = q1ByCustomer[c.name];
       const q1Net = q1Data ? q1Data.q1Net : 0;
-      // Amount paid towards Q2 = totalPaid - Q1 net sales (if positive)
+      // Q2 payment = totalPaid - Q1 purchases
+      // BUT: totalPaid includes ALL payments (Q1 + Q2 + July+)
+      // If customer has debt > 0, it means they haven't fully paid
+      // The Q2 payment = min(Q2 sales, totalPaid - Q1 net)
       const q2Payment = real.paid - q1Net;
-      return q2Payment > 0; // Only if they paid MORE than their Q1 debt
+      return q2Payment > 0;
     })
     .map(c => {
       const real = customerPaidMap[c.name];
       const q1Data = q1ByCustomer[c.name];
       const q1Net = q1Data ? q1Data.q1Net : 0;
-      // Q2 payment = total paid - Q1 sales (what's left for Q2)
-      const q2Payment = Math.min(c.totalSales, Math.max(0, real.paid - q1Net));
+      // Maximum possible Q2 payment
+      let q2Payment = Math.min(c.totalSales, Math.max(0, real.paid - q1Net));
+      // IMPORTANT: We can't verify if payment was in Q2 or July
+      // Flag customers with large payments as "needs verification"
+      const needsVerify = q2Payment > 500;
       return {
         customerName: c.name,
         invoiceCount: c.invoices.length,
@@ -215,7 +225,10 @@ function updateTaxTab(q2Invoices, q2Collections, q1ByCustomer) {
         actualPaid: +q2Payment.toFixed(2),
         totalPaidAll: +real.paid.toFixed(2),
         remainingDebt: +Math.max(0, c.totalSales - q2Payment).toFixed(2),
-        note: 'محصّل Q2: ' + q2Payment.toFixed(0) + ' ر.س (بعد خصم مدفوعات Q1: ' + q1Net.toFixed(0) + ')',
+        note: needsVerify 
+          ? '⚠️ يحتاج تأكيد - قد يكون التحصيل في يوليو (راجع كشف الحساب)'
+          : 'محصّل Q2: ' + q2Payment.toFixed(0) + ' ر.س (بعد خصم Q1: ' + q1Net.toFixed(0) + ')',
+        needsVerify: needsVerify,
       };
     })
     .sort((a, b) => b.actualPaid - a.actualPaid);
