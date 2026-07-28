@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ضرائب Q2 2026 - بفته</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'IBM Plex Sans Arabic', 'Segoe UI', sans-serif; background: #F8F7FC; color: #1a1a2e; line-height: 1.6; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+h1 { font-size: 1.8rem; color: #333088; margin-bottom: 4px; }
+.subtitle { color: #6B7280; font-size: 0.9rem; margin-bottom: 24px; }
+.card { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #F3F0F8; }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.kpi { padding: 20px; border-radius: 12px; text-align: center; }
+.kpi.cash { background: linear-gradient(135deg, #DCFCE7, #F0FDF4); border: 1px solid #BBF7D0; }
+.kpi.returns { background: linear-gradient(135deg, #FEE2E2, #FEF2F2); border: 1px solid #FECACA; }
+.kpi.total { background: linear-gradient(135deg, #DBEAFE, #EFF6FF); border: 1px solid #BFDBFE; }
+.kpi.vat { background: linear-gradient(135deg, #FEF3C7, #FFFBEB); border: 1px solid #FDE68A; }
+.kpi-label { font-size: 0.78rem; color: #6B7280; margin-bottom: 6px; }
+.kpi-value { font-size: 1.6rem; font-weight: 800; }
+.kpi-sub { font-size: 0.72rem; color: #6B7280; margin-top: 4px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+th { text-align: right; padding: 10px 8px; background: #F8F7FC; font-weight: 700; color: #333088; border-bottom: 2px solid #E8E5F0; position: sticky; top: 0; }
+td { padding: 8px; border-bottom: 1px solid #F3F0F8; }
+tr:hover td { background: #FAFAFC; }
+.amount { font-weight: 600; text-align: left; white-space: nowrap; }
+.positive { color: #059669; }
+.negative { color: #DC2626; }
+.tag { display: inline-block; padding: 2px 10px; border-radius: 100px; font-size: 0.68rem; font-weight: 600; }
+.tag-cash { background: #DCFCE7; color: #059669; }
+.tag-card { background: #DBEAFE; color: #2563EB; }
+.tag-credit { background: #FEF3C7; color: #D97706; }
+.tag-return { background: #FEE2E2; color: #DC2626; }
+.search { width: 100%; padding: 10px 14px; border: 2px solid #333088; border-radius: 8px; font-size: 14px; margin-bottom: 12px; }
+.note-box { padding: 14px 18px; border-radius: 10px; background: #FEF3C7; border: 1px solid #FDE68A; font-size: 0.82rem; margin-top: 16px; }
+.warning-box { padding: 14px 18px; border-radius: 10px; background: #FEE2E2; border: 1px solid #FECACA; font-size: 0.82rem; margin-top: 16px; }
+.table-wrap { max-height: 600px; overflow-y: auto; border-radius: 8px; }
+tfoot tr { background: #F8F7FC !important; font-weight: 800; position: sticky; bottom: 0; }
+@media (max-width: 768px) { .kpi-grid { grid-template-columns: 1fr 1fr; } table { font-size: 0.72rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📊 ضرائب القيمة المضافة - Q2 2026</h1>
+  <p class="subtitle">الفترة: 1 أبريل - 30 يونيو 2026 | الأساس النقدي | جميع البيانات من منصة رواء</p>
+  
+  <div class="kpi-grid">
+    <div class="kpi cash">
+      <div class="kpi-label">💵 مبيعات محصّلة (نقدي/بطاقة)</div>
+      <div class="kpi-value" style="color:#059669">5,459.50</div>
+      <div class="kpi-sub">65 عميل | 81 فاتورة</div>
+    </div>
+    <div class="kpi returns">
+      <div class="kpi-label">↩️ المرتجعات</div>
+      <div class="kpi-value" style="color:#DC2626">-9,746.00</div>
+      <div class="kpi-sub">17 فاتورة مرتجع</div>
+    </div>
+    <div class="kpi total">
+      <div class="kpi-label">💰 صافي المحصّل</div>
+      <div class="kpi-value" style="color:#333088">0.00</div>
+      <div class="kpi-sub">بعد خصم المرتجعات</div>
+    </div>
+    <div class="kpi vat">
+      <div class="kpi-label">📋 ضريبة القيمة المضافة (15%)</div>
+      <div class="kpi-value" style="color:#D97706">0.00</div>
+      <div class="kpi-sub">المبلغ × 15 ÷ 115</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">✅ المبيعات المحصّلة في Q2 (نقدي وبطاقة)</div>
+    <p style="font-size:0.82rem;color:#6B7280;margin-bottom:12px">هذه الفواتير تم بيعها وتحصيلها فوراً في نفس اليوم خلال أبريل-يونيو 2026. مضمونة 100%.</p>
+    <input type="text" class="search" id="cashSearch" placeholder="🔍 بحث باسم العميل أو رقم الفاتورة..." oninput="filterTable('cashTable','cashSearch')">
+    <div class="table-wrap">
+      <table id="cashTable">
+        <thead><tr><th>#</th><th>التاريخ</th><th>رقم الفاتورة</th><th>العميل</th><th>طريقة الدفع</th><th>المبلغ (ر.س)</th></tr></thead>
+        <tbody>
+          
+          <tr>
+            <td>1</td>
+            <td style="white-space:nowrap">2026-04-01</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260401-577');this.textContent='✅'">S20260401-577</code></td>
+            <td style="font-weight:600">تموينات النجوم</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">55.00</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td style="white-space:nowrap">2026-04-01</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260401-576');this.textContent='✅'">S20260401-576</code></td>
+            <td style="font-weight:600">تموينات سنابل الخير الاقتصادية</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td style="white-space:nowrap">2026-04-01</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260401-575');this.textContent='✅'">S20260401-575</code></td>
+            <td style="font-weight:600">بقالة نهى البوادي</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td style="white-space:nowrap">2026-04-01</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260401-574');this.textContent='✅'">S20260401-574</code></td>
+            <td style="font-weight:600">مركز الحسيني بلاستيك ومنضفات</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">410.00</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td style="white-space:nowrap">2026-04-01</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260401-573');this.textContent='✅'">S20260401-573</code></td>
+            <td style="font-weight:600"></td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">410.00</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td style="white-space:nowrap">2026-04-01</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260401-572');this.textContent='✅'">S20260401-572</code></td>
+            <td style="font-weight:600">بقالة صفاء</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">55.00</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td style="white-space:nowrap">2026-04-01</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260401-567');this.textContent='✅'">S20260401-567</code></td>
+            <td style="font-weight:600">بقالة الاحسان</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">30.00</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td style="white-space:nowrap">2026-04-02</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260402-585');this.textContent='✅'">S20260402-585</code></td>
+            <td style="font-weight:600">تموينات شوق عوض هياس الزهراني</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td style="white-space:nowrap">2026-04-02</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260402-584');this.textContent='✅'">S20260402-584</code></td>
+            <td style="font-weight:600">تموينات الجنات الطبيعية</td>
+            <td><span class="tag tag-card">Cash, Post Pay</span></td>
+            <td class="amount positive">120.00</td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td style="white-space:nowrap">2026-04-04</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260404-598');this.textContent='✅'">S20260404-598</code></td>
+            <td style="font-weight:600">الطيبه سوبر ماركت</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td style="white-space:nowrap">2026-04-04</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260404-594');this.textContent='✅'">S20260404-594</code></td>
+            <td style="font-weight:600">تموينات سامي الربوة</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>12</td>
+            <td style="white-space:nowrap">2026-04-04</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260404-592');this.textContent='✅'">S20260404-592</code></td>
+            <td style="font-weight:600">تموينات نصيب الاطلال</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>13</td>
+            <td style="white-space:nowrap">2026-04-05</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260405-607');this.textContent='✅'">S20260405-607</code></td>
+            <td style="font-weight:600">تموينات الخير الفضيلة</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">30.00</td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td style="white-space:nowrap">2026-04-05</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260405-605');this.textContent='✅'">S20260405-605</code></td>
+            <td style="font-weight:600">مخابز و تموينات البدر همس</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">58.00</td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td style="white-space:nowrap">2026-04-05</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260405-603');this.textContent='✅'">S20260405-603</code></td>
+            <td style="font-weight:600">تموينات ماريه</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">30.00</td>
+          </tr>
+          <tr>
+            <td>16</td>
+            <td style="white-space:nowrap">2026-04-05</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260405-602');this.textContent='✅'">S20260405-602</code></td>
+            <td style="font-weight:600">تموينات الاسرة السعيدة الفضيلة</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">30.00</td>
+          </tr>
+          <tr>
+            <td>17</td>
+            <td style="white-space:nowrap">2026-04-05</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260405-601');this.textContent='✅'">S20260405-601</code></td>
+            <td style="font-weight:600">تموينات البدر</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">30.00</td>
+          </tr>
+          <tr>
+            <td>18</td>
+            <td style="white-space:nowrap">2026-04-06</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260406-608');this.textContent='✅'">S20260406-608</code></td>
+            <td style="font-weight:600">sara supermarket 2</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">37.00</td>
+          </tr>
+          <tr>
+            <td>19</td>
+            <td style="white-space:nowrap">2026-04-09</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260409-616');this.textContent='✅'">S20260409-616</code></td>
+            <td style="font-weight:600">تموينات عالم الارتقاء</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>20</td>
+            <td style="white-space:nowrap">2026-04-09</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260409-615');this.textContent='✅'">S20260409-615</code></td>
+            <td style="font-weight:600">تموينات الاسيوية</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>21</td>
+            <td style="white-space:nowrap">2026-04-11</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260411-623');this.textContent='✅'">S20260411-623</code></td>
+            <td style="font-weight:600">مغاسل الماسة</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">115.00</td>
+          </tr>
+          <tr>
+            <td>22</td>
+            <td style="white-space:nowrap">2026-04-11</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260411-619');this.textContent='✅'">S20260411-619</code></td>
+            <td style="font-weight:600">تموينات الفروسية</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>23</td>
+            <td style="white-space:nowrap">2026-04-12</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260412-625');this.textContent='✅'">S20260412-625</code></td>
+            <td style="font-weight:600">تموينات بشائر</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">58.00</td>
+          </tr>
+          <tr>
+            <td>24</td>
+            <td style="white-space:nowrap">2026-04-13</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260413-629');this.textContent='✅'">S20260413-629</code></td>
+            <td style="font-weight:600"></td>
+            <td><span class="tag tag-card">Rewaa Pay</span></td>
+            <td class="amount positive">115.00</td>
+          </tr>
+          <tr>
+            <td>25</td>
+            <td style="white-space:nowrap">2026-04-14</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260414-631');this.textContent='✅'">S20260414-631</code></td>
+            <td style="font-weight:600">تموينات البيان</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">30.00</td>
+          </tr>
+          <tr>
+            <td>26</td>
+            <td style="white-space:nowrap">2026-04-19</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260419-644');this.textContent='✅'">S20260419-644</code></td>
+            <td style="font-weight:600">تموينات الامين فور</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>27</td>
+            <td style="white-space:nowrap">2026-04-19</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260419-643');this.textContent='✅'">S20260419-643</code></td>
+            <td style="font-weight:600">اسواق اليخت للتسوق</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>28</td>
+            <td style="white-space:nowrap">2026-04-20</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260420-649');this.textContent='✅'">S20260420-649</code></td>
+            <td style="font-weight:600">مركز نسرين للتسويق</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>29</td>
+            <td style="white-space:nowrap">2026-04-20</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260420-648');this.textContent='✅'">S20260420-648</code></td>
+            <td style="font-weight:600">تموينات الخير العائلية</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>30</td>
+            <td style="white-space:nowrap">2026-04-21</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260421-656');this.textContent='✅'">S20260421-656</code></td>
+            <td style="font-weight:600">تموينات بيان</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>31</td>
+            <td style="white-space:nowrap">2026-04-25</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260425-669');this.textContent='✅'">S20260425-669</code></td>
+            <td style="font-weight:600">تموينات الحي</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>32</td>
+            <td style="white-space:nowrap">2026-04-25</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260425-666');this.textContent='✅'">S20260425-666</code></td>
+            <td style="font-weight:600">تموينات البدر</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">30.00</td>
+          </tr>
+          <tr>
+            <td>33</td>
+            <td style="white-space:nowrap">2026-04-25</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260425-664');this.textContent='✅'">S20260425-664</code></td>
+            <td style="font-weight:600">تموينات تحريم</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>34</td>
+            <td style="white-space:nowrap">2026-04-26</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260426-674');this.textContent='✅'">S20260426-674</code></td>
+            <td style="font-weight:600">تموينات ريم</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>35</td>
+            <td style="white-space:nowrap">2026-04-26</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260426-673');this.textContent='✅'">S20260426-673</code></td>
+            <td style="font-weight:600">مركز رحمة للتسويق</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">18.00</td>
+          </tr>
+          <tr>
+            <td>36</td>
+            <td style="white-space:nowrap">2026-04-28</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260428-680');this.textContent='✅'">S20260428-680</code></td>
+            <td style="font-weight:600">تموينات مالك</td>
+            <td><span class="tag tag-card">Rewaa Pay</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>37</td>
+            <td style="white-space:nowrap">2026-04-28</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260428-679');this.textContent='✅'">S20260428-679</code></td>
+            <td style="font-weight:600">تموينات القمر البدر</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>38</td>
+            <td style="white-space:nowrap">2026-05-02</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260503-691');this.textContent='✅'">S20260503-691</code></td>
+            <td style="font-weight:600">تموينات حايل</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>39</td>
+            <td style="white-space:nowrap">2026-05-03</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260503-697');this.textContent='✅'">S20260503-697</code></td>
+            <td style="font-weight:600">مغاسل الماسة</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">230.00</td>
+          </tr>
+          <tr>
+            <td>40</td>
+            <td style="white-space:nowrap">2026-05-03</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260503-695');this.textContent='✅'">S20260503-695</code></td>
+            <td style="font-weight:600">اسواق الرحمة</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>41</td>
+            <td style="white-space:nowrap">2026-05-03</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260503-694');this.textContent='✅'">S20260503-694</code></td>
+            <td style="font-weight:600">تموينات الحسن</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>42</td>
+            <td style="white-space:nowrap">2026-05-05</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260505-699');this.textContent='✅'">S20260505-699</code></td>
+            <td style="font-weight:600">تموينات راف</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>43</td>
+            <td style="white-space:nowrap">2026-05-06</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260506-705');this.textContent='✅'">S20260506-705</code></td>
+            <td style="font-weight:600">تموينات البدر حي الرياض</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">47.00</td>
+          </tr>
+          <tr>
+            <td>44</td>
+            <td style="white-space:nowrap">2026-05-06</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260506-703');this.textContent='✅'">S20260506-703</code></td>
+            <td style="font-weight:600">تموينات الشمال الحديثة</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>45</td>
+            <td style="white-space:nowrap">2026-05-07</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260507-708');this.textContent='✅'">S20260507-708</code></td>
+            <td style="font-weight:600">بقالتي مارت</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">58.00</td>
+          </tr>
+          <tr>
+            <td>46</td>
+            <td style="white-space:nowrap">2026-05-10</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260510-714');this.textContent='✅'">S20260510-714</code></td>
+            <td style="font-weight:600">تموينات مالك</td>
+            <td><span class="tag tag-card">Rewaa Pay</span></td>
+            <td class="amount positive">230.00</td>
+          </tr>
+          <tr>
+            <td>47</td>
+            <td style="white-space:nowrap">2026-05-12</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260512-725');this.textContent='✅'">S20260512-725</code></td>
+            <td style="font-weight:600">تموينات وتين للمواد الغذانية</td>
+            <td><span class="tag tag-card">Rewaa Pay</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>48</td>
+            <td style="white-space:nowrap">2026-05-12</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260512-722');this.textContent='✅'">S20260512-722</code></td>
+            <td style="font-weight:600">تموينات نبراس الوفاء</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>49</td>
+            <td style="white-space:nowrap">2026-05-12</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260512-721');this.textContent='✅'">S20260512-721</code></td>
+            <td style="font-weight:600">تموينات جنة</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>50</td>
+            <td style="white-space:nowrap">2026-05-14</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260514-730');this.textContent='✅'">S20260514-730</code></td>
+            <td style="font-weight:600">تموينات الخير الفضيلة</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">30.00</td>
+          </tr>
+          <tr>
+            <td>51</td>
+            <td style="white-space:nowrap">2026-05-16</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260516-732');this.textContent='✅'">S20260516-732</code></td>
+            <td style="font-weight:600">تموينات نجمة البشائر</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>52</td>
+            <td style="white-space:nowrap">2026-05-17</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260517-736');this.textContent='✅'">S20260517-736</code></td>
+            <td style="font-weight:600">تموينات عبدالله حامد القحطاني</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>53</td>
+            <td style="white-space:nowrap">2026-05-17</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260517-735');this.textContent='✅'">S20260517-735</code></td>
+            <td style="font-weight:600">تموينات سلوى</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>54</td>
+            <td style="white-space:nowrap">2026-05-17</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260517-734');this.textContent='✅'">S20260517-734</code></td>
+            <td style="font-weight:600">تموينات سلوى</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">30.00</td>
+          </tr>
+          <tr>
+            <td>55</td>
+            <td style="white-space:nowrap">2026-05-18</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260518-738');this.textContent='✅'">S20260518-738</code></td>
+            <td style="font-weight:600">تموينات الامين فور</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>56</td>
+            <td style="white-space:nowrap">2026-06-01</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260601-754');this.textContent='✅'">S20260601-754</code></td>
+            <td style="font-weight:600">تموينات ماريه</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">30.00</td>
+          </tr>
+          <tr>
+            <td>57</td>
+            <td style="white-space:nowrap">2026-06-01</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260601-750');this.textContent='✅'">S20260601-750</code></td>
+            <td style="font-weight:600">تموينات تسوق زائد للتجارة</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>58</td>
+            <td style="white-space:nowrap">2026-06-02</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260602-756');this.textContent='✅'">S20260602-756</code></td>
+            <td style="font-weight:600">تموينات كنوز المذاق</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">60.00</td>
+          </tr>
+          <tr>
+            <td>59</td>
+            <td style="white-space:nowrap">2026-06-02</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260602-755');this.textContent='✅'">S20260602-755</code></td>
+            <td style="font-weight:600">تموينات الخير حي الاجواد</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">30.00</td>
+          </tr>
+          <tr>
+            <td>60</td>
+            <td style="white-space:nowrap">2026-06-04</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260604-763');this.textContent='✅'">S20260604-763</code></td>
+            <td style="font-weight:600">تموينات السلام</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">32.50</td>
+          </tr>
+          <tr>
+            <td>61</td>
+            <td style="white-space:nowrap">2026-06-06</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260606-769');this.textContent='✅'">S20260606-769</code></td>
+            <td style="font-weight:600">اسواق ريم التموين</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">32.50</td>
+          </tr>
+          <tr>
+            <td>62</td>
+            <td style="white-space:nowrap">2026-06-06</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260606-768');this.textContent='✅'">S20260606-768</code></td>
+            <td style="font-weight:600">تموينات دكان عيشة</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">40.00</td>
+          </tr>
+          <tr>
+            <td>63</td>
+            <td style="white-space:nowrap">2026-06-06</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260606-767');this.textContent='✅'">S20260606-767</code></td>
+            <td style="font-weight:600">تموينات الشعلة المتطورة للمواد الغذائية</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">127.00</td>
+          </tr>
+          <tr>
+            <td>64</td>
+            <td style="white-space:nowrap">2026-06-07</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260607-771');this.textContent='✅'">S20260607-771</code></td>
+            <td style="font-weight:600">تموينات الامين فور</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">80.00</td>
+          </tr>
+          <tr>
+            <td>65</td>
+            <td style="white-space:nowrap">2026-06-08</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260608-777');this.textContent='✅'">S20260608-777</code></td>
+            <td style="font-weight:600">تموينات2021</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">105.00</td>
+          </tr>
+          <tr>
+            <td>66</td>
+            <td style="white-space:nowrap">2026-06-08</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260608-776');this.textContent='✅'">S20260608-776</code></td>
+            <td style="font-weight:600">تموينات سلوى</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">80.00</td>
+          </tr>
+          <tr>
+            <td>67</td>
+            <td style="white-space:nowrap">2026-06-10</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260610-790');this.textContent='✅'">S20260610-790</code></td>
+            <td style="font-weight:600">تموينات سامي</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">62.00</td>
+          </tr>
+          <tr>
+            <td>68</td>
+            <td style="white-space:nowrap">2026-06-10</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260610-786');this.textContent='✅'">S20260610-786</code></td>
+            <td style="font-weight:600">اسواق حمزه</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">65.00</td>
+          </tr>
+          <tr>
+            <td>69</td>
+            <td style="white-space:nowrap">2026-06-11</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260611-794');this.textContent='✅'">S20260611-794</code></td>
+            <td style="font-weight:600">تموينات صفا</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">40.00</td>
+          </tr>
+          <tr>
+            <td>70</td>
+            <td style="white-space:nowrap">2026-06-11</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260611-792');this.textContent='✅'">S20260611-792</code></td>
+            <td style="font-weight:600">مركز رحمة للتسويق</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">32.50</td>
+          </tr>
+          <tr>
+            <td>71</td>
+            <td style="white-space:nowrap">2026-06-13</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260613-799');this.textContent='✅'">S20260613-799</code></td>
+            <td style="font-weight:600">أسواق الصبياني</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">207.00</td>
+          </tr>
+          <tr>
+            <td>72</td>
+            <td style="white-space:nowrap">2026-06-15</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260615-809');this.textContent='✅'">S20260615-809</code></td>
+            <td style="font-weight:600">تموينات المستقبل السلامة</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">62.00</td>
+          </tr>
+          <tr>
+            <td>73</td>
+            <td style="white-space:nowrap">2026-06-16</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260616-811');this.textContent='✅'">S20260616-811</code></td>
+            <td style="font-weight:600">تموينات سامي 4</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">65.00</td>
+          </tr>
+          <tr>
+            <td>74</td>
+            <td style="white-space:nowrap">2026-06-18</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260618-820');this.textContent='✅'">S20260618-820</code></td>
+            <td style="font-weight:600">مخبز  و تموينات لنا</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">127.00</td>
+          </tr>
+          <tr>
+            <td>75</td>
+            <td style="white-space:nowrap">2026-06-20</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260620-824');this.textContent='✅'">S20260620-824</code></td>
+            <td style="font-weight:600">تموينات مير</td>
+            <td><span class="tag tag-card">Rewaa Pay</span></td>
+            <td class="amount positive">145.00</td>
+          </tr>
+          <tr>
+            <td>76</td>
+            <td style="white-space:nowrap">2026-06-21</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260621-827');this.textContent='✅'">S20260621-827</code></td>
+            <td style="font-weight:600"></td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">6.50</td>
+          </tr>
+          <tr>
+            <td>77</td>
+            <td style="white-space:nowrap">2026-06-22</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260622-838');this.textContent='✅'">S20260622-838</code></td>
+            <td style="font-weight:600">مخابز و تموينات البدر همس</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">62.00</td>
+          </tr>
+          <tr>
+            <td>78</td>
+            <td style="white-space:nowrap">2026-06-22</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260622-831');this.textContent='✅'">S20260622-831</code></td>
+            <td style="font-weight:600">اسواق ابيات الكرم</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">72.50</td>
+          </tr>
+          <tr>
+            <td>79</td>
+            <td style="white-space:nowrap">2026-06-22</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260622-830');this.textContent='✅'">S20260622-830</code></td>
+            <td style="font-weight:600">تموينات الامين فور</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">65.00</td>
+          </tr>
+          <tr>
+            <td>80</td>
+            <td style="white-space:nowrap">2026-06-24</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260624-842');this.textContent='✅'">S20260624-842</code></td>
+            <td style="font-weight:600">تموينات الصقر</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">65.00</td>
+          </tr>
+          <tr>
+            <td>81</td>
+            <td style="white-space:nowrap">2026-06-28</td>
+            <td><code style="background:#F3F0F8;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260628-851');this.textContent='✅'">S20260628-851</code></td>
+            <td style="font-weight:600">تموينات السليمانية</td>
+            <td><span class="tag tag-cash">نقدي</span></td>
+            <td class="amount positive">32.50</td>
+          </tr>
+        </tbody>
+        <tfoot><tr><td colspan="5">الإجمالي</td><td class="amount positive">5,932.00</td></tr></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">↩️ المرتجعات في Q2</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>التاريخ</th><th>رقم الفاتورة</th><th>العميل</th><th>المبلغ (ر.س)</th></tr></thead>
+        <tbody>
+          
+          <tr><td>1</td><td>2026-04-01</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260401-30</code></td><td></td><td class="amount negative">-410.00</td></tr>
+          <tr><td>2</td><td>2026-04-04</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260404-31</code></td><td>تموينات واحة الخير الحديثة</td><td class="amount negative">-180.00</td></tr>
+          <tr><td>3</td><td>2026-04-08</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260408-32</code></td><td>شركة المتحدون الاولى التجارية</td><td class="amount negative">-6,000.00</td></tr>
+          <tr><td>4</td><td>2026-04-25</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260425-33</code></td><td>مؤسسة حنان سالم الصيعري</td><td class="amount negative">-60.00</td></tr>
+          <tr><td>5</td><td>2026-04-28</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260428-34</code></td><td>شركة راحة الشمال</td><td class="amount negative">-115.00</td></tr>
+          <tr><td>6</td><td>2026-05-06</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260506-35</code></td><td>تموينات ومخابز ساعة الانطلاق</td><td class="amount negative">-104.00</td></tr>
+          <tr><td>7</td><td>2026-05-07</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260507-37</code></td><td>بقالة سعده عبدالله</td><td class="amount negative">-116.00</td></tr>
+          <tr><td>8</td><td>2026-05-07</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260507-36</code></td><td>تموينات خيرات رانيا</td><td class="amount negative">-60.00</td></tr>
+          <tr><td>9</td><td>2026-05-10</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260510-38</code></td><td>تموينات بست مكس</td><td class="amount negative">-116.00</td></tr>
+          <tr><td>10</td><td>2026-05-17</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260517-39</code></td><td>تموينات البركة</td><td class="amount negative">-56.00</td></tr>
+          <tr><td>11</td><td>2026-05-18</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260518-40</code></td><td>تموينات السلام</td><td class="amount negative">-60.00</td></tr>
+          <tr><td>12</td><td>2026-06-01</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260601-41</code></td><td>تموينات الاسرة السعيدة الفضيلة</td><td class="amount negative">-60.00</td></tr>
+          <tr><td>13</td><td>2026-06-15</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260615-42</code></td><td>تموينات جدة</td><td class="amount negative">-58.00</td></tr>
+          <tr><td>14</td><td>2026-06-21</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260621-43</code></td><td>تموينات سلة هوم</td><td class="amount negative">-118.00</td></tr>
+          <tr><td>15</td><td>2026-06-24</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260624-44</code></td><td>شركة التقدم الراقي التجارية</td><td class="amount negative">-2,000.00</td></tr>
+          <tr><td>16</td><td>2026-06-27</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260627-45</code></td><td>مغاسل لوندري حي السلامة</td><td class="amount negative">-115.00</td></tr>
+          <tr><td>17</td><td>2026-06-28</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">R20260628-46</code></td><td>تموينات الاندلس  3</td><td class="amount negative">-118.00</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="4">الإجمالي</td><td class="amount negative">-9,746.00</td></tr></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📅 التحصيلات اليومية في Q2 (من تقارير رواء)</div>
+    <p style="font-size:0.82rem;color:#6B7280;margin-bottom:12px">إجمالي ما تم تحصيله فعلياً كل يوم من منصة رواء (شامل الكاش والتحويلات والبطاقات)</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>التاريخ</th><th>كاش</th><th>تحصيل آجل</th><th>بطاقة</th><th>رواء باي</th><th>الإجمالي</th></tr></thead>
+        <tbody>
+          
+          <tr><td style="font-weight:600">2026-04-01</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">983.61</td><td class="amount">-</td><td class="amount" style="font-weight:700">983.61</td></tr>
+          <tr><td style="font-weight:600">2026-04-04</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">130.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">130.00</td></tr>
+          <tr><td style="font-weight:600">2026-04-06</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">148.05</td><td class="amount">-</td><td class="amount" style="font-weight:700">148.05</td></tr>
+          <tr><td style="font-weight:600">2026-04-08</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">15.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">15.00</td></tr>
+          <tr><td style="font-weight:600">2026-04-11</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">3,500.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">3,500.00</td></tr>
+          <tr><td style="font-weight:600">2026-04-13</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">100.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">100.00</td></tr>
+          <tr><td style="font-weight:600">2026-04-15</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">100.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">100.00</td></tr>
+          <tr><td style="font-weight:600">2026-04-21</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">50.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">50.00</td></tr>
+          <tr><td style="font-weight:600">2026-04-26</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">204.30</td><td class="amount">-</td><td class="amount" style="font-weight:700">204.30</td></tr>
+          <tr><td style="font-weight:600">2026-04-30</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">14,503.03</td><td class="amount">-</td><td class="amount" style="font-weight:700">14,503.03</td></tr>
+          <tr><td style="font-weight:600">2026-05-02</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">1,500.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">1,500.00</td></tr>
+          <tr><td style="font-weight:600">2026-05-03</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">2,650.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">2,650.00</td></tr>
+          <tr><td style="font-weight:600">2026-05-06</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">15.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">15.00</td></tr>
+          <tr><td style="font-weight:600">2026-05-11</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">1,775.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">1,775.00</td></tr>
+          <tr><td style="font-weight:600">2026-05-12</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">300.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">300.00</td></tr>
+          <tr><td style="font-weight:600">2026-05-14</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">402.50</td><td class="amount">-</td><td class="amount" style="font-weight:700">402.50</td></tr>
+          <tr><td style="font-weight:600">2026-05-15</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">550.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">550.00</td></tr>
+          <tr><td style="font-weight:600">2026-05-16</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">60.90</td><td class="amount">-</td><td class="amount" style="font-weight:700">60.90</td></tr>
+          <tr><td style="font-weight:600">2026-05-20</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">132.60</td><td class="amount">-</td><td class="amount" style="font-weight:700">132.60</td></tr>
+          <tr><td style="font-weight:600">2026-05-25</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">1,800.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">1,800.00</td></tr>
+          <tr><td style="font-weight:600">2026-05-31</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">6,000.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">6,000.00</td></tr>
+          <tr><td style="font-weight:600">2026-06-02</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">204.30</td><td class="amount">-</td><td class="amount" style="font-weight:700">204.30</td></tr>
+          <tr><td style="font-weight:600">2026-06-07</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">500.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">500.00</td></tr>
+          <tr><td style="font-weight:600">2026-06-14</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">839.09</td><td class="amount">-</td><td class="amount" style="font-weight:700">839.09</td></tr>
+          <tr><td style="font-weight:600">2026-06-27</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">150.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">150.00</td></tr>
+          <tr><td style="font-weight:600">2026-06-28</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">170.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">170.00</td></tr>
+          <tr><td style="font-weight:600">2026-06-30</td><td class="amount positive">-</td><td class="amount">-</td><td class="amount">138.00</td><td class="amount">-</td><td class="amount" style="font-weight:700">138.00</td></tr>
+        </tbody>
+        <tfoot><tr><td>الإجمالي</td><td class="amount positive">0.00</td><td class="amount">0.00</td><td class="amount">36,921.38</td><td>-</td><td class="amount" style="font-weight:800">36,921.38</td></tr></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 مبيعات آجلة في Q2 (لم تُحصّل فوراً)</div>
+    <p style="font-size:0.82rem;color:#6B7280;margin-bottom:12px">فواتير صدرت كآجل (Post Pay) في أبريل-يونيو. تحصيلها يحتاج مراجعة كشف الحساب لتحديد التاريخ الدقيق.</p>
+    <input type="text" class="search" id="creditSearch" placeholder="🔍 بحث باسم العميل..." oninput="filterTable('creditTable','creditSearch')">
+    <div class="table-wrap">
+      <table id="creditTable">
+        <thead><tr><th>#</th><th>التاريخ</th><th>رقم الفاتورة</th><th>العميل</th><th>المبلغ (ر.س)</th></tr></thead>
+        <tbody>
+          
+          <tr><td>1</td><td style="white-space:nowrap">2026-04-01</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260401-571');this.textContent='✅'">S20260401-571</code></td><td style="font-weight:600">البركة بلاستيك ومنضفات</td><td class="amount">1,275.00</td></tr>
+          <tr><td>2</td><td style="white-space:nowrap">2026-04-01</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260401-570');this.textContent='✅'">S20260401-570</code></td><td style="font-weight:600">تموينات رنا الخير</td><td class="amount">118.00</td></tr>
+          <tr><td>3</td><td style="white-space:nowrap">2026-04-01</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260401-569');this.textContent='✅'">S20260401-569</code></td><td style="font-weight:600">تموينات رنا الخير</td><td class="amount">118.00</td></tr>
+          <tr><td>4</td><td style="white-space:nowrap">2026-04-01</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260401-568');this.textContent='✅'">S20260401-568</code></td><td style="font-weight:600">تموينات ركائز الاسرة</td><td class="amount">118.00</td></tr>
+          <tr><td>5</td><td style="white-space:nowrap">2026-04-01</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260401-566');this.textContent='✅'">S20260401-566</code></td><td style="font-weight:600">Al Shifa super market</td><td class="amount">118.00</td></tr>
+          <tr><td>6</td><td style="white-space:nowrap">2026-04-02</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260402-583');this.textContent='✅'">S20260402-583</code></td><td style="font-weight:600">بقالة الخير الربوة</td><td class="amount">60.00</td></tr>
+          <tr><td>7</td><td style="white-space:nowrap">2026-04-02</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260402-582');this.textContent='✅'">S20260402-582</code></td><td style="font-weight:600">اسواق تفاح</td><td class="amount">60.00</td></tr>
+          <tr><td>8</td><td style="white-space:nowrap">2026-04-02</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260402-581');this.textContent='✅'">S20260402-581</code></td><td style="font-weight:600">اسواق و مخابز الفرح المطورة</td><td class="amount">30.00</td></tr>
+          <tr><td>9</td><td style="white-space:nowrap">2026-04-02</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260402-580');this.textContent='✅'">S20260402-580</code></td><td style="font-weight:600">تموينات شواطئ الوليد</td><td class="amount">120.00</td></tr>
+          <tr><td>10</td><td style="white-space:nowrap">2026-04-02</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260402-579');this.textContent='✅'">S20260402-579</code></td><td style="font-weight:600">تموينات ومخابز الرضوان</td><td class="amount">60.00</td></tr>
+          <tr><td>11</td><td style="white-space:nowrap">2026-04-02</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260402-578');this.textContent='✅'">S20260402-578</code></td><td style="font-weight:600">نزهة مارت</td><td class="amount">60.00</td></tr>
+          <tr><td>12</td><td style="white-space:nowrap">2026-04-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260404-599');this.textContent='✅'">S20260404-599</code></td><td style="font-weight:600">شركة ترند التجارية</td><td class="amount">240.00</td></tr>
+          <tr><td>13</td><td style="white-space:nowrap">2026-04-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260404-597');this.textContent='✅'">S20260404-597</code></td><td style="font-weight:600">تموينات بدر</td><td class="amount">60.00</td></tr>
+          <tr><td>14</td><td style="white-space:nowrap">2026-04-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260404-596');this.textContent='✅'">S20260404-596</code></td><td style="font-weight:600">تموينات المقصف الوافر</td><td class="amount">60.00</td></tr>
+          <tr><td>15</td><td style="white-space:nowrap">2026-04-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260404-595');this.textContent='✅'">S20260404-595</code></td><td style="font-weight:600">اسواق ومخابز قوتي</td><td class="amount">60.00</td></tr>
+          <tr><td>16</td><td style="white-space:nowrap">2026-04-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260404-593');this.textContent='✅'">S20260404-593</code></td><td style="font-weight:600">سوبر ماركت التاج الروابي</td><td class="amount">60.00</td></tr>
+          <tr><td>17</td><td style="white-space:nowrap">2026-04-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260404-591');this.textContent='✅'">S20260404-591</code></td><td style="font-weight:600">الواحة مارت</td><td class="amount">60.00</td></tr>
+          <tr><td>18</td><td style="white-space:nowrap">2026-04-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260404-590');this.textContent='✅'">S20260404-590</code></td><td style="font-weight:600">TEN ELEVEN</td><td class="amount">118.00</td></tr>
+          <tr><td>19</td><td style="white-space:nowrap">2026-04-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260404-589');this.textContent='✅'">S20260404-589</code></td><td style="font-weight:600">اسواق نجد</td><td class="amount">60.00</td></tr>
+          <tr><td>20</td><td style="white-space:nowrap">2026-04-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260404-588');this.textContent='✅'">S20260404-588</code></td><td style="font-weight:600">سوبر ماركت ومخابز اماسي</td><td class="amount">60.00</td></tr>
+          <tr><td>21</td><td style="white-space:nowrap">2026-04-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260404-587');this.textContent='✅'">S20260404-587</code></td><td style="font-weight:600">تموينات شبيلي عسيري</td><td class="amount">60.00</td></tr>
+          <tr><td>22</td><td style="white-space:nowrap">2026-04-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260404-586');this.textContent='✅'">S20260404-586</code></td><td style="font-weight:600">سوبر ماركت</td><td class="amount">60.00</td></tr>
+          <tr><td>23</td><td style="white-space:nowrap">2026-04-05</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260405-606');this.textContent='✅'">S20260405-606</code></td><td style="font-weight:600">اسواق البشية التجارية المروة</td><td class="amount">120.00</td></tr>
+          <tr><td>24</td><td style="white-space:nowrap">2026-04-05</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260405-604');this.textContent='✅'">S20260405-604</code></td><td style="font-weight:600">بقالة شهد العائض</td><td class="amount">60.00</td></tr>
+          <tr><td>25</td><td style="white-space:nowrap">2026-04-05</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260405-600');this.textContent='✅'">S20260405-600</code></td><td style="font-weight:600">تموينات النهدي</td><td class="amount">118.00</td></tr>
+          <tr><td>26</td><td style="white-space:nowrap">2026-04-06</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260406-611');this.textContent='✅'">S20260406-611</code></td><td style="font-weight:600">بستي سوبرماركت</td><td class="amount">30.00</td></tr>
+          <tr><td>27</td><td style="white-space:nowrap">2026-04-06</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260406-610');this.textContent='✅'">S20260406-610</code></td><td style="font-weight:600">تموينات طيب المروة</td><td class="amount">60.00</td></tr>
+          <tr><td>28</td><td style="white-space:nowrap">2026-04-06</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260406-609');this.textContent='✅'">S20260406-609</code></td><td style="font-weight:600">تموينات السنبلة</td><td class="amount">59.00</td></tr>
+          <tr><td>29</td><td style="white-space:nowrap">2026-04-08</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260408-614');this.textContent='✅'">S20260408-614</code></td><td style="font-weight:600">شركة المتحدون الاولى التجارية</td><td class="amount">5,589.00</td></tr>
+          <tr><td>30</td><td style="white-space:nowrap">2026-04-08</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260408-613');this.textContent='✅'">S20260408-613</code></td><td style="font-weight:600">شركة المتحدون الاولى التجارية</td><td class="amount">6,000.00</td></tr>
+          <tr><td>31</td><td style="white-space:nowrap">2026-04-08</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260408-612');this.textContent='✅'">S20260408-612</code></td><td style="font-weight:600">تموينات مالك</td><td class="amount">6.00</td></tr>
+          <tr><td>32</td><td style="white-space:nowrap">2026-04-09</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260409-618');this.textContent='✅'">S20260409-618</code></td><td style="font-weight:600">متاجر كنان شركة كنان الدولية</td><td class="amount">118.00</td></tr>
+          <tr><td>33</td><td style="white-space:nowrap">2026-04-09</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260409-617');this.textContent='✅'">S20260409-617</code></td><td style="font-weight:600">شركة عالم الاقتصادي للمواد الغذائية</td><td class="amount">1,550.00</td></tr>
+          <tr><td>34</td><td style="white-space:nowrap">2026-04-11</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260411-622');this.textContent='✅'">S20260411-622</code></td><td style="font-weight:600">تموينات ابداع للمواد الغذائية</td><td class="amount">58.00</td></tr>
+          <tr><td>35</td><td style="white-space:nowrap">2026-04-11</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260411-621');this.textContent='✅'">S20260411-621</code></td><td style="font-weight:600">مخبز و تموينات باسل</td><td class="amount">60.00</td></tr>
+          <tr><td>36</td><td style="white-space:nowrap">2026-04-11</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260411-620');this.textContent='✅'">S20260411-620</code></td><td style="font-weight:600">بقالة على الله</td><td class="amount">151.30</td></tr>
+          <tr><td>37</td><td style="white-space:nowrap">2026-04-12</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260412-626');this.textContent='✅'">S20260412-626</code></td><td style="font-weight:600">تموينات الاندلس  3</td><td class="amount">118.00</td></tr>
+          <tr><td>38</td><td style="white-space:nowrap">2026-04-12</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260412-624');this.textContent='✅'">S20260412-624</code></td><td style="font-weight:600">اسواق السلة المتميزة</td><td class="amount">55.00</td></tr>
+          <tr><td>39</td><td style="white-space:nowrap">2026-04-13</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260413-630');this.textContent='✅'">S20260413-630</code></td><td style="font-weight:600">تموينات التوفير الاولى</td><td class="amount">120.00</td></tr>
+          <tr><td>40</td><td style="white-space:nowrap">2026-04-13</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260413-628');this.textContent='✅'">S20260413-628</code></td><td style="font-weight:600">تموينات انصاف</td><td class="amount">30.00</td></tr>
+          <tr><td>41</td><td style="white-space:nowrap">2026-04-13</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260413-627');this.textContent='✅'">S20260413-627</code></td><td style="font-weight:600">تموينات الرئيسية</td><td class="amount">58.00</td></tr>
+          <tr><td>42</td><td style="white-space:nowrap">2026-04-14</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260414-633');this.textContent='✅'">S20260414-633</code></td><td style="font-weight:600">مغاسل لوندري حي السلامة</td><td class="amount">115.00</td></tr>
+          <tr><td>43</td><td style="white-space:nowrap">2026-04-14</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260414-632');this.textContent='✅'">S20260414-632</code></td><td style="font-weight:600">تموينات وائل</td><td class="amount">60.00</td></tr>
+          <tr><td>44</td><td style="white-space:nowrap">2026-04-15</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260415-635');this.textContent='✅'">S20260415-635</code></td><td style="font-weight:600">تفارة ماركت</td><td class="amount">60.00</td></tr>
+          <tr><td>45</td><td style="white-space:nowrap">2026-04-15</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260415-634');this.textContent='✅'">S20260415-634</code></td><td style="font-weight:600">تموينات محمد علي حسن العبدلي</td><td class="amount">30.00</td></tr>
+          <tr><td>46</td><td style="white-space:nowrap">2026-04-16</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260416-640');this.textContent='✅'">S20260416-640</code></td><td style="font-weight:600">مغاسل المن والسلوى</td><td class="amount">1,150.00</td></tr>
+          <tr><td>47</td><td style="white-space:nowrap">2026-04-16</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260416-639');this.textContent='✅'">S20260416-639</code></td><td style="font-weight:600">تموينات الاسرة الربوة</td><td class="amount">60.00</td></tr>
+          <tr><td>48</td><td style="white-space:nowrap">2026-04-16</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260416-638');this.textContent='✅'">S20260416-638</code></td><td style="font-weight:600">تموينات ماركت البركة</td><td class="amount">60.00</td></tr>
+          <tr><td>49</td><td style="white-space:nowrap">2026-04-16</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260416-637');this.textContent='✅'">S20260416-637</code></td><td style="font-weight:600">تموينات الاثير الذهبية</td><td class="amount">60.00</td></tr>
+          <tr><td>50</td><td style="white-space:nowrap">2026-04-16</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260416-636');this.textContent='✅'">S20260416-636</code></td><td style="font-weight:600">تموينات مرحبا النزلة</td><td class="amount">60.00</td></tr>
+          <tr><td>51</td><td style="white-space:nowrap">2026-04-18</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260418-642');this.textContent='✅'">S20260418-642</code></td><td style="font-weight:600">شركة الجوهرة الحديثه المتطورة</td><td class="amount">1,500.00</td></tr>
+          <tr><td>52</td><td style="white-space:nowrap">2026-04-18</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260418-641');this.textContent='✅'">S20260418-641</code></td><td style="font-weight:600">مؤسسة هبة بنت محسن ابن حسني الجمال التجارية</td><td class="amount">1,740.00</td></tr>
+          <tr><td>53</td><td style="white-space:nowrap">2026-04-19</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260419-647');this.textContent='✅'">S20260419-647</code></td><td style="font-weight:600">مؤسسة احتياجات بيتي التجارية</td><td class="amount">560.00</td></tr>
+          <tr><td>54</td><td style="white-space:nowrap">2026-04-19</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260419-646');this.textContent='✅'">S20260419-646</code></td><td style="font-weight:600">تموينات ايان الحديثة</td><td class="amount">60.00</td></tr>
+          <tr><td>55</td><td style="white-space:nowrap">2026-04-19</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260419-645');this.textContent='✅'">S20260419-645</code></td><td style="font-weight:600">بقالة البقمي</td><td class="amount">60.00</td></tr>
+          <tr><td>56</td><td style="white-space:nowrap">2026-04-20</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260420-652');this.textContent='✅'">S20260420-652</code></td><td style="font-weight:600">اماكن دبي للتسوق - العزيزية</td><td class="amount">1,525.00</td></tr>
+          <tr><td>57</td><td style="white-space:nowrap">2026-04-20</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260420-651');this.textContent='✅'">S20260420-651</code></td><td style="font-weight:600">مؤسسة الوطنية باك للتجاره بلاستيك ونظافة</td><td class="amount">1,500.00</td></tr>
+          <tr><td>58</td><td style="white-space:nowrap">2026-04-20</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260420-650');this.textContent='✅'">S20260420-650</code></td><td style="font-weight:600">اسواق نيو</td><td class="amount">30.00</td></tr>
+          <tr><td>59</td><td style="white-space:nowrap">2026-04-21</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260421-655');this.textContent='✅'">S20260421-655</code></td><td style="font-weight:600">تموينات الانجاز المتحدة</td><td class="amount">60.00</td></tr>
+          <tr><td>60</td><td style="white-space:nowrap">2026-04-21</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260421-654');this.textContent='✅'">S20260421-654</code></td><td style="font-weight:600">تموينات الفلاع الحديثة</td><td class="amount">60.00</td></tr>
+          <tr><td>61</td><td style="white-space:nowrap">2026-04-21</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260421-653');this.textContent='✅'">S20260421-653</code></td><td style="font-weight:600">شركة خالد الجيلاني للبلاستيك</td><td class="amount">500.00</td></tr>
+          <tr><td>62</td><td style="white-space:nowrap">2026-04-22</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260422-659');this.textContent='✅'">S20260422-659</code></td><td style="font-weight:600">شركة الوفاء باك بلاستيك ومنظفات</td><td class="amount">500.00</td></tr>
+          <tr><td>63</td><td style="white-space:nowrap">2026-04-22</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260422-658');this.textContent='✅'">S20260422-658</code></td><td style="font-weight:600">شركة عالم الاقتصادي للمواد الغذائية</td><td class="amount">1,500.00</td></tr>
+          <tr><td>64</td><td style="white-space:nowrap">2026-04-22</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260422-657');this.textContent='✅'">S20260422-657</code></td><td style="font-weight:600">تموينات افاق العالي</td><td class="amount">118.00</td></tr>
+          <tr><td>65</td><td style="white-space:nowrap">2026-04-23</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260423-663');this.textContent='✅'">S20260423-663</code></td><td style="font-weight:600">بقالة صفاء</td><td class="amount">60.00</td></tr>
+          <tr><td>66</td><td style="white-space:nowrap">2026-04-23</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260423-662');this.textContent='✅'">S20260423-662</code></td><td style="font-weight:600">تموينات سلتي وان</td><td class="amount">60.00</td></tr>
+          <tr><td>67</td><td style="white-space:nowrap">2026-04-23</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260423-661');this.textContent='✅'">S20260423-661</code></td><td style="font-weight:600">تموينات ام علي</td><td class="amount">60.00</td></tr>
+          <tr><td>68</td><td style="white-space:nowrap">2026-04-23</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260423-660');this.textContent='✅'">S20260423-660</code></td><td style="font-weight:600">baraka mini market</td><td class="amount">60.00</td></tr>
+          <tr><td>69</td><td style="white-space:nowrap">2026-04-25</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260425-670');this.textContent='✅'">S20260425-670</code></td><td style="font-weight:600">تموينات الريحان</td><td class="amount">60.00</td></tr>
+          <tr><td>70</td><td style="white-space:nowrap">2026-04-25</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260425-668');this.textContent='✅'">S20260425-668</code></td><td style="font-weight:600">مؤسسة حنان سالم الصيعري</td><td class="amount">60.00</td></tr>
+          <tr><td>71</td><td style="white-space:nowrap">2026-04-25</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260425-667');this.textContent='✅'">S20260425-667</code></td><td style="font-weight:600">مؤسسة حنان سالم الصيعري</td><td class="amount">60.00</td></tr>
+          <tr><td>72</td><td style="white-space:nowrap">2026-04-25</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260425-665');this.textContent='✅'">S20260425-665</code></td><td style="font-weight:600">تموينات التسامح</td><td class="amount">100.00</td></tr>
+          <tr><td>73</td><td style="white-space:nowrap">2026-04-26</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260426-675');this.textContent='✅'">S20260426-675</code></td><td style="font-weight:600">ساحل جدة بلاستيك ومنضفات</td><td class="amount">1,500.00</td></tr>
+          <tr><td>74</td><td style="white-space:nowrap">2026-04-26</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260426-672');this.textContent='✅'">S20260426-672</code></td><td style="font-weight:600">مركز الروضة للبلاستيك وادوات النظافة</td><td class="amount">560.00</td></tr>
+          <tr><td>75</td><td style="white-space:nowrap">2026-04-26</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260426-671');this.textContent='✅'">S20260426-671</code></td><td style="font-weight:600">تموينات ركن الميني</td><td class="amount">60.00</td></tr>
+          <tr><td>76</td><td style="white-space:nowrap">2026-04-27</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260427-676');this.textContent='✅'">S20260427-676</code></td><td style="font-weight:600">كلين للمنظفات</td><td class="amount">500.00</td></tr>
+          <tr><td>77</td><td style="white-space:nowrap">2026-04-28</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260428-678');this.textContent='✅'">S20260428-678</code></td><td style="font-weight:600">الفلاح مارت</td><td class="amount">60.00</td></tr>
+          <tr><td>78</td><td style="white-space:nowrap">2026-04-28</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260428-677');this.textContent='✅'">S20260428-677</code></td><td style="font-weight:600">سوبرماركت الاخوان</td><td class="amount">42.00</td></tr>
+          <tr><td>79</td><td style="white-space:nowrap">2026-04-29</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260429-685');this.textContent='✅'">S20260429-685</code></td><td style="font-weight:600">مؤسسة هبة بنت محسن ابن حسني الجمال التجارية</td><td class="amount">3,000.00</td></tr>
+          <tr><td>80</td><td style="white-space:nowrap">2026-04-29</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260429-684');this.textContent='✅'">S20260429-684</code></td><td style="font-weight:600">اسواق ومخابز الربعي</td><td class="amount">60.00</td></tr>
+          <tr><td>81</td><td style="white-space:nowrap">2026-04-29</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260429-683');this.textContent='✅'">S20260429-683</code></td><td style="font-weight:600">مؤسسة طيف الثريا التجارية</td><td class="amount">560.00</td></tr>
+          <tr><td>82</td><td style="white-space:nowrap">2026-04-29</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260429-682');this.textContent='✅'">S20260429-682</code></td><td style="font-weight:600">تموينات كنان</td><td class="amount">120.00</td></tr>
+          <tr><td>83</td><td style="white-space:nowrap">2026-04-29</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260429-681');this.textContent='✅'">S20260429-681</code></td><td style="font-weight:600">اسواق رهوة تهامة</td><td class="amount">120.00</td></tr>
+          <tr><td>84</td><td style="white-space:nowrap">2026-04-30</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260430-688');this.textContent='✅'">S20260430-688</code></td><td style="font-weight:600">شركة حي المصفاة التجارية - الخردوات</td><td class="amount">1,000.00</td></tr>
+          <tr><td>85</td><td style="white-space:nowrap">2026-04-30</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260430-687');this.textContent='✅'">S20260430-687</code></td><td style="font-weight:600">مخابز و تموينات قوت كنان</td><td class="amount">60.00</td></tr>
+          <tr><td>86</td><td style="white-space:nowrap">2026-04-30</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260430-686');this.textContent='✅'">S20260430-686</code></td><td style="font-weight:600">بقالة عيده</td><td class="amount">60.00</td></tr>
+          <tr><td>87</td><td style="white-space:nowrap">2026-05-02</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260502-690');this.textContent='✅'">S20260502-690</code></td><td style="font-weight:600">بقالة الرواد</td><td class="amount">60.00</td></tr>
+          <tr><td>88</td><td style="white-space:nowrap">2026-05-02</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260502-689');this.textContent='✅'">S20260502-689</code></td><td style="font-weight:600">تموينات ومخابز الجوهرة</td><td class="amount">60.00</td></tr>
+          <tr><td>89</td><td style="white-space:nowrap">2026-05-03</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260503-696');this.textContent='✅'">S20260503-696</code></td><td style="font-weight:600">تموينات السامرية</td><td class="amount">60.00</td></tr>
+          <tr><td>90</td><td style="white-space:nowrap">2026-05-03</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260503-693');this.textContent='✅'">S20260503-693</code></td><td style="font-weight:600">حصائد للبلاستيك والنظافه</td><td class="amount">120.00</td></tr>
+          <tr><td>91</td><td style="white-space:nowrap">2026-05-03</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260503-692');this.textContent='✅'">S20260503-692</code></td><td style="font-weight:600">اسواق ومخابز الحسام</td><td class="amount">60.00</td></tr>
+          <tr><td>92</td><td style="white-space:nowrap">2026-05-05</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260505-701');this.textContent='✅'">S20260505-701</code></td><td style="font-weight:600">ساحل جدة بلاستيك ومنضفات</td><td class="amount">1,500.00</td></tr>
+          <tr><td>93</td><td style="white-space:nowrap">2026-05-05</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260505-700');this.textContent='✅'">S20260505-700</code></td><td style="font-weight:600">تموينات جامع الثريا</td><td class="amount">120.00</td></tr>
+          <tr><td>94</td><td style="white-space:nowrap">2026-05-05</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260505-698');this.textContent='✅'">S20260505-698</code></td><td style="font-weight:600">تموينات الباحة</td><td class="amount">60.00</td></tr>
+          <tr><td>95</td><td style="white-space:nowrap">2026-05-06</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260506-704');this.textContent='✅'">S20260506-704</code></td><td style="font-weight:600">تموينات ومخابز الشريف</td><td class="amount">59.00</td></tr>
+          <tr><td>96</td><td style="white-space:nowrap">2026-05-06</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260506-702');this.textContent='✅'">S20260506-702</code></td><td style="font-weight:600">مؤسسة اليسر الراقي</td><td class="amount">180.00</td></tr>
+          <tr><td>97</td><td style="white-space:nowrap">2026-05-07</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260507-709');this.textContent='✅'">S20260507-709</code></td><td style="font-weight:600">تموينات السلطان الاقتصادية</td><td class="amount">118.00</td></tr>
+          <tr><td>98</td><td style="white-space:nowrap">2026-05-07</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260507-707');this.textContent='✅'">S20260507-707</code></td><td style="font-weight:600">تموينات الصفوة</td><td class="amount">118.00</td></tr>
+          <tr><td>99</td><td style="white-space:nowrap">2026-05-07</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260507-706');this.textContent='✅'">S20260507-706</code></td><td style="font-weight:600">تموينات خيرات رانيا</td><td class="amount">30.00</td></tr>
+          <tr><td>100</td><td style="white-space:nowrap">2026-05-09</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260509-711');this.textContent='✅'">S20260509-711</code></td><td style="font-weight:600">تموينات هناء</td><td class="amount">58.00</td></tr>
+          <tr><td>101</td><td style="white-space:nowrap">2026-05-09</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260509-710');this.textContent='✅'">S20260509-710</code></td><td style="font-weight:600">اسواق تفاح</td><td class="amount">30.00</td></tr>
+          <tr><td>102</td><td style="white-space:nowrap">2026-05-10</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260510-713');this.textContent='✅'">S20260510-713</code></td><td style="font-weight:600">تموينات الجنات الطبيعية</td><td class="amount">60.00</td></tr>
+          <tr><td>103</td><td style="white-space:nowrap">2026-05-10</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260510-712');this.textContent='✅'">S20260510-712</code></td><td style="font-weight:600">baraka mini market</td><td class="amount">60.00</td></tr>
+          <tr><td>104</td><td style="white-space:nowrap">2026-05-11</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260511-719');this.textContent='✅'">S20260511-719</code></td><td style="font-weight:600">اسواق و مخابز الموج الهادي</td><td class="amount">60.00</td></tr>
+          <tr><td>105</td><td style="white-space:nowrap">2026-05-11</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260511-718');this.textContent='✅'">S20260511-718</code></td><td style="font-weight:600">تموينات وقت الحلويات</td><td class="amount">60.00</td></tr>
+          <tr><td>106</td><td style="white-space:nowrap">2026-05-11</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260511-717');this.textContent='✅'">S20260511-717</code></td><td style="font-weight:600">شركة الشراع الفضي التجارية</td><td class="amount">60.00</td></tr>
+          <tr><td>107</td><td style="white-space:nowrap">2026-05-11</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260511-716');this.textContent='✅'">S20260511-716</code></td><td style="font-weight:600">تموينات الريان</td><td class="amount">60.00</td></tr>
+          <tr><td>108</td><td style="white-space:nowrap">2026-05-11</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260511-715');this.textContent='✅'">S20260511-715</code></td><td style="font-weight:600">تموينات رفا  الغربية</td><td class="amount">60.00</td></tr>
+          <tr><td>109</td><td style="white-space:nowrap">2026-05-12</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260512-726');this.textContent='✅'">S20260512-726</code></td><td style="font-weight:600">تموينات سامي</td><td class="amount">60.00</td></tr>
+          <tr><td>110</td><td style="white-space:nowrap">2026-05-12</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260512-724');this.textContent='✅'">S20260512-724</code></td><td style="font-weight:600">مؤسسة الوطنية باك للتجاره بلاستيك ونظافة</td><td class="amount">1,500.00</td></tr>
+          <tr><td>111</td><td style="white-space:nowrap">2026-05-12</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260512-723');this.textContent='✅'">S20260512-723</code></td><td style="font-weight:600">مركز الروضة للبلاستيك وادوات النظافة</td><td class="amount">60.00</td></tr>
+          <tr><td>112</td><td style="white-space:nowrap">2026-05-12</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260512-720');this.textContent='✅'">S20260512-720</code></td><td style="font-weight:600">تموينات الزين</td><td class="amount">60.00</td></tr>
+          <tr><td>113</td><td style="white-space:nowrap">2026-05-13</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260513-729');this.textContent='✅'">S20260513-729</code></td><td style="font-weight:600">اماكن دبي للتسوق- الحمدانية</td><td class="amount">1,000.00</td></tr>
+          <tr><td>114</td><td style="white-space:nowrap">2026-05-13</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260513-728');this.textContent='✅'">S20260513-728</code></td><td style="font-weight:600">كود الصالحية بلاستيك ومنظفات</td><td class="amount">1,000.00</td></tr>
+          <tr><td>115</td><td style="white-space:nowrap">2026-05-13</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260513-727');this.textContent='✅'">S20260513-727</code></td><td style="font-weight:600">تموينات ياسر صالح القحطاني</td><td class="amount">60.00</td></tr>
+          <tr><td>116</td><td style="white-space:nowrap">2026-05-14</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260514-731');this.textContent='✅'">S20260514-731</code></td><td style="font-weight:600">تموينات العروس 2</td><td class="amount">60.00</td></tr>
+          <tr><td>117</td><td style="white-space:nowrap">2026-05-16</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260516-733');this.textContent='✅'">S20260516-733</code></td><td style="font-weight:600">تموينات الانصار</td><td class="amount">120.00</td></tr>
+          <tr><td>118</td><td style="white-space:nowrap">2026-05-17</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260517-737');this.textContent='✅'">S20260517-737</code></td><td style="font-weight:600">تموينات افاق العالي</td><td class="amount">118.00</td></tr>
+          <tr><td>119</td><td style="white-space:nowrap">2026-05-18</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260518-739');this.textContent='✅'">S20260518-739</code></td><td style="font-weight:600">شركة سلة فرح للمواد الغذائية</td><td class="amount">60.00</td></tr>
+          <tr><td>120</td><td style="white-space:nowrap">2026-05-19</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260519-741');this.textContent='✅'">S20260519-741</code></td><td style="font-weight:600">بقالة صفاء</td><td class="amount">60.00</td></tr>
+          <tr><td>121</td><td style="white-space:nowrap">2026-05-19</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260519-740');this.textContent='✅'">S20260519-740</code></td><td style="font-weight:600">تموينات شواطئ الوليد</td><td class="amount">500.00</td></tr>
+          <tr><td>122</td><td style="white-space:nowrap">2026-05-20</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260520-743');this.textContent='✅'">S20260520-743</code></td><td style="font-weight:600">شركة نهر الامداد فرع السامر</td><td class="amount">60.00</td></tr>
+          <tr><td>123</td><td style="white-space:nowrap">2026-05-20</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260520-742');this.textContent='✅'">S20260520-742</code></td><td style="font-weight:600">تموينات السلطانة</td><td class="amount">60.00</td></tr>
+          <tr><td>124</td><td style="white-space:nowrap">2026-05-24</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260524-746');this.textContent='✅'">S20260524-746</code></td><td style="font-weight:600">تموينات محمد علي حسن العبدلي</td><td class="amount">30.00</td></tr>
+          <tr><td>125</td><td style="white-space:nowrap">2026-05-24</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260524-745');this.textContent='✅'">S20260524-745</code></td><td style="font-weight:600">سوبرماركت الاخوان</td><td class="amount">60.00</td></tr>
+          <tr><td>126</td><td style="white-space:nowrap">2026-05-24</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260524-744');this.textContent='✅'">S20260524-744</code></td><td style="font-weight:600">تموينات راكان</td><td class="amount">60.00</td></tr>
+          <tr><td>127</td><td style="white-space:nowrap">2026-06-01</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260601-753');this.textContent='✅'">S20260601-753</code></td><td style="font-weight:600">تموينات الاسرة السعيدة الفضيلة</td><td class="amount">60.00</td></tr>
+          <tr><td>128</td><td style="white-space:nowrap">2026-06-01</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260601-752');this.textContent='✅'">S20260601-752</code></td><td style="font-weight:600">تموينات الاسرة السعيدة الفضيلة</td><td class="amount">60.00</td></tr>
+          <tr><td>129</td><td style="white-space:nowrap">2026-06-01</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260601-751');this.textContent='✅'">S20260601-751</code></td><td style="font-weight:600">تموينات التسامح</td><td class="amount">100.00</td></tr>
+          <tr><td>130</td><td style="white-space:nowrap">2026-06-01</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260601-749');this.textContent='✅'">S20260601-749</code></td><td style="font-weight:600">سوبر ماركت التاج الروابي</td><td class="amount">60.00</td></tr>
+          <tr><td>131</td><td style="white-space:nowrap">2026-06-01</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260601-748');this.textContent='✅'">S20260601-748</code></td><td style="font-weight:600">اسواق نجد</td><td class="amount">60.00</td></tr>
+          <tr><td>132</td><td style="white-space:nowrap">2026-06-01</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260601-747');this.textContent='✅'">S20260601-747</code></td><td style="font-weight:600">سوبر ماركت ومخابز اماسي</td><td class="amount">60.00</td></tr>
+          <tr><td>133</td><td style="white-space:nowrap">2026-06-03</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260603-759');this.textContent='✅'">S20260603-759</code></td><td style="font-weight:600">تموينات دكان عيشة</td><td class="amount">60.00</td></tr>
+          <tr><td>134</td><td style="white-space:nowrap">2026-06-03</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260603-758');this.textContent='✅'">S20260603-758</code></td><td style="font-weight:600">تموينات ومخابز الرهيب</td><td class="amount">60.00</td></tr>
+          <tr><td>135</td><td style="white-space:nowrap">2026-06-03</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260603-757');this.textContent='✅'">S20260603-757</code></td><td style="font-weight:600">الفلاح مارت</td><td class="amount">60.00</td></tr>
+          <tr><td>136</td><td style="white-space:nowrap">2026-06-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260604-765');this.textContent='✅'">S20260604-765</code></td><td style="font-weight:600">ساحل جدة بلاستيك ومنضفات</td><td class="amount">1,470.00</td></tr>
+          <tr><td>137</td><td style="white-space:nowrap">2026-06-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260604-764');this.textContent='✅'">S20260604-764</code></td><td style="font-weight:600">اسواق تفاح</td><td class="amount">46.50</td></tr>
+          <tr><td>138</td><td style="white-space:nowrap">2026-06-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260604-762');this.textContent='✅'">S20260604-762</code></td><td style="font-weight:600">تموينات زاد صاري</td><td class="amount">142.00</td></tr>
+          <tr><td>139</td><td style="white-space:nowrap">2026-06-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260604-761');this.textContent='✅'">S20260604-761</code></td><td style="font-weight:600">تموينات طارق</td><td class="amount">207.00</td></tr>
+          <tr><td>140</td><td style="white-space:nowrap">2026-06-04</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260604-760');this.textContent='✅'">S20260604-760</code></td><td style="font-weight:600">تموينات الصقر</td><td class="amount">145.00</td></tr>
+          <tr><td>141</td><td style="white-space:nowrap">2026-06-06</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260606-770');this.textContent='✅'">S20260606-770</code></td><td style="font-weight:600">تموينات ابو فهد الحربي</td><td class="amount">167.00</td></tr>
+          <tr><td>142</td><td style="white-space:nowrap">2026-06-06</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260606-766');this.textContent='✅'">S20260606-766</code></td><td style="font-weight:600">سوبرماركت الاخوان</td><td class="amount">112.50</td></tr>
+          <tr><td>143</td><td style="white-space:nowrap">2026-06-07</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260607-775');this.textContent='✅'">S20260607-775</code></td><td style="font-weight:600">تموينات طيبات الجزيرة</td><td class="amount">167.00</td></tr>
+          <tr><td>144</td><td style="white-space:nowrap">2026-06-07</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260607-774');this.textContent='✅'">S20260607-774</code></td><td style="font-weight:600">تموينات رنا الخير</td><td class="amount">160.00</td></tr>
+          <tr><td>145</td><td style="white-space:nowrap">2026-06-07</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260607-773');this.textContent='✅'">S20260607-773</code></td><td style="font-weight:600">baraka mini market</td><td class="amount">142.00</td></tr>
+          <tr><td>146</td><td style="white-space:nowrap">2026-06-07</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260607-772');this.textContent='✅'">S20260607-772</code></td><td style="font-weight:600">مؤسسة حنان سالم الصيعري</td><td class="amount">65.00</td></tr>
+          <tr><td>147</td><td style="white-space:nowrap">2026-06-09</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260609-779');this.textContent='✅'">S20260609-779</code></td><td style="font-weight:600">تموينات ركن الميني</td><td class="amount">40.00</td></tr>
+          <tr><td>148</td><td style="white-space:nowrap">2026-06-09</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260609-778');this.textContent='✅'">S20260609-778</code></td><td style="font-weight:600">تفارة ماركت</td><td class="amount">269.00</td></tr>
+          <tr><td>149</td><td style="white-space:nowrap">2026-06-10</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260610-789');this.textContent='✅'">S20260610-789</code></td><td style="font-weight:600">تموينات راف</td><td class="amount">142.00</td></tr>
+          <tr><td>150</td><td style="white-space:nowrap">2026-06-10</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260610-788');this.textContent='✅'">S20260610-788</code></td><td style="font-weight:600">تموينات المروة</td><td class="amount">62.00</td></tr>
+          <tr><td>151</td><td style="white-space:nowrap">2026-06-10</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260610-787');this.textContent='✅'">S20260610-787</code></td><td style="font-weight:600">مؤسسة جذور العز</td><td class="amount">207.00</td></tr>
+          <tr><td>152</td><td style="white-space:nowrap">2026-06-10</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260610-785');this.textContent='✅'">S20260610-785</code></td><td style="font-weight:600">تموينات المساوي</td><td class="amount">80.00</td></tr>
+          <tr><td>153</td><td style="white-space:nowrap">2026-06-10</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260610-784');this.textContent='✅'">S20260610-784</code></td><td style="font-weight:600">تموينات المساوي</td><td class="amount">65.00</td></tr>
+          <tr><td>154</td><td style="white-space:nowrap">2026-06-10</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260610-783');this.textContent='✅'">S20260610-783</code></td><td style="font-weight:600">اسواق السائر</td><td class="amount">334.00</td></tr>
+          <tr><td>155</td><td style="white-space:nowrap">2026-06-10</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260610-782');this.textContent='✅'">S20260610-782</code></td><td style="font-weight:600">تموينات بحره</td><td class="amount">105.00</td></tr>
+          <tr><td>156</td><td style="white-space:nowrap">2026-06-10</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260610-781');this.textContent='✅'">S20260610-781</code></td><td style="font-weight:600">بقالة البقمي</td><td class="amount">80.00</td></tr>
+          <tr><td>157</td><td style="white-space:nowrap">2026-06-10</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260610-780');this.textContent='✅'">S20260610-780</code></td><td style="font-weight:600">تموينات الباحة</td><td class="amount">102.00</td></tr>
+          <tr><td>158</td><td style="white-space:nowrap">2026-06-11</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260611-795');this.textContent='✅'">S20260611-795</code></td><td style="font-weight:600">شركة حي المصفاة التجارية - الخردوات</td><td class="amount">900.00</td></tr>
+          <tr><td>159</td><td style="white-space:nowrap">2026-06-11</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260611-793');this.textContent='✅'">S20260611-793</code></td><td style="font-weight:600">تموينات الزهراء</td><td class="amount">72.50</td></tr>
+          <tr><td>160</td><td style="white-space:nowrap">2026-06-11</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260611-791');this.textContent='✅'">S20260611-791</code></td><td style="font-weight:600">تموينات جوهرة المروة</td><td class="amount">105.00</td></tr>
+          <tr><td>161</td><td style="white-space:nowrap">2026-06-13</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260613-801');this.textContent='✅'">S20260613-801</code></td><td style="font-weight:600">اماكن دبي للتسوق - العزيزية</td><td class="amount">1,342.50</td></tr>
+          <tr><td>162</td><td style="white-space:nowrap">2026-06-13</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260613-800');this.textContent='✅'">S20260613-800</code></td><td style="font-weight:600">تموينات جاسم الرابية</td><td class="amount">145.00</td></tr>
+          <tr><td>163</td><td style="white-space:nowrap">2026-06-13</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260613-798');this.textContent='✅'">S20260613-798</code></td><td style="font-weight:600">مخابز و تموينات ديمة</td><td class="amount">145.00</td></tr>
+          <tr><td>164</td><td style="white-space:nowrap">2026-06-13</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260613-797');this.textContent='✅'">S20260613-797</code></td><td style="font-weight:600">مخبز و تموينات باسل</td><td class="amount">142.00</td></tr>
+          <tr><td>165</td><td style="white-space:nowrap">2026-06-13</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260613-796');this.textContent='✅'">S20260613-796</code></td><td style="font-weight:600">تموينات المستهلك الفروسية</td><td class="amount">80.00</td></tr>
+          <tr><td>166</td><td style="white-space:nowrap">2026-06-14</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260614-804');this.textContent='✅'">S20260614-804</code></td><td style="font-weight:600">تموينات الانصار</td><td class="amount">80.00</td></tr>
+          <tr><td>167</td><td style="white-space:nowrap">2026-06-14</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260614-803');this.textContent='✅'">S20260614-803</code></td><td style="font-weight:600">تموينات سلة الاسرة الحديثة للمواد الغذائية</td><td class="amount">334.00</td></tr>
+          <tr><td>168</td><td style="white-space:nowrap">2026-06-14</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260614-802');this.textContent='✅'">S20260614-802</code></td><td style="font-weight:600">تموينات نجمة البشائر</td><td class="amount">145.00</td></tr>
+          <tr><td>169</td><td style="white-space:nowrap">2026-06-15</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260615-810');this.textContent='✅'">S20260615-810</code></td><td style="font-weight:600">تموينات دانة</td><td class="amount">65.00</td></tr>
+          <tr><td>170</td><td style="white-space:nowrap">2026-06-15</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260615-808');this.textContent='✅'">S20260615-808</code></td><td style="font-weight:600">تموينات جدة</td><td class="amount">145.00</td></tr>
+          <tr><td>171</td><td style="white-space:nowrap">2026-06-15</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260615-807');this.textContent='✅'">S20260615-807</code></td><td style="font-weight:600">تموينات البيان</td><td class="amount">40.00</td></tr>
+          <tr><td>172</td><td style="white-space:nowrap">2026-06-15</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260615-806');this.textContent='✅'">S20260615-806</code></td><td style="font-weight:600">اسواق الرحمة</td><td class="amount">80.00</td></tr>
+          <tr><td>173</td><td style="white-space:nowrap">2026-06-15</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260615-805');this.textContent='✅'">S20260615-805</code></td><td style="font-weight:600">تموينات افاق العالي</td><td class="amount">269.00</td></tr>
+          <tr><td>174</td><td style="white-space:nowrap">2026-06-16</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260616-814');this.textContent='✅'">S20260616-814</code></td><td style="font-weight:600">تموينات البستان 1</td><td class="amount">142.00</td></tr>
+          <tr><td>175</td><td style="white-space:nowrap">2026-06-16</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260616-813');this.textContent='✅'">S20260616-813</code></td><td style="font-weight:600">تموينات البستان 3</td><td class="amount">65.00</td></tr>
+          <tr><td>176</td><td style="white-space:nowrap">2026-06-16</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260616-812');this.textContent='✅'">S20260616-812</code></td><td style="font-weight:600">تموينات على الماشى</td><td class="amount">127.00</td></tr>
+          <tr><td>177</td><td style="white-space:nowrap">2026-06-17</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260617-817');this.textContent='✅'">S20260617-817</code></td><td style="font-weight:600">اسواق النهدي</td><td class="amount">1,240.00</td></tr>
+          <tr><td>178</td><td style="white-space:nowrap">2026-06-17</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260617-816');this.textContent='✅'">S20260617-816</code></td><td style="font-weight:600">شركت الوان ماركت</td><td class="amount">207.00</td></tr>
+          <tr><td>179</td><td style="white-space:nowrap">2026-06-17</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260617-815');this.textContent='✅'">S20260617-815</code></td><td style="font-weight:600">متاجر تل الزيتون</td><td class="amount">334.00</td></tr>
+          <tr><td>180</td><td style="white-space:nowrap">2026-06-18</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260618-822');this.textContent='✅'">S20260618-822</code></td><td style="font-weight:600">تموينات طيب المروة</td><td class="amount">145.00</td></tr>
+          <tr><td>181</td><td style="white-space:nowrap">2026-06-18</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260618-821');this.textContent='✅'">S20260618-821</code></td><td style="font-weight:600">تموينات ماركت البركة</td><td class="amount">65.00</td></tr>
+          <tr><td>182</td><td style="white-space:nowrap">2026-06-18</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260618-819');this.textContent='✅'">S20260618-819</code></td><td style="font-weight:600">تموينات حنان</td><td class="amount">80.00</td></tr>
+          <tr><td>183</td><td style="white-space:nowrap">2026-06-18</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260618-818');this.textContent='✅'">S20260618-818</code></td><td style="font-weight:600">تموينات عائشة</td><td class="amount">80.00</td></tr>
+          <tr><td>184</td><td style="white-space:nowrap">2026-06-20</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260620-826');this.textContent='✅'">S20260620-826</code></td><td style="font-weight:600">متجر سندس للمواد الغذائية</td><td class="amount">80.00</td></tr>
+          <tr><td>185</td><td style="white-space:nowrap">2026-06-20</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260620-825');this.textContent='✅'">S20260620-825</code></td><td style="font-weight:600">مركز ومخبز التميز للتسوق</td><td class="amount">207.00</td></tr>
+          <tr><td>186</td><td style="white-space:nowrap">2026-06-20</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260620-823');this.textContent='✅'">S20260620-823</code></td><td style="font-weight:600">تموينات السلمي ولي العهد</td><td class="amount">207.00</td></tr>
+          <tr><td>187</td><td style="white-space:nowrap">2026-06-21</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260621-829');this.textContent='✅'">S20260621-829</code></td><td style="font-weight:600">تموينات سلة العائلة اكسترا بوينت</td><td class="amount">142.00</td></tr>
+          <tr><td>188</td><td style="white-space:nowrap">2026-06-21</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260621-828');this.textContent='✅'">S20260621-828</code></td><td style="font-weight:600">تموينات حسين محمد حجازي</td><td class="amount">192.00</td></tr>
+          <tr><td>189</td><td style="white-space:nowrap">2026-06-22</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260623-839');this.textContent='✅'">S20260623-839</code></td><td style="font-weight:600">تموينات الجنات الطبيعية</td><td class="amount">142.00</td></tr>
+          <tr><td>190</td><td style="white-space:nowrap">2026-06-22</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260622-837');this.textContent='✅'">S20260622-837</code></td><td style="font-weight:600">بقالة شهد العائض</td><td class="amount">94.50</td></tr>
+          <tr><td>191</td><td style="white-space:nowrap">2026-06-22</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260622-836');this.textContent='✅'">S20260622-836</code></td><td style="font-weight:600">اسواق السلة المتميزة</td><td class="amount">254.00</td></tr>
+          <tr><td>192</td><td style="white-space:nowrap">2026-06-22</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260622-835');this.textContent='✅'">S20260622-835</code></td><td style="font-weight:600">تموينات النهدي</td><td class="amount">80.00</td></tr>
+          <tr><td>193</td><td style="white-space:nowrap">2026-06-22</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260622-834');this.textContent='✅'">S20260622-834</code></td><td style="font-weight:600">تموينات النور</td><td class="amount">207.00</td></tr>
+          <tr><td>194</td><td style="white-space:nowrap">2026-06-22</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260622-833');this.textContent='✅'">S20260622-833</code></td><td style="font-weight:600">الواحة مارت</td><td class="amount">80.00</td></tr>
+          <tr><td>195</td><td style="white-space:nowrap">2026-06-22</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260622-832');this.textContent='✅'">S20260622-832</code></td><td style="font-weight:600">سوبر ماركت</td><td class="amount">80.00</td></tr>
+          <tr><td>196</td><td style="white-space:nowrap">2026-06-23</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260623-841');this.textContent='✅'">S20260623-841</code></td><td style="font-weight:600">تموينات الريحان</td><td class="amount">174.50</td></tr>
+          <tr><td>197</td><td style="white-space:nowrap">2026-06-23</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260623-840');this.textContent='✅'">S20260623-840</code></td><td style="font-weight:600">تموينات الحي</td><td class="amount">207.00</td></tr>
+          <tr><td>198</td><td style="white-space:nowrap">2026-06-24</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260624-846');this.textContent='✅'">S20260624-846</code></td><td style="font-weight:600">شركة التقدم الراقي التجارية</td><td class="amount">2,000.00</td></tr>
+          <tr><td>199</td><td style="white-space:nowrap">2026-06-24</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260624-845');this.textContent='✅'">S20260624-845</code></td><td style="font-weight:600">شركة التقدم الراقي التجارية</td><td class="amount">2,000.00</td></tr>
+          <tr><td>200</td><td style="white-space:nowrap">2026-06-24</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260624-844');this.textContent='✅'">S20260624-844</code></td><td style="font-weight:600">تموينات التوفير الاولى</td><td class="amount">225.00</td></tr>
+          <tr><td>201</td><td style="white-space:nowrap">2026-06-24</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260624-843');this.textContent='✅'">S20260624-843</code></td><td style="font-weight:600">حصائد للبلاستيك والنظافه</td><td class="amount">414.00</td></tr>
+          <tr><td>202</td><td style="white-space:nowrap">2026-06-25</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260625-848');this.textContent='✅'">S20260625-848</code></td><td style="font-weight:600">اماكن دبي للتسوق - العزيزية</td><td class="amount">800.00</td></tr>
+          <tr><td>203</td><td style="white-space:nowrap">2026-06-25</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260625-847');this.textContent='✅'">S20260625-847</code></td><td style="font-weight:600">شركة عالم الاقتصادي للمواد الغذائية</td><td class="amount">1,500.00</td></tr>
+          <tr><td>204</td><td style="white-space:nowrap">2026-06-27</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260627-849');this.textContent='✅'">S20260627-849</code></td><td style="font-weight:600">تموينات عبدالرحمن</td><td class="amount">62.00</td></tr>
+          <tr><td>205</td><td style="white-space:nowrap">2026-06-28</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260628-850');this.textContent='✅'">S20260628-850</code></td><td style="font-weight:600">Al Shifa super market</td><td class="amount">65.00</td></tr>
+          <tr><td>206</td><td style="white-space:nowrap">2026-06-29</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260629-854');this.textContent='✅'">S20260629-854</code></td><td style="font-weight:600">اسواق تموين الواحة</td><td class="amount">145.00</td></tr>
+          <tr><td>207</td><td style="white-space:nowrap">2026-06-29</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260629-853');this.textContent='✅'">S20260629-853</code></td><td style="font-weight:600">تموينات زيتون مارت</td><td class="amount">207.00</td></tr>
+          <tr><td>208</td><td style="white-space:nowrap">2026-06-29</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260629-852');this.textContent='✅'">S20260629-852</code></td><td style="font-weight:600">كود الصالحية بلاستيك ومنظفات</td><td class="amount">2,100.00</td></tr>
+          <tr><td>209</td><td style="white-space:nowrap">2026-06-30</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260630-856');this.textContent='✅'">S20260630-856</code></td><td style="font-weight:600">اسواق ومخابز الحسام</td><td class="amount">145.00</td></tr>
+          <tr><td>210</td><td style="white-space:nowrap">2026-06-30</td><td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem" onclick="navigator.clipboard.writeText('S20260630-855');this.textContent='✅'">S20260630-855</code></td><td style="font-weight:600">تموينات عالية ماركت</td><td class="amount">207.00</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="4">الإجمالي الآجل</td><td class="amount">68,448.30</td></tr></tfoot>
+      </table>
+    </div>
+    <div class="warning-box">
+      ⚠️ <strong>تنبيه مهم:</strong> هذه المبيعات الآجلة قد تكون تحصّلت في Q2 أو في يوليو أو لازالت غير محصّلة. 
+      يجب مراجعة كشف حساب كل عميل في رواء للتأكد من تاريخ التحصيل الفعلي.
+      الضريبة المستحقة = فقط ما تم تحصيله فعلياً خلال أبريل-يونيو.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📌 ملخص الضريبة المستحقة</div>
+    <table>
+      <tr><td style="padding:12px">مبيعات محصّلة (نقدي/بطاقة)</td><td class="amount positive" style="padding:12px">5,459.50</td></tr>
+      <tr><td style="padding:12px">(-) مرتجعات</td><td class="amount negative" style="padding:12px">-9,746.00</td></tr>
+      <tr style="background:#F8F7FC;font-weight:700"><td style="padding:12px">صافي المبيعات الخاضعة للضريبة</td><td class="amount" style="padding:12px">0.00</td></tr>
+      <tr><td style="padding:12px">ضريبة القيمة المضافة (15%)</td><td class="amount" style="padding:12px;color:#D97706;font-weight:700">0.00</td></tr>
+    </table>
+    <div class="note-box">
+      💡 <strong>ملاحظة:</strong> الضريبة محسوبة على الأساس النقدي - فقط ما تم تحصيله فعلياً.<br>
+      إذا تم تحصيل مبالغ من العملاء الآجلين خلال Q2، يجب إضافتها للضريبة بعد مراجعة كشوف الحساب.
+    </div>
+  </div>
+
+  <p style="text-align:center;color:#6B7280;font-size:0.78rem;margin:24px 0">
+    تم إنشاء هذا التقرير من منصة رواء | 2026-07-28<br>
+    جميع المبالغ بالريال السعودي وتشمل ضريبة القيمة المضافة
+  </p>
+</div>
+
+<script>
+function filterTable(tableId, inputId) {
+  const q = document.getElementById(inputId).value.toLowerCase();
+  document.querySelectorAll('#' + tableId + ' tbody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
