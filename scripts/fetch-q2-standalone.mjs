@@ -92,49 +92,39 @@ function buildHTML(invoices, dailyCollections) {
   const sales = invoices.filter(i => !i.isReturn);
   const returns = invoices.filter(i => i.isReturn);
   
-  // Cash sales = NOT credit (collected at invoice time)
-  const cashSales = sales.filter(i => !i.isCredit);
-  const creditSales = sales.filter(i => i.isCredit);
-  
-  // Returns
-  const returnsByCustomer = {};
-  returns.forEach(r => {
-    returnsByCustomer[r.customer] = (returnsByCustomer[r.customer] || 0) + r.total;
+  // CASH SALES = payment method is Cash, Card, or Rewaa Pay (NOT Post Pay, NOT mixed)
+  // These are DEFINITELY collected at invoice time in Q2
+  const cashSales = sales.filter(i => {
+    const pm = i.pm;
+    return pm === 'Cash' || pm === 'Card' || pm === 'Rewaa Pay' || pm === 'SoftPos';
   });
   
-  // Cash sales by customer (subtract returns)
-  const cashByCustomer = {};
-  cashSales.forEach(i => {
-    if (!cashByCustomer[i.customer]) cashByCustomer[i.customer] = { invoices: [], total: 0 };
-    cashByCustomer[i.customer].invoices.push(i);
-    cashByCustomer[i.customer].total += i.total;
-  });
-  Object.keys(cashByCustomer).forEach(c => {
-    cashByCustomer[c].total = Math.max(0, cashByCustomer[c].total - (returnsByCustomer[c] || 0));
-  });
-  const cashCustomers = Object.entries(cashByCustomer)
-    .filter(([_, v]) => v.total > 0)
-    .sort((a, b) => b[1].total - a[1].total);
-
-  const totalCash = cashCustomers.reduce((s, [_, v]) => s + v.total, 0);
+  // Returns from CASH customers only (money was actually refunded)
+  const cashCustomers = new Set(cashSales.map(i => i.customer));
+  const cashReturns = returns.filter(i => cashCustomers.has(i.customer));
+  
+  // Credit returns (no cash refunded - just reduces debt)
+  const creditReturns = returns.filter(i => !cashCustomers.has(i.customer));
+  
+  // Gross totals
+  const grossCash = cashSales.reduce((s, i) => s + i.total, 0);
+  const cashReturnsTotal = cashReturns.reduce((s, i) => s + i.total, 0);
+  const netCash = grossCash - cashReturnsTotal;
+  const vat = Math.max(0, netCash) * 15 / 115;
+  
+  // All returns for display
   const totalReturns = returns.reduce((s, r) => s + r.total, 0);
+  
+  // Credit sales
+  const creditSales = sales.filter(i => {
+    const pm = i.pm;
+    return pm !== 'Cash' && pm !== 'Card' && pm !== 'Rewaa Pay' && pm !== 'SoftPos';
+  });
+  const creditTotal = creditSales.reduce((s, i) => s + i.total, 0);
   
   // Daily totals
   const dailyTotal = dailyCollections.reduce((s, d) => s + d.total, 0);
-  const dailyCash = dailyCollections.reduce((s, d) => s + d.cash, 0);
-  const dailyDebit = dailyCollections.reduce((s, d) => s + d.debit, 0);
-  const dailyCard = dailyCollections.reduce((s, d) => s + d.card, 0);
   
-  // Credit sales summary
-  const creditTotal = creditSales.reduce((s, i) => s + i.total, 0);
-  const creditByCustomer = {};
-  creditSales.forEach(i => {
-    if (!creditByCustomer[i.customer]) creditByCustomer[i.customer] = { invoices: [], total: 0 };
-    creditByCustomer[i.customer].invoices.push(i);
-    creditByCustomer[i.customer].total += i.total;
-  });
-  const creditCustomers = Object.entries(creditByCustomer).sort((a, b) => b[1].total - a[1].total);
-
   const fmt = n => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   let html = `<!DOCTYPE html>
@@ -187,30 +177,30 @@ tfoot tr { background: #F8F7FC !important; font-weight: 800; position: sticky; b
   
   <div class="kpi-grid">
     <div class="kpi cash">
-      <div class="kpi-label">💵 مبيعات محصّلة (نقدي/بطاقة)</div>
-      <div class="kpi-value" style="color:#059669">${fmt(totalCash)}</div>
-      <div class="kpi-sub">${cashCustomers.length} عميل | ${cashSales.length} فاتورة</div>
+      <div class="kpi-label">💵 مبيعات كاش/بطاقة (إجمالي)</div>
+      <div class="kpi-value" style="color:#059669">${fmt(grossCash)}</div>
+      <div class="kpi-sub">${cashSales.length} فاتورة</div>
     </div>
     <div class="kpi returns">
-      <div class="kpi-label">↩️ المرتجعات</div>
-      <div class="kpi-value" style="color:#DC2626">-${fmt(totalReturns)}</div>
-      <div class="kpi-sub">${returns.length} فاتورة مرتجع</div>
+      <div class="kpi-label">↩️ مرتجعات (من عملاء نقديين)</div>
+      <div class="kpi-value" style="color:#DC2626">-${fmt(cashReturnsTotal)}</div>
+      <div class="kpi-sub">${cashReturns.length} فاتورة مرتجع</div>
     </div>
     <div class="kpi total">
       <div class="kpi-label">💰 صافي المحصّل</div>
-      <div class="kpi-value" style="color:#333088">${fmt(Math.max(0, totalCash - totalReturns))}</div>
-      <div class="kpi-sub">بعد خصم المرتجعات</div>
+      <div class="kpi-value" style="color:#333088">${fmt(netCash)}</div>
+      <div class="kpi-sub">مضمون 100%</div>
     </div>
     <div class="kpi vat">
       <div class="kpi-label">📋 ضريبة القيمة المضافة (15%)</div>
-      <div class="kpi-value" style="color:#D97706">${fmt(Math.max(0, totalCash - totalReturns) * 15 / 115)}</div>
-      <div class="kpi-sub">المبلغ × 15 ÷ 115</div>
+      <div class="kpi-value" style="color:#D97706">${fmt(vat)}</div>
+      <div class="kpi-sub">الصافي × 15 ÷ 115</div>
     </div>
   </div>
 
   <div class="card">
     <div class="card-title">✅ المبيعات المحصّلة في Q2 (نقدي وبطاقة)</div>
-    <p style="font-size:0.82rem;color:#6B7280;margin-bottom:12px">هذه الفواتير تم بيعها وتحصيلها فوراً في نفس اليوم خلال أبريل-يونيو 2026. مضمونة 100%.</p>
+    <p style="font-size:0.82rem;color:#6B7280;margin-bottom:12px">هذه الفواتير تم بيعها وتحصيلها فوراً (نقدي/بطاقة/رواء باي) في نفس اليوم خلال أبريل-يونيو 2026. مضمونة 100%.</p>
     <input type="text" class="search" id="cashSearch" placeholder="🔍 بحث باسم العميل أو رقم الفاتورة..." oninput="filterTable('cashTable','cashSearch')">
     <div class="table-wrap">
       <table id="cashTable">
@@ -226,21 +216,25 @@ tfoot tr { background: #F8F7FC !important; font-weight: 800; position: sticky; b
             <td class="amount positive">${fmt(inv.total)}</td>
           </tr>`).join('')}
         </tbody>
-        <tfoot><tr><td colspan="5">الإجمالي</td><td class="amount positive">${fmt(cashSales.reduce((s,i)=>s+i.total,0))}</td></tr></tfoot>
+        <tfoot><tr><td colspan="5">الإجمالي المحصّل</td><td class="amount positive">${fmt(grossCash)}</td></tr></tfoot>
       </table>
     </div>
   </div>
 
   <div class="card">
     <div class="card-title">↩️ المرتجعات في Q2</div>
+    <p style="font-size:0.82rem;color:#6B7280;margin-bottom:12px">
+      مرتجعات العملاء النقديين (${fmt(cashReturnsTotal)} ر.س) تخصم من الضريبة لأن المبلغ تم رده فعلياً.<br>
+      مرتجعات العملاء الآجلين (${fmt(creditReturns.reduce((s,r)=>s+r.total,0))} ر.س) لا تخصم لأنها تقلل الدين فقط.
+    </p>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>#</th><th>التاريخ</th><th>رقم الفاتورة</th><th>العميل</th><th>المبلغ (ر.س)</th></tr></thead>
+        <thead><tr><th>#</th><th>التاريخ</th><th>رقم الفاتورة</th><th>العميل</th><th>النوع</th><th>المبلغ (ر.س)</th></tr></thead>
         <tbody>
           ${returns.sort((a,b) => a.date.localeCompare(b.date)).map((r, i) => `
-          <tr><td>${i+1}</td><td>${r.date}</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">${r.num}</code></td><td>${r.customer}</td><td class="amount negative">-${fmt(r.total)}</td></tr>`).join('')}
+          <tr><td>${i+1}</td><td>${r.date}</td><td><code style="background:#FEE2E2;padding:2px 8px;border-radius:4px;font-size:0.75rem">${r.num}</code></td><td>${r.customer}</td><td><span class="tag ${cashCustomers.has(r.customer) ? 'tag-cash' : 'tag-credit'}">${cashCustomers.has(r.customer) ? 'نقدي' : 'آجل'}</span></td><td class="amount negative">-${fmt(r.total)}</td></tr>`).join('')}
         </tbody>
-        <tfoot><tr><td colspan="4">الإجمالي</td><td class="amount negative">-${fmt(totalReturns)}</td></tr></tfoot>
+        <tfoot><tr><td colspan="5">الإجمالي</td><td class="amount negative">-${fmt(totalReturns)}</td></tr></tfoot>
       </table>
     </div>
   </div>
@@ -284,14 +278,16 @@ tfoot tr { background: #F8F7FC !important; font-weight: 800; position: sticky; b
   <div class="card">
     <div class="card-title">📌 ملخص الضريبة المستحقة</div>
     <table>
-      <tr><td style="padding:12px">مبيعات محصّلة (نقدي/بطاقة)</td><td class="amount positive" style="padding:12px">${fmt(totalCash)}</td></tr>
-      <tr><td style="padding:12px">(-) مرتجعات</td><td class="amount negative" style="padding:12px">-${fmt(totalReturns)}</td></tr>
-      <tr style="background:#F8F7FC;font-weight:700"><td style="padding:12px">صافي المبيعات الخاضعة للضريبة</td><td class="amount" style="padding:12px">${fmt(Math.max(0, totalCash - totalReturns))}</td></tr>
-      <tr><td style="padding:12px">ضريبة القيمة المضافة (15%)</td><td class="amount" style="padding:12px;color:#D97706;font-weight:700">${fmt(Math.max(0, totalCash - totalReturns) * 15 / 115)}</td></tr>
+      <tr><td style="padding:12px">مبيعات محصّلة (كاش/بطاقة/رواء باي)</td><td class="amount positive" style="padding:12px">${fmt(grossCash)}</td></tr>
+      <tr><td style="padding:12px">(-) مرتجعات من عملاء نقديين</td><td class="amount negative" style="padding:12px">-${fmt(cashReturnsTotal)}</td></tr>
+      <tr style="background:#F8F7FC;font-weight:700"><td style="padding:12px">صافي المبيعات الخاضعة للضريبة</td><td class="amount" style="padding:12px;font-weight:800">${fmt(netCash)}</td></tr>
+      <tr><td style="padding:12px">ضريبة القيمة المضافة المستحقة (15%)</td><td class="amount" style="padding:12px;color:#D97706;font-weight:800">${fmt(vat)}</td></tr>
     </table>
     <div class="note-box">
-      💡 <strong>ملاحظة:</strong> الضريبة محسوبة على الأساس النقدي - فقط ما تم تحصيله فعلياً.<br>
-      إذا تم تحصيل مبالغ من العملاء الآجلين خلال Q2، يجب إضافتها للضريبة بعد مراجعة كشوف الحساب.
+      ✅ <strong>هذه الأرقام مضمونة 100%</strong> - فقط فواتير تم بيعها وتحصيلها نقدياً/بالبطاقة في أبريل-يونيو.<br>
+      مرتجعات العملاء النقديين فقط هي المخصومة (لأنها تم رد المبلغ فعلياً).<br>
+      مرتجعات العملاء الآجلين لا تخصم هنا (لم يرد منها مبلغ نقدي).<br><br>
+      ⚠️ إذا حصّلت مبالغ من عملاء آجلين خلال Q2، يجب إضافتها بعد مراجعة كشوف الحساب.
     </div>
   </div>
 
