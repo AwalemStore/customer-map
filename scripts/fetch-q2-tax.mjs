@@ -281,9 +281,12 @@ function updateTaxTab(q2Invoices, q2Collections, q1ByCustomer) {
       firstDate: c.firstDate,
       lastDate: c.lastDate,
       totalSales: c.totalSales,
+      q1Purchases: c.q1Purchases || 0,
       actualPaid: c.actualPaid,
+      totalPaidAll: c.totalPaidAll || 0,
       remainingDebt: c.remainingDebt,
       note: c.note,
+      needsVerify: c.needsVerify || false,
     })),
     // Daily collection summary
     dailyCollections: dailySummary,
