@@ -23,6 +23,49 @@ async function auth() {
   return data.AuthenticationResult.IdToken;
 }
 
+async function fetchQ1Invoices(token) {
+  console.log('[1.5/4] Fetching Q1 invoices (Jan-Mar 2026) for customer debt calculation...');
+  const q1ByCustomer = {};
+  let offset = 0;
+  const limit = 50;
+  let hasMore = true;
+  
+  while (hasMore) {
+    const res = await fetch(`${API_BASE}/enigma/invoices?query=&limit=${limit}&offset=${offset}`, {
+      headers: { accept: 'application/json', authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) break;
+    const data = await res.json();
+    if (!data.data || data.data.length === 0) break;
+    
+    for (const inv of data.data) {
+      const d = new Date(inv.completionDate || inv.date || inv.createdAt);
+      // Q1 = January (0) to March (2) 2026
+      if (d.getFullYear() === 2026 && d.getMonth() >= 0 && d.getMonth() <= 2) {
+        const name = (inv.customerName || 'غير محدد').trim();
+        if (!q1ByCustomer[name]) q1ByCustomer[name] = { q1Sales: 0, q1Returns: 0 };
+        if (inv.isReturn || inv.invoiceNumber?.startsWith('R')) {
+          q1ByCustomer[name].q1Returns += parseFloat(inv.total || 0);
+        } else {
+          q1ByCustomer[name].q1Sales += parseFloat(inv.total || 0);
+        }
+      }
+      // Stop if past Q1
+      if (d.getFullYear() === 2026 && d.getMonth() > 2 && d.getMonth() > 5) { hasMore = false; break; }
+    }
+    offset += limit;
+    if (data.data.length < limit) hasMore = false;
+  }
+  
+  // Net Q1 sales per customer
+  Object.keys(q1ByCustomer).forEach(name => {
+    q1ByCustomer[name].q1Net = q1ByCustomer[name].q1Sales - q1ByCustomer[name].q1Returns;
+  });
+  
+  console.log(`  ✓ Q1 data for ${Object.keys(q1ByCustomer).length} customers`);
+  return q1ByCustomer;
+}
+
 async function fetchAllInvoicesQ2(token) {
   console.log('[2/3] Fetching Q2 invoices (Apr-Jun 2026)...');
   const allInvoices = [];
@@ -71,7 +114,7 @@ async function fetchAllInvoicesQ2(token) {
   return allInvoices;
 }
 
-function updateTaxTab(q2Invoices, q2Collections) {
+function updateTaxTab(q2Invoices, q2Collections, q1ByCustomer) {
   const htmlPath = join(REPO_ROOT, 'paftah-comprehensive-report.html');
   let html = readFileSync(htmlPath, 'utf-8');
 
@@ -141,14 +184,25 @@ function updateTaxTab(q2Invoices, q2Collections) {
     q2CreditByCustomer[name].totalSales += i.total;
   });
   
-  // Only include customers who ACTUALLY PAID (totalPaid > 0 from PAFTAH_DATA)
+  // Only include customers who ACTUALLY PAID for Q2 (not Q1 payments)
+  // Logic: if totalPaid > Q1 net sales → the excess was paid towards Q2
   const creditCollected = Object.values(q2CreditByCustomer)
     .filter(c => {
       const real = customerPaidMap[c.name];
-      return real && real.paid > 0;
+      if (!real || real.paid === 0) return false;
+      // Check if payment covers Q1 debt first
+      const q1Data = q1ByCustomer[c.name];
+      const q1Net = q1Data ? q1Data.q1Net : 0;
+      // Amount paid towards Q2 = totalPaid - Q1 net sales (if positive)
+      const q2Payment = real.paid - q1Net;
+      return q2Payment > 0; // Only if they paid MORE than their Q1 debt
     })
     .map(c => {
       const real = customerPaidMap[c.name];
+      const q1Data = q1ByCustomer[c.name];
+      const q1Net = q1Data ? q1Data.q1Net : 0;
+      // Q2 payment = total paid - Q1 sales (what's left for Q2)
+      const q2Payment = Math.min(c.totalSales, Math.max(0, real.paid - q1Net));
       return {
         customerName: c.name,
         invoiceCount: c.invoices.length,
@@ -156,9 +210,11 @@ function updateTaxTab(q2Invoices, q2Collections) {
         firstDate: c.invoices.map(i => i.date).sort()[0],
         lastDate: c.invoices.map(i => i.date).sort().pop(),
         totalSales: +c.totalSales.toFixed(2),
-        actualPaid: +real.paid.toFixed(2),
-        remainingDebt: +real.debt.toFixed(2),
-        note: 'عميل آجل في Q2 - مؤكد التحصيل من كشف الحساب (مدفوع: ' + real.paid.toFixed(0) + ' ر.س)',
+        q1Purchases: +q1Net.toFixed(2),
+        actualPaid: +q2Payment.toFixed(2),
+        totalPaidAll: +real.paid.toFixed(2),
+        remainingDebt: +Math.max(0, c.totalSales - q2Payment).toFixed(2),
+        note: 'محصّل Q2: ' + q2Payment.toFixed(0) + ' ر.س (بعد خصم مدفوعات Q1: ' + q1Net.toFixed(0) + ')',
       };
     })
     .sort((a, b) => b.actualPaid - a.actualPaid);
@@ -405,6 +461,7 @@ async function main() {
   const token = await auth();
   console.log('✓ Authenticated');
 
+  const q1ByCustomer = await fetchQ1Invoices(token);
   const q2Invoices = await fetchAllInvoicesQ2(token);
   console.log(`\\n[3/4] Total Q2 invoices: ${q2Invoices.length}`);
   console.log(`  Sales: ${q2Invoices.filter(i => i.type === 'sale').length}`);
@@ -415,7 +472,7 @@ async function main() {
   const q2CollectionsTotal = q2Collections.reduce((s,d) => s + d.total, 0);
   console.log(`\nQ2 Total collections: ${q2CollectionsTotal.toFixed(2)} ر.س (${q2Collections.length} active days)`);
 
-  updateTaxTab(q2Invoices, q2Collections);
+  updateTaxTab(q2Invoices, q2Collections, q1ByCustomer);
   console.log('\\nDone!');
 }
 
