@@ -61,11 +61,16 @@ jobs:
           REWAA_EMAIL: info@paftah.com
           REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
         run: node scripts/fetch-expenses.mjs
+      - name: Q2 tax standalone
+        env:
+          REWAA_EMAIL: info@paftah.com
+          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
+        run: node scripts/fetch-q2-standalone.mjs
       - name: Commit
         run: |
           git config user.name "Paftah Bot"
           git config user.email "bot@paftah.com"
-          git add paftah-comprehensive-report.html
+          git add paftah-comprehensive-report.html q2-tax.html
           git diff --staged --quiet || (git commit -m "auto: $(date -u +'%Y-%m-%d %H:%M')" && git push)
       - name: Setup Pages
         uses: actions/configure-pages@v4
