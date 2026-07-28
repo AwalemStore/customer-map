@@ -293,10 +293,11 @@ function updateTaxTab(q2Invoices, q2Collections, q1ByCustomer) {
     html = html.substring(0, taxFuncIdx) + q2DataLine + html.substring(taxFuncIdx);
   }
 
-  // Replace the tax tab functions (from initTaxTab to just before renderQ2CashCredit)
-  // This preserves renderQ2CashCredit which is defined separately in the HTML
-  const replaceStart = html.indexOf('// ===== TAX TAB');
-  const oldRenderFn = replaceStart > -1 ? replaceStart : html.indexOf('function renderTaxTable()');
+  // Remove ALL existing initTaxTab definitions first
+  html = html.replace(/function initTaxTab\(\)\s*\{[^}]*\}\n*/g, '');
+  
+  // Now find renderTaxTable and replace up to renderQ2CashCredit
+  const oldRenderFn = html.indexOf('function renderTaxTable()');
   const oldRenderEnd = html.indexOf('function renderQ2CashCredit()', oldRenderFn);
   if (oldRenderFn > -1 && oldRenderEnd > -1) {
     const newRenderFn = `
