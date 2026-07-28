@@ -5783,23 +5783,24 @@ function renderQ2CashCredit() {
   html += '</div>';
 
   if (data.creditCollected && data.creditCollected.length > 0) {
-    html += '<h4 style="margin:16px 0 8px;color:var(--primary-dark)">📋 فواتير آجل في Q2 تم تحصيلها</h4>';
+    html += '<h4 style="margin:16px 0 8px;color:var(--primary-dark)">📋 عملاء آجل في Q2 تم تحصيلهم (مؤكد من كشف الحساب)</h4>';
     html += '<div class="table-wrapper"><table class="data-table"><thead>';
-    html += '<tr><th>#</th><th>رقم الفاتورة</th><th>العميل</th><th>تاريخ الإصدار</th><th>التحصيل</th><th>المبلغ</th><th>المحصّل</th><th>ملاحظة</th></tr>';
+    html += '<tr><th>#</th><th>العميل</th><th>فواتير Q2</th><th>فترة الإصدار</th><th>مبيعات Q2 (آجل)</th><th>المحصّل الفعلي</th><th>المتبقي</th><th>ملاحظة</th></tr>';
     html += '</thead><tbody>';
-    data.creditCollected.forEach(function(inv, i) {
+    data.creditCollected.forEach(function(c, i) {
       html += '<tr><td>' + (i+1) + '</td>';
-      html += '<td><code style="background:#FEF3C7;padding:2px 8px;border-radius:4px;white-space:nowrap;cursor:pointer;font-size:0.75rem" onclick="copyText(\'' + inv.invoiceNumber + '\',this)">' + inv.invoiceNumber + ' 📋</code></td>';
-      html += '<td style="font-weight:600">' + inv.customerName + '</td>';
-      html += '<td style="white-space:nowrap">' + inv.issueDate + '</td>';
-      html += '<td style="white-space:nowrap;color:var(--warning,#F59E0B);font-weight:600">لاحقاً ⏳</td>';
-      html += '<td>' + fmt(inv.total) + '</td>';
-      var paidColor = inv.paidAmount >= inv.total ? 'var(--success)' : 'var(--warning,#F59E0B)';
-      html += '<td style="font-weight:700;color:' + paidColor + '">' + fmt(inv.paidAmount) + '</td>';
-      html += '<td style="font-size:0.72rem;color:var(--text-light)">' + inv.note + '</td></tr>';
+      html += '<td style="font-weight:600">' + c.customerName + '</td>';
+      html += '<td style="font-size:0.75rem">' + c.invoiceCount + ' فاتورة</td>';
+      html += '<td style="white-space:nowrap;font-size:0.75rem">' + c.firstDate + ' ← ' + c.lastDate + '</td>';
+      html += '<td>' + fmt(c.totalSales) + '</td>';
+      var paidColor = c.actualPaid >= c.totalSales ? 'var(--success)' : 'var(--warning,#F59E0B)';
+      html += '<td style="font-weight:700;color:' + paidColor + '">' + fmt(c.actualPaid) + '</td>';
+      html += '<td class="amount negative">' + fmt(c.remainingDebt) + '</td>';
+      html += '<td style="font-size:0.68rem;color:var(--text-light)">' + c.note + '</td></tr>';
     });
     html += '</tbody>';
-    html += '<tfoot><tr style="background:var(--primary-light);font-weight:700"><td colspan="5">الإجمالي</td><td>' + fmt(data.creditCollected.reduce(function(s,i){return s+i.total;},0)) + '</td><td>' + fmt(creditTotal) + '</td><td></td></tr></tfoot>';
+    var totSales = data.creditCollected.reduce(function(s,c){return s+c.totalSales;},0);
+    html += '<tfoot><tr style="background:var(--primary-light);font-weight:700"><td colspan="4">الإجمالي</td><td>' + fmt(totSales) + '</td><td>' + fmt(creditTotal) + '</td><td colspan="2"></td></tr></tfoot>';
     html += '</table></div>';
   }
 
