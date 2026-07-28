@@ -125,6 +125,10 @@ function buildHTML(invoices, dailyCollections) {
   // Daily totals
   const dailyTotal = dailyCollections.reduce((s, d) => s + d.total, 0);
   
+  const dailyCash = dailyCollections.reduce((s, d) => s + d.cash, 0);
+  const dailyDebit = dailyCollections.reduce((s, d) => s + d.debit, 0);
+  const dailyCard = dailyCollections.reduce((s, d) => s + d.card, 0);
+  
   const fmt = n => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   let html = `<!DOCTYPE html>
