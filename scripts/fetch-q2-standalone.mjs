@@ -106,14 +106,10 @@ function buildHTML(invoices, dailyCollections) {
   // Credit returns (no cash refunded - just reduces debt)
   const creditReturns = returns.filter(i => !cashCustomers.has(i.customer));
   
-  // Gross totals
+  // Gross totals - SIMPLE and ACCURATE
   const grossCash = cashSales.reduce((s, i) => s + i.total, 0);
-  const cashReturnsTotal = cashReturns.reduce((s, i) => s + i.total, 0);
-  const netCash = grossCash - cashReturnsTotal;
-  const vat = Math.max(0, netCash) * 15 / 115;
-  
-  // All returns for display
   const totalReturns = returns.reduce((s, r) => s + r.total, 0);
+  const vat = grossCash * 15 / 115;
   
   // Credit sales
   const creditSales = sales.filter(i => {
@@ -181,24 +177,19 @@ tfoot tr { background: #F8F7FC !important; font-weight: 800; position: sticky; b
   
   <div class="kpi-grid">
     <div class="kpi cash">
-      <div class="kpi-label">💵 مبيعات كاش/بطاقة (إجمالي)</div>
+      <div class="kpi-label">💵 مبيعات محصّلة (كاش/بطاقة/رواء باي)</div>
       <div class="kpi-value" style="color:#059669">${fmt(grossCash)}</div>
-      <div class="kpi-sub">${cashSales.length} فاتورة</div>
+      <div class="kpi-sub">${cashSales.length} فاتورة | مضمون 100%</div>
     </div>
     <div class="kpi returns">
-      <div class="kpi-label">↩️ مرتجعات (من عملاء نقديين)</div>
-      <div class="kpi-value" style="color:#DC2626">-${fmt(cashReturnsTotal)}</div>
-      <div class="kpi-sub">${cashReturns.length} فاتورة مرتجع</div>
-    </div>
-    <div class="kpi total">
-      <div class="kpi-label">💰 صافي المحصّل</div>
-      <div class="kpi-value" style="color:#333088">${fmt(netCash)}</div>
-      <div class="kpi-sub">مضمون 100%</div>
+      <div class="kpi-label">↩️ كل المرتجعات (للمراجعة)</div>
+      <div class="kpi-value" style="color:#DC2626">-${fmt(totalReturns)}</div>
+      <div class="kpi-sub">${returns.length} فاتورة مرتجع</div>
     </div>
     <div class="kpi vat">
       <div class="kpi-label">📋 ضريبة القيمة المضافة (15%)</div>
       <div class="kpi-value" style="color:#D97706">${fmt(vat)}</div>
-      <div class="kpi-sub">الصافي × 15 ÷ 115</div>
+      <div class="kpi-sub">${fmt(grossCash)} × 15 ÷ 115</div>
     </div>
   </div>
 
@@ -283,15 +274,14 @@ tfoot tr { background: #F8F7FC !important; font-weight: 800; position: sticky; b
     <div class="card-title">📌 ملخص الضريبة المستحقة</div>
     <table>
       <tr><td style="padding:12px">مبيعات محصّلة (كاش/بطاقة/رواء باي)</td><td class="amount positive" style="padding:12px">${fmt(grossCash)}</td></tr>
-      <tr><td style="padding:12px">(-) مرتجعات من عملاء نقديين</td><td class="amount negative" style="padding:12px">-${fmt(cashReturnsTotal)}</td></tr>
-      <tr style="background:#F8F7FC;font-weight:700"><td style="padding:12px">صافي المبيعات الخاضعة للضريبة</td><td class="amount" style="padding:12px;font-weight:800">${fmt(netCash)}</td></tr>
-      <tr><td style="padding:12px">ضريبة القيمة المضافة المستحقة (15%)</td><td class="amount" style="padding:12px;color:#D97706;font-weight:800">${fmt(vat)}</td></tr>
+      <tr style="background:#F8F7FC;font-weight:700"><td style="padding:12px">الأساس الخاضع للضريبة</td><td class="amount" style="padding:12px;font-weight:800">${fmt(grossCash)}</td></tr>
+      <tr><td style="padding:12px">ضريبة القيمة المضافة المستحقة (15%)</td><td class="amount" style="padding:12px;color:#D97706;font-weight:800;font-size:1.1em">${fmt(vat)}</td></tr>
     </table>
     <div class="note-box">
-      ✅ <strong>هذه الأرقام مضمونة 100%</strong> - فقط فواتير تم بيعها وتحصيلها نقدياً/بالبطاقة في أبريل-يونيو.<br>
-      مرتجعات العملاء النقديين فقط هي المخصومة (لأنها تم رد المبلغ فعلياً).<br>
-      مرتجعات العملاء الآجلين لا تخصم هنا (لم يرد منها مبلغ نقدي).<br><br>
-      ⚠️ إذا حصّلت مبالغ من عملاء آجلين خلال Q2، يجب إضافتها بعد مراجعة كشوف الحساب.
+      ✅ <strong>الأرقام المضمونة 100%:</strong> فقط فواتير تم بيعها وتحصيلها نقدياً/بالبطاقة في أبريل-يونيو.<br><br>
+      ⚠️ <strong>المرتجعات:</strong> راجع جدول المرتجعات. إذا رددت مبلغ نقدي لعميل، اخصمه من الضريبة.<br>
+      مرتجعات العملاء الآجلين لا تخصم (لم يرد منها مبلغ نقدي).<br><br>
+      ⚠️ <strong>التحصيلات الآجلة:</strong> إذا حصّلت من عملاء آجلين خلال Q2، أضف المبلغ للضريبة.
     </div>
   </div>
 
