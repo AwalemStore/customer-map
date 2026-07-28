@@ -219,7 +219,7 @@ tfoot tr { background: #F8F7FC !important; font-weight: 800; position: sticky; b
   <div class="card">
     <div class="card-title">↩️ المرتجعات في Q2</div>
     <p style="font-size:0.82rem;color:#6B7280;margin-bottom:12px">
-      مرتجعات العملاء النقديين (${fmt(cashReturnsTotal)} ر.س) تخصم من الضريبة لأن المبلغ تم رده فعلياً.<br>
+      مرتجعات العملاء النقديين (باللون الأخضر) خصمت منها مبالغ فعلية - راجعها يدوياً.<br>
       مرتجعات العملاء الآجلين (${fmt(creditReturns.reduce((s,r)=>s+r.total,0))} ر.س) لا تخصم لأنها تقلل الدين فقط.
     </p>
     <div class="table-wrap">
