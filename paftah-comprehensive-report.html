@@ -4554,7 +4554,7 @@ function initExecutiveDashboard() {
   if (!el || typeof PAFTAH_DATA === 'undefined') return;
   
   const m = PAFTAH_DATA.monthly;
-  const total = m.find(x => x.isTotal) || m[m.length-1];
+  const total = m.find(x => x.isTotal) || m[m.length-1] || {};
   const months = m.filter(x => !x.isTotal);
   const lastMonth = months[months.length - 1] || {};
   const prevMonth = months[months.length - 2] || {};
@@ -4562,9 +4562,9 @@ function initExecutiveDashboard() {
   // Expenses 2026
   let exp2026 = 0;
   if (typeof EXPENSES_DATA !== 'undefined') {
-    EXPENSES_DATA.expenses.forEach(e => { if (e.date?.startsWith('2026')) exp2026 += e.amount; });
+    EXPENSES_DATA.expenses.forEach(e => { if (e.date?.startsWith('2026')) exp2026 += (e.amount || 0); });
   }
-  const netIncome = total.profit - exp2026;
+  const netIncome = (total.profit || 0) - exp2026;
   
   // Growth
   const salesGrowth = prevMonth.sales ? ((lastMonth.sales - prevMonth.sales) / prevMonth.sales * 100) : 0;
@@ -4742,7 +4742,7 @@ function initPnL() {
   }
   
   const totalExp = months.reduce((s,m,idx) => s + (expByMonth['2026-' + String(idx+1).padStart(2,'0')] || 0), 0);
-  const cogs = total.sales - total.profit;
+  const cogs = (total.sales || 0) - (total.profit || 0);
   const netIncome = total.profit - totalExp;
   
   // Build monthly P&L table
@@ -4750,8 +4750,8 @@ function initPnL() {
     const monthNum = idx + 1;
     const monthKey = '2026-' + String(monthNum).padStart(2,'0');
     const exp = expByMonth[monthKey] || 0;
-    const cogsM = mo.sales - mo.profit;
-    const netM = mo.profit - exp;
+    const cogsM = (mo.sales || 0) - (mo.profit || 0);
+    const netM = (mo.profit || 0) - exp;
     return { month: mo.month, monthNum, sales: mo.sales, cogs: cogsM, profit: mo.profit, exp, net: netM };
   });
   

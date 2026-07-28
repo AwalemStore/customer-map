@@ -51,6 +51,11 @@ jobs:
           REWAA_EMAIL: info@paftah.com
           REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
         run: node scripts/fetch-reports.mjs
+      - name: All taxes
+        env:
+          REWAA_EMAIL: info@paftah.com
+          REWAA_PASSWORD: ${{ secrets.REWAA_PASSWORD }}
+        run: node scripts/fetch-all-taxes.mjs || true
       - name: Expenses
         env:
           REWAA_EMAIL: info@paftah.com

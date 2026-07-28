@@ -309,7 +309,7 @@ if (invStart > -1 && invEnd > invStart) {
 }
 
 // === SYNC "عمليات البيع" COUNTER WITH ACTUAL INVOICE COUNT ===
-const saleCount = cleanInvoices.filter(i => i.type === 'sale').length;
+const saleCount = cleanInvoices.filter(i => i.type === 'sale' && i.date.startsWith('2026')).length;
 const returnCount = cleanInvoices.filter(i => i.type === 'return').length;
 const oldCounter = html.match(/data-count="(\d+)" data-int="1">0<\/div>\s*<div class="sub">يناير - يوليو 2026/);
 html = html.replace(
