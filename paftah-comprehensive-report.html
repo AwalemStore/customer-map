@@ -2860,7 +2860,10 @@ function switchTab(tabId) {
   document.getElementById('tab-' + tabId).classList.add('active');
   event.target.classList.add('active');
   if (tabId === 'whatsapp' && !waInitialized) { waInitialized = true; initWa(); }
-  if (tabId === 'tax') { initTaxTab(); }
+  if (tabId === 'tax') {
+    if (typeof renderTaxTable === 'function') renderTaxTable();
+    if (typeof renderQ2CashCredit === 'function') renderQ2CashCredit();
+  }
   if (tabId === 'q1returns') { initQ1ReturnsTab(); }
   if (tabId === 'vip') { initVipTab(); }
   if (tabId === 'taxes') { initTaxesTab(); }
