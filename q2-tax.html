@@ -5,60 +5,111 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ضرائب Q2 2026 - بفته</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&display=swap');
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'IBM Plex Sans Arabic', 'Segoe UI', sans-serif; background: #F8F7FC; color: #1a1a2e; line-height: 1.6; }
-.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-h1 { font-size: 1.8rem; color: #333088; margin-bottom: 4px; }
-.subtitle { color: #6B7280; font-size: 0.9rem; margin-bottom: 24px; }
-.card { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-.card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #F3F0F8; }
-.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-.kpi { padding: 20px; border-radius: 12px; text-align: center; }
+body { font-family: 'IBM Plex Sans Arabic', 'Segoe UI', sans-serif; background: #F0EEF8; color: #1a1a2e; line-height: 1.6; }
+
+/* HEADER */
+.header { background: linear-gradient(135deg, #333088 0%, #4D49A8 50%, #6366F1 100%); color: #fff; padding: 32px 20px; position: relative; overflow: hidden; }
+.header::after { content: ''; position: absolute; top: -50%; right: -10%; width: 400px; height: 400px; background: rgba(255,255,255,0.05); border-radius: 50%; }
+.header-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+.header h1 { font-size: 2rem; font-weight: 800; margin-bottom: 6px; }
+.header .subtitle { opacity: 0.85; font-size: 0.92rem; }
+.header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); padding: 4px 14px; border-radius: 100px; font-size: 0.78rem; margin-top: 10px; backdrop-filter: blur(10px); }
+
+/* CONTAINER */
+.container { max-width: 1200px; margin: -20px auto 0; padding: 0 20px 40px; position: relative; z-index: 2; }
+
+/* CARDS */
+.card { background: #fff; border-radius: 16px; padding: 28px; margin-bottom: 20px; box-shadow: 0 4px 24px rgba(51,48,136,0.06); border: 1px solid rgba(51,48,136,0.04); }
+.card-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 2px solid #F3F0F8; display: flex; align-items: center; gap: 8px; }
+
+/* KPI */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.kpi { padding: 24px 20px; border-radius: 16px; text-align: center; transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; }
+.kpi:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+.kpi-icon { font-size: 2rem; margin-bottom: 8px; }
 .kpi.cash { background: linear-gradient(135deg, #DCFCE7, #F0FDF4); border: 1px solid #BBF7D0; }
 .kpi.returns { background: linear-gradient(135deg, #FEE2E2, #FEF2F2); border: 1px solid #FECACA; }
-.kpi.total { background: linear-gradient(135deg, #DBEAFE, #EFF6FF); border: 1px solid #BFDBFE; }
 .kpi.vat { background: linear-gradient(135deg, #FEF3C7, #FFFBEB); border: 1px solid #FDE68A; }
-.kpi-label { font-size: 0.78rem; color: #6B7280; margin-bottom: 6px; }
-.kpi-value { font-size: 1.6rem; font-weight: 800; }
-.kpi-sub { font-size: 0.72rem; color: #6B7280; margin-top: 4px; }
-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-th { text-align: right; padding: 10px 8px; background: #F8F7FC; font-weight: 700; color: #333088; border-bottom: 2px solid #E8E5F0; position: sticky; top: 0; }
-td { padding: 8px; border-bottom: 1px solid #F3F0F8; }
+.kpi-label { font-size: 0.8rem; color: #4B5563; margin-bottom: 8px; font-weight: 600; }
+.kpi-value { font-size: 1.8rem; font-weight: 800; line-height: 1.2; }
+.kpi-sub { font-size: 0.72rem; color: #6B7280; margin-top: 6px; }
+.kpi-guarantee { position: absolute; top: 8px; left: 8px; font-size: 0.6rem; background: rgba(5,150,105,0.15); color: #059669; padding: 2px 8px; border-radius: 100px; font-weight: 700; }
+
+/* TABLES */
+table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+th { text-align: right; padding: 12px 10px; background: #F8F7FC; font-weight: 700; color: #333088; border-bottom: 2px solid #E8E5F0; position: sticky; top: 0; z-index: 1; }
+td { padding: 10px; border-bottom: 1px solid #F3F0F8; }
 tr:hover td { background: #FAFAFC; }
 .amount { font-weight: 600; text-align: left; white-space: nowrap; }
 .positive { color: #059669; }
 .negative { color: #DC2626; }
-.tag { display: inline-block; padding: 2px 10px; border-radius: 100px; font-size: 0.68rem; font-weight: 600; }
+tfoot tr { background: #F8F7FC !important; font-weight: 800; position: sticky; bottom: 0; }
+
+/* TAGS */
+.tag { display: inline-block; padding: 3px 12px; border-radius: 100px; font-size: 0.68rem; font-weight: 600; }
 .tag-cash { background: #DCFCE7; color: #059669; }
 .tag-card { background: #DBEAFE; color: #2563EB; }
 .tag-credit { background: #FEF3C7; color: #D97706; }
-.tag-return { background: #FEE2E2; color: #DC2626; }
-.search { width: 100%; padding: 10px 14px; border: 2px solid #333088; border-radius: 8px; font-size: 14px; margin-bottom: 12px; }
-.note-box { padding: 14px 18px; border-radius: 10px; background: #FEF3C7; border: 1px solid #FDE68A; font-size: 0.82rem; margin-top: 16px; }
-.warning-box { padding: 14px 18px; border-radius: 10px; background: #FEE2E2; border: 1px solid #FECACA; font-size: 0.82rem; margin-top: 16px; }
-.table-wrap { max-height: 600px; overflow-y: auto; border-radius: 8px; }
-tfoot tr { background: #F8F7FC !important; font-weight: 800; position: sticky; bottom: 0; }
-@media (max-width: 768px) { .kpi-grid { grid-template-columns: 1fr 1fr; } table { font-size: 0.72rem; } }
+
+/* SEARCH */
+.search { width: 100%; padding: 12px 18px; border: 2px solid #E8E5F0; border-radius: 12px; font-size: 14px; margin-bottom: 14px; transition: border 0.2s; font-family: inherit; }
+.search:focus { outline: none; border-color: #6366F1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+
+/* BOXES */
+.note-box { padding: 16px 20px; border-radius: 12px; background: linear-gradient(135deg, #FEF3C7, #FFFBEB); border: 1px solid #FDE68A; font-size: 0.84rem; margin-top: 16px; line-height: 1.8; }
+.warning-box { padding: 16px 20px; border-radius: 12px; background: linear-gradient(135deg, #FEE2E2, #FEF2F2); border: 1px solid #FECACA; font-size: 0.84rem; margin-top: 16px; line-height: 1.8; }
+.table-wrap { max-height: 600px; overflow-y: auto; border-radius: 12px; border: 1px solid #F3F0F8; }
+
+/* INVOICE CODE */
+code { cursor: pointer; transition: all 0.15s; }
+code:hover { transform: scale(1.05); }
+
+/* SUMMARY TABLE */
+.summary-table { width: 100%; font-size: 0.95rem; }
+.summary-table td { padding: 14px 16px; }
+.summary-table .vat-row { font-size: 1.1rem; }
+
+/* FOOTER */
+.footer { text-align: center; color: #6B7280; font-size: 0.78rem; margin: 32px 0; padding: 24px; }
+.footer-logo { font-size: 1rem; font-weight: 700; color: #333088; margin-bottom: 6px; }
+
+/* PRINT */
+@media print { .header { background: #333088 !important; -webkit-print-color-adjust: exact; } .card { box-shadow: none; border: 1px solid #ddd; page-break-inside: avoid; } .search, .table-wrap { max-height: none; overflow: visible; } }
+@media (max-width: 768px) { .kpi-grid { grid-template-columns: 1fr 1fr; } .header h1 { font-size: 1.4rem; } table { font-size: 0.72rem; } .card { padding: 16px; } }
 </style>
 </head>
 <body>
+
+<div class="header">
+  <div class="header-inner">
+    <h1>📊 ضرائب القيمة المضافة - Q2 2026</h1>
+    <p class="subtitle">الفترة: 1 أبريل - 30 يونيو 2026 | الأساس النقدي | جميع البيانات من منصة رواء</p>
+    <span class="header-badge">✅ مضمون 100% - تحديث تلقائي يومي</span>
+  </div>
+</div>
+
 <div class="container">
-  <h1>📊 ضرائب القيمة المضافة - Q2 2026</h1>
-  <p class="subtitle">الفترة: 1 أبريل - 30 يونيو 2026 | الأساس النقدي | جميع البيانات من منصة رواء</p>
   
   <div class="kpi-grid">
     <div class="kpi cash">
-      <div class="kpi-label">💵 مبيعات محصّلة (كاش/بطاقة/رواء باي)</div>
+      <span class="kpi-guarantee">✅ مضمون</span>
+      <div class="kpi-icon">💵</div>
+      <div class="kpi-label">مبيعات محصّلة (كاش/بطاقة/رواء باي)</div>
       <div class="kpi-value" style="color:#059669">5,812.00</div>
-      <div class="kpi-sub">80 فاتورة | مضمون 100%</div>
+      <div class="kpi-sub">80 فاتورة | بيع + تحصيل فوري</div>
     </div>
     <div class="kpi returns">
-      <div class="kpi-label">↩️ كل المرتجعات (للمراجعة)</div>
+      <div class="kpi-icon">↩️</div>
+      <div class="kpi-label">كل المرتجعات (للمراجعة)</div>
       <div class="kpi-value" style="color:#DC2626">-9,746.00</div>
       <div class="kpi-sub">17 فاتورة مرتجع</div>
     </div>
     <div class="kpi vat">
-      <div class="kpi-label">📋 ضريبة القيمة المضافة (15%)</div>
+      <span class="kpi-guarantee">📋 ضريبة</span>
+      <div class="kpi-icon">🧾</div>
+      <div class="kpi-label">ضريبة القيمة المضافة (15%)</div>
       <div class="kpi-value" style="color:#D97706">758.09</div>
       <div class="kpi-sub">5,812.00 × 15 ÷ 115</div>
     </div>
@@ -1040,7 +1091,8 @@ tfoot tr { background: #F8F7FC !important; font-weight: 800; position: sticky; b
     </div>
   </div>
 
-  <p style="text-align:center;color:#6B7280;font-size:0.78rem;margin:24px 0">
+  <p style="text-align:center;color:#6B7280;font-size:0.78rem;margin:24px 0;padding:24px">
+    <div class="footer-logo">بفته - التقرير الضريبي</div>
     تم إنشاء هذا التقرير من منصة رواء | 2026-07-28<br>
     جميع المبالغ بالريال السعودي وتشمل ضريبة القيمة المضافة
   </p>
