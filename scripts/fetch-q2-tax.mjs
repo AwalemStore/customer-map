@@ -28,9 +28,8 @@ async function fetchQ1Invoices(token) {
   const q1ByCustomer = {};
   let offset = 0;
   const limit = 50;
-  let hasMore = true;
   
-  while (hasMore) {
+  while (true) {
     const res = await fetch(`${API_BASE}/enigma/invoices?query=&limit=${limit}&offset=${offset}`, {
       headers: { accept: 'application/json', authorization: `Bearer ${token}` },
     });
@@ -38,10 +37,11 @@ async function fetchQ1Invoices(token) {
     const data = await res.json();
     if (!data.data || data.data.length === 0) break;
     
+    let foundQ1 = false;
     for (const inv of data.data) {
       const d = new Date(inv.completionDate || inv.date || inv.createdAt);
-      // Q1 = January (0) to March (2) 2026
       if (d.getFullYear() === 2026 && d.getMonth() >= 0 && d.getMonth() <= 2) {
+        foundQ1 = true;
         const name = (inv.customerName || 'غير محدد').trim();
         if (!q1ByCustomer[name]) q1ByCustomer[name] = { q1Sales: 0, q1Returns: 0 };
         if (inv.isReturn || inv.invoiceNumber?.startsWith('R')) {
@@ -50,11 +50,12 @@ async function fetchQ1Invoices(token) {
           q1ByCustomer[name].q1Sales += parseFloat(inv.total || 0);
         }
       }
-      // Stop if past Q1
-      if (d.getFullYear() === 2026 && d.getMonth() > 2 && d.getMonth() > 5) { hasMore = false; break; }
+      // Stop if we've gone before 2026
+      if (d.getFullYear() < 2026) { offset = -1; break; }
     }
+    if (offset === -1) break;
     offset += limit;
-    if (data.data.length < limit) hasMore = false;
+    if (data.data.length < limit) break;
   }
   
   // Net Q1 sales per customer
