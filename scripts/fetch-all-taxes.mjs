@@ -120,7 +120,7 @@ for (const [qKey, q] of Object.entries(quarters)) {
       invoice: r.num, date: r.date, amount: +r.total.toFixed(2),
       customer: r.customer, vat: +(r.total * 15 / 115).toFixed(2),
     })).sort((a,b) => b.amount - a.amount),
-    customers: customerList.slice(0, 100),
+    customers: customerList.slice(0, 500),
   };
 
   console.log(`\n${q.name} (${q.period}):`);

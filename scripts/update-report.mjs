@@ -140,12 +140,12 @@ async function fetchInvoices(token) {
   console.log('[6/7] Fetching invoices...');
   const allInvoices = [];
   let offset = 0;
-  const limit = 200;
+  const limit = 50;
   const cutoff = new Date('2025-12-31T21:00:00.000Z');
   let hasMore = true;
   let page = 0;
-  while (hasMore && page < 30) {
-    const data = await apiFetchSafe(token, `/enigma/invoices/latest?offset=${offset}&limit=${limit}`);
+  while (hasMore && page < 60) {
+    const data = await apiFetchSafe(token, `/enigma/invoices?query=&limit=${limit}&offset=${offset}`);
     if (!data || !data.data || data.data.length === 0) { hasMore = false; break; }
     for (const inv of data.data) {
       const d = new Date(inv.date);
@@ -164,9 +164,23 @@ async function fetchExpensesAndInventory(token) {
   console.log('[7/7] Fetching expenses & inventory...');
   const now = new Date();
   const yearStr = now.getUTCFullYear();
-  const expenses = await apiFetchSafe(token, `/expense-service/expenses?offset=0&limit=100&search=&sortOn=createdAt&sortBy=DESC&amount=&taxAmount=&createdAtFrom=2025-12-31&createdAtTo=${yearStr}-12-31`);
+  const allRecords = [];
+  let offset = 0;
+  const limit = 100;
+  let total = null;
+  while (total === null || offset < total) {
+    const page = await apiFetchSafe(token, `/expense-service/expenses?offset=${offset}&limit=${limit}&search=&sortOn=createdAt&sortBy=DESC&amount=&taxAmount=&createdAtFrom=2024-01-01&createdAtTo=${yearStr}-12-31`);
+    if (!page) break;
+    if (total === null) total = page.total || page.meta?.total || 0;
+    const records = page.resultSet || page.data || [];
+    if (records.length === 0) break;
+    allRecords.push(...records);
+    offset += limit;
+    if (records.length < limit) break;
+  }
+  const expenses = { total: total ?? allRecords.length, resultSet: allRecords };
   const inventory = await apiFetchSafe(token, `/reporting-bridge/dashboard/v2/todays-inventory-value?locationIds=`);
-  console.log(`  ✓ Expenses: ${expenses?.total || expenses?.resultSet?.length || 0} records`);
+  console.log(`  ✓ Expenses: ${expenses.total} records (fetched ${allRecords.length})`);
   console.log(`  ✓ Inventory value: ${inventory?.inventoryValue || 'N/A'}`);
   return { expenses, inventory };
 }
@@ -299,8 +313,8 @@ function updateHtmlReport(paftahData, invoiceArray, monthlyStats, inventoryValue
     const expData = extras.expenses.data || extras.expenses.resultSet || extras.expenses || [];
     if (Array.isArray(expData)) {
       expData.forEach(e => {
-        const amount = parseFloat(e.amount || e.totalAmount || 0);
-        const d = new Date(e.createdAt || e.date);
+        const amount = parseFloat(e.totalAmount || e.amount || 0);
+        const d = new Date(e.paymentDateTime || e.createdAt || e.date);
         if (d.getFullYear() === 2026) {
           const m = d.getMonth() + 1;
           monthExpenses[m] = (monthExpenses[m] || 0) + amount;
