@@ -148,7 +148,7 @@ async function fetchInvoices(token) {
     const data = await apiFetchSafe(token, `/enigma/invoices?query=&limit=${limit}&offset=${offset}`);
     if (!data || !data.data || data.data.length === 0) { hasMore = false; break; }
     for (const inv of data.data) {
-      const d = new Date(inv.date);
+      const d = new Date(inv.completionDate || inv.date || inv.createdAt);
       if (d <= cutoff) { hasMore = false; break; }
       allInvoices.push(inv);
     }
@@ -239,7 +239,7 @@ function buildInvoiceArray(apiInvoices) {
       return true;
     })
     .map(inv => ({
-      date: inv.date.substring(0, 10),
+      date: (inv.completionDate || inv.date || inv.createdAt).substring(0, 10),
       num: inv.invoiceNumber,
       type: inv.invoiceNumber.startsWith('R') ? 'return' : 'sale',
       amount: parseFloat(inv.total),
